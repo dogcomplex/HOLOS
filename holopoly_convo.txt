@@ -1,0 +1,83 @@
+HOLO-POLY, houses represent **Compute Upgrades** or **Infrastructure.**\n\n**"
+      }, {
+        "text": "The Physics:**\n*   **Attachment:** You cannot buy a House separate from the Land. They are a bundled asset ("
+      }, {
+        "text": "The Factory + The Land).\n*   **The Valuation Bump:**\n    *   When you buy a House ("
+      }, {
+        "text": "Cost: \\$100), you *should* raise your Self-Assessed Valuation by *at least* \\$100."
+      }, {
+        "text": "\n    *   **Why?** If you don\u0027t, a Raider will buy your property for the old price, essentially"
+      }, {
+        "text": " getting the House for free.\n*   **The Tax Consequences:**\n    *   Upgrading a property increases your **Rent Revenue"
+      }, {
+        "text": "** (Good).\n    *   But it forces you to raise your **Valuation**, which increases your **Tax Bill"
+      }, {
+        "text": "** (Bad).\n*   **The Strategic Limit:** You cannot just \"spam houses.\" You can only build if"
+      }, {
+        "text": " the **Marginal Revenue (Rent yield)** exceeds the **Marginal Cost (Increased Tax).**\n\n**This solves"
+      }, {
+        "text": " the \"Housing Crisis\" logic:**\nYou only build luxury condos (Hotels) if there is actual demand (People"
+      }, {
+        "text": " landing on the tile). If you build a Hotel in the desert (Baltic Ave), the tax will bankrupt you before"
+      }, {
+        "text": " anyone rents it.\n\n---\n\n### 3. Chance / Community Chest (The Oracle Events)\n\nMost cards are immediate"
+      }, {
+        "text": " events (\"Pay \\$50\"). These are **Sensus Shocks.**\n*   They are **Public Events.**\n*   They simulate"
+      }, {
+        "text": " **External Market Volatility** (Regulatory fines, server crashes, windfalls).\n\n**What about \"Secret\" Cards"
+      }, {
+        "text": "?**\nIf we want to introduce a **Private Asset** (Hidden Hand), it must be something that *cannot* be forcibly"
+      }, {
+        "text": " transferred, or whose value relies on surprise.\n*   *Example:* **\"The Sabotage Card\"** (Play"
+      }, {
+        "text": " to destroy a House).\n*   *Handling:* This belongs in the **Locus (Private State)**.\n*   *The Trade"
+      }, {
+        "text": "off:* Because it is private, it cannot be taxed.\n*   *The Limitation:* To prevent this from breaking"
+      }, {
+        "text": " the economy, these cards must have a **Expiration Date (Time-Lock).** Use it in 3 turns or"
+      }, {
+        "text": " it rots. (This simulates the ephemeral nature of \"Insider Information\").\n\n---\n\n### 4. Summary: What is"
+      }, {
+        "text": " Private vs. Public?\n\nHere is the final **Information Hierarchy** for the MVP.\n\n| Asset Class | Example"
+      }, {
+        "text": " | Visibility | Taxed? | Holos Concept |\n| :--- | :--- | :--- | :--- | :"
+      }, {
+        "text": "--- |\n| **Identity** | Player ID / Strategy | **Private** | No | **Locus ($n\u003d1"
+      }, {
+        "text": "$)** |\n| **Liquidity** | Cash Balance | **Private** | No | **Locus (Sol"
+      }, {
+        "text": "vency)** |\n| **Real Estate** | Properties (Land) | **Public** | **Yes** | **Signum ("
+      }, {
+        "text": "Means of Production)** |\n| **Infrastructure** | Houses / Hotels | **Public** | **Yes** | **Signum (Capital)** |\n"
+      }, {
+        "text": "| **Licenses** | GOOJF Card | **Public** | **Yes** | **Signum (Access)** |\n| **Entropy** |"
+      }, {
+        "text": " Dice Rolls / Events | **Public** | No | **Sensus (Reality)** |\n| **Secrets** |"
+      }, {
+        "text": " Strategy Cards / Sabotage | **Private** | No | **Locus (Intel)** |\n\n---\n\n### 5."
+      }, {
+        "text": " The \"Soul\" of the Game\n\nYou asked: *\"What does it feel like?\"*\n\n**To the Human Player"
+      }, {
+        "text": ":**\nIt feels like **Poker** mixed with **SimCity.**\n*   You are constantly bluffing with your Cash"
+      }, {
+        "text": " stack (hiding your insolvency).\n*   You are constantly adjusting your prices (Valuations) to balance Gre"
+      }, {
+        "text": "ed (Rent) vs. Fear (Tax).\n*   You feel **Relief** when someone buys a property from you that"
+      }, {
+        "text": " you couldn\u0027t afford to keep. (The \"Liquidity Exit\").\n\n**To the AI Agent:**\nIt feels like **Optimization"
+      }, {
+        "text": " under Pressure.**\n*   There is no \"End Turn\" where you are safe.\n*   Every asset is a liability. Every"
+      }, {
+        "text": " liability is an asset.\n*   The agent learns that **Holding Nothing** is safe but unprofitable (The Squatter), and **Holding"
+      }, {
+        "text": " Everything** is profitable but deadly (The Dragon).\n*   It searches for the **Golden Mean**: The **Flow State**.\n\nThis is the perfect"
+      }, {
+        "text": " MVP. It is simple enough for `Llama-3.1-8b` to parse (\"Price goes up -\u003e Tax goes"
+      }, {
+        "text": " up\"), but complex enough to exhibit emergent behaviors like **Gentrification**, **Market Crashes**, and **Jub"
+      }, {
+        "text": "ilees**."
+      }, {
+        "text": "",
+        "thoughtSignature": "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"
+      }]

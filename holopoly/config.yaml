@@ -60,7 +60,7 @@ llm:
   max_history_turns: 20       # Include last N turns in context
 
   # Fallback for testing without API
-  stub_mode: false            # Use real Gemini API
+  stub_mode: true             # Using stub - API key returned 403
   stub_strategy: "random"     # "random", "conservative", "aggressive"
 
 randomness:

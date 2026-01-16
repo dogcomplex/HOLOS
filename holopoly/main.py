@@ -179,6 +179,12 @@ def run_game(
     logger.info(f"Transaction Stats: {stats['transaction_stats']}")
     logger.info(f"Ownership Changes: {stats['ownership_changes']}")
     logger.info(f"Bankruptcies: {stats['bankruptcies']}")
+
+    # Report token usage
+    from agents.llm_client import token_tracker
+    usage = token_tracker.get_usage()
+    logger.info(f"LLM Token Usage: {usage['total_tokens']:,} tokens in {usage['total_calls']} calls")
+    logger.info(f"Token Budget Remaining: {usage['remaining']:,} / {usage['limit']:,}")
     logger.info("=" * 60)
 
     return {

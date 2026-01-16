@@ -1,74 +1,54 @@
-# HOLO-POLY Configuration
-# Default settings for MVP (4 players, 1 board)
-
-game:
-  id: "game_001"              # Unique game identifier
-  max_turns: 200              # 0 = unlimited (last player wins)
-  log_level: "INFO"           # DEBUG, INFO, WARNING, ERROR
-
-universe:
-  num_boards: 1               # Number of Monopoly boards
-  board_size: 40              # Tiles per board (standard Monopoly)
-
-players:
-  count: 4
-  starting_balance: 1500
-  archetypes:
-    - "Slumlord"
-    - "Squatter"
-    - "Flipper"
-    - "Developer"
-
 economics:
-  # Timing modes: "on_go" or "per_turn"
-  tax_timing: "on_go"
-  dividend_timing: "on_go"
-
-  # Rates
-  tax_rate: 0.10              # 10% of total valuations
-  rent_rate: 0.10             # 10% of property valuation
+  avg_circuit_length: 10
+  dividend_timing: on_go
   pass_go_salary: 200
-
-  # For per_turn mode adjustment
-  avg_circuit_length: 10      # Expected turns per board circuit
-
+  rent_rate: 0.1
+  tax_rate: 0.1
+  tax_timing: on_go
+game:
+  id: game_001
+  log_level: INFO
+  max_turns: 20
 harberger:
+  auto_valuation_on_buy: true
   enabled: true
   force_buy_enabled: true
-  min_valuation: 1            # Cannot set valuation to $0
-  auto_valuation_on_buy: true # New valuation = max(old, purchase_price)
-
+  min_valuation: 1
 houses:
-  # Standard Monopoly house/hotel costs by color group
-  # (Simplified: using average costs)
-  house_cost_cheap: 50        # Brown, Light Blue
-  house_cost_mid: 100         # Pink, Orange
-  house_cost_high: 150        # Red, Yellow
-  house_cost_premium: 200     # Green, Blue
-  max_houses: 4               # 5th "house" = hotel
-  require_monopoly: true      # Must own all colors to build
-  build_evenly: true          # Standard Monopoly rule
-
+  build_evenly: true
+  house_cost_cheap: 50
+  house_cost_high: 150
+  house_cost_mid: 100
+  house_cost_premium: 200
+  max_houses: 4
+  require_monopoly: true
 llm:
-  provider: "openai"
-  model: "gpt-4o-mini"
-  api_key_env: "OPENAI_API_KEY"   # Environment variable name
-  temperature: 0.7
-  max_tokens: 1000
-  timeout_seconds: 30
+  api_key_env: OPENAI_API_KEY
   include_history: true
-  max_history_turns: 20       # Include last N turns in context
-
-  # Fallback for testing without API
-  stub_mode: false            # Use real Gemini API
-  stub_strategy: "random"     # "random", "conservative", "aggressive"
-
+  max_history_turns: 20
+  max_tokens: 1000
+  model: gpt-5-mini
+  provider: openai
+  stub_mode: false
+  stub_strategy: random
+  temperature: 0.7
+  timeout_seconds: 30
+output:
+  database_path: holopoly.db
+  log_file: holopoly.log
+  save_llm_responses: true
+players:
+  archetypes:
+  - Slumlord
+  - Squatter
+  - Flipper
+  - Developer
+  count: 4
+  starting_balance: 1500
 randomness:
-  seed: null                  # null = random, int = reproducible
+  seed: null
   shuffle_chance_deck: true
   shuffle_chest_deck: true
-
-output:
-  database_path: "holopoly.db"
-  log_file: "holopoly.log"
-  save_llm_responses: true
+universe:
+  board_size: 40
+  num_boards: 1

@@ -238,9 +238,14 @@ class OpenAIClient(BaseLLMClient):
         payload = {
             "model": self.model_name,
             "messages": messages,
-            "temperature": temperature,
-            "max_tokens": 1000,
         }
+        # gpt-5 models use max_completion_tokens and don't support temperature
+        if "gpt-5" in self.model_name:
+            payload["max_completion_tokens"] = 1000
+            # gpt-5-mini only supports temperature=1 (default)
+        else:
+            payload["max_tokens"] = 1000
+            payload["temperature"] = temperature
 
         try:
             response = requests.post(

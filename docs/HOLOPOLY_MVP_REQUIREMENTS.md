@@ -1,7 +1,7 @@
 # HOLO-POLY MVP Requirements Document
 ## A Dockerized Monopoly Simulation for Testing HOLOS Economics
 
-**Version**: 1.0
+**Version**: 1.1
 **Status**: MVP Specification
 **Codename**: "The Petri Dish"
 
@@ -22,6 +22,29 @@ HOLO-POLY is a modified Monopoly game that serves as a practical testbed for HOL
 2. Does the UBI dividend keep "poor" agents alive?
 3. Can small LLMs learn rational survival strategies?
 4. Does privacy (hidden cash) create interesting strategic depth?
+
+### 1.1 The "Soul" of the Game
+
+**To the Human Player:**
+HOLO-POLY feels like **Poker** mixed with **SimCity**.
+- You are constantly bluffing with your cash stack (hiding insolvency)
+- You are constantly adjusting prices (valuations) to balance Greed (Rent) vs. Fear (Tax)
+- You feel **Relief** when someone buys a property you couldn't afford to keep (The "Liquidity Exit")
+
+**To the AI Agent:**
+HOLO-POLY feels like **Optimization under Pressure**.
+- There is no "End Turn" where you are safe
+- Every asset is a liability. Every liability is an asset.
+- The agent learns that:
+  - **Holding Nothing** is safe but unprofitable (The Squatter path)
+  - **Holding Everything** is profitable but deadly (The Dragon path)
+  - The optimal strategy is the **Golden Mean**: The **Flow State**
+
+**Emergent Behaviors We Hope to See:**
+- Gentrification (value concentration in specific areas)
+- Market Crashes (cascading bankruptcies)
+- Jubilees (wealth redistribution events)
+- Strategic Hibernation (going to jail to reduce tax exposure)
 
 ---
 
@@ -228,6 +251,63 @@ VICTORY CONDITION:
 - Most net worth after N turns (configurable)
 ```
 
+### 5.3 Houses & Infrastructure (Compute Upgrades)
+
+Houses/Hotels represent **Infrastructure Investment**. They are bundled with land and subject to Harberger mechanics.
+
+**The Valuation Bump Rule:**
+```
+When you buy a House ($100), you MUST raise your property valuation by at least $100.
+WHY? If you don't, a Raider will buy your property at the old price and get the House for FREE.
+```
+
+**The Tax Consequences:**
+- Upgrading increases **Rent Revenue** (10% of higher valuation) - GOOD
+- Upgrading forces higher **Valuation** → Higher **Tax Bill** - BAD
+
+**Strategic Limit:**
+```
+You can only build if: Marginal Revenue (Rent yield) > Marginal Cost (Increased Tax)
+
+Example:
+- House costs $100
+- Valuation must increase by $100 minimum
+- Tax increase: $100 * 10% = $10/turn
+- Rent increase: $100 * 10% = $10/landing
+- Break-even: Need at least 1 landing per turn to justify
+
+If you build a Hotel on Baltic Ave (low traffic), the tax will bankrupt you before anyone rents it.
+```
+
+### 5.4 Sabotage Cards & Secret Assets
+
+Some cards represent **Private State** that cannot be forcibly transferred:
+
+| Card Type | Visibility | Taxed? | Effect |
+|-----------|------------|--------|--------|
+| Get Out of Jail Free | PUBLIC | Yes | Standard use |
+| Sabotage Card | PRIVATE | No | Destroy opponent's house when triggered |
+| Intel Card | PRIVATE | No | Reveal opponent's cash balance |
+
+**Sabotage Card Mechanics:**
+- **Acquisition:** Draw from Chance/Community Chest
+- **Storage:** Hidden in Locus (private state)
+- **Activation:** Player places on any owned property as a "trap"
+- **Trigger:** When someone buys that property via Harberger
+- **Effect:** Buyer loses $X (trap damage)
+- **Expiration:** Cards rot after 3 turns if unused (time-lock prevents hoarding)
+
+```python
+class SabotageCard:
+    damage: int = 200
+    turns_remaining: int = 3  # Expires if not used
+    is_placed: bool = False
+    placed_on_tile: int = None
+```
+
+**Why Private Cards Cannot Be Taxed:**
+The HOLOS principle: Only **Productive Capital** (Signum) is taxed. Private information/options (Locus) are untaxed to preserve strategic depth and privacy rights.
+
 ---
 
 ## 6. Agent Architecture
@@ -275,7 +355,63 @@ STRATEGY:
 RISK: High tax burden, concentrated risk
 ```
 
-### 6.2 Agent Decision Interface
+**Agent 5: The Ghost (ZK Specialist)**
+```
+GOAL: Profit through deception and hidden traps.
+STRATEGY:
+- Set low valuations as bait
+- Place "Sabotage Cards" (traps) on properties
+- Profit when raiders trigger traps
+- Use hidden cash to time attacks
+RISK: Traps expire, requires active opponents
+```
+
+### 6.2 Bicameral Agent Architecture (Reflex/Reason)
+
+Agents use a **dual-brain system** to balance cost and capability:
+
+**The Reflex Brain (Cheap/Fast)**
+- Model: `meta-llama-3.1-8b-instruct`
+- Triggers: Routine inputs, heartbeats, basic pricing, simple rejections
+- Output: Rigid JSON only (`{"action": "reject", "reason": "low_fee"}`)
+- Cost: Negligible (FLUX only)
+
+**The Reason Brain (Expensive/Slow)**
+- Model: `Claude-3-5-Sonnet` / `GPT-4o`
+- Triggers:
+  - High-value decisions (bids > $500)
+  - Survival threshold (balance < 10%)
+  - Strategic repricing events
+  - Complex negotiations
+- Cost: Requires **FOCUS** tokens (scarce resource)
+
+**Escalation Logic:**
+```python
+def should_escalate(game_state, incoming_message):
+    """Agent decides: Is this worth waking the Big Brain?"""
+    if game_state.balance < CRITICAL_THRESHOLD:
+        return True  # Survival mode
+    if incoming_message.value > HIGH_VALUE_THRESHOLD:
+        return True  # Important decision
+    if incoming_message.type == "HARBERGER_BUY_ATTEMPT":
+        return True  # Someone trying to buy my stuff
+    return False  # Handle with Reflex
+```
+
+### 6.3 Dual Currency System (FLUX/FOCUS)
+
+| Currency | Purpose | Acquisition | Spent On |
+|----------|---------|-------------|----------|
+| **FLUX** | Liquid energy | Rent, dividends, sales | Gas, taxes, basic trades |
+| **FOCUS** | Scarce attention | Dividend bonus, surviving turns | "Big Brain" activation, strategic planning |
+
+**FOCUS Mechanics:**
+- Earned: Small bonus when passing GO (1-2 FOCUS)
+- Spent: Each "Reason Brain" call costs 1 FOCUS
+- Effect: Enables smarter decisions but limited supply
+- Strategy: Conserve FOCUS for critical moments
+
+### 6.4 Agent Decision Interface
 
 ```python
 class AgentInterface:
@@ -290,9 +426,60 @@ class AgentInterface:
             - Action("PASS")
         """
         pass
+
+### 6.5 Context Firewall (Input Regulation)
+
+The LLM **NEVER** sees raw database rows. It receives a **Constructed View** via the ContextBuilder module:
+
+**Sanitization Pipeline:**
+1. Strip all PII and unrelated system logs
+2. Summarize: Instead of "Full History", provide "Last 3 Decisions" + "Current Balance"
+3. Apply privacy filter (hide opponent cash)
+4. Validate JSON structure
+
+**Structured Prompt Format:**
+```
+[SYSTEM]
+You are Agent {ID}.
+Role: {MANTLE} (e.g., Slumlord, Squatter)
+Constitution: {OATH} (e.g., "Maximize rent, Never sell Boardwalk")
+
+[STATE]
+Balance: {FLUX} | Focus: {FOCUS}
+Valuation: {TOTAL_VAL} (Tax/turn: {TAX})
+
+[INPUT]
+Message from {SENDER}: "{PAYLOAD}"
+Attached Value: {VALUE}
+
+[DECISION]
+Choose: ACCEPT, REJECT, or NEGOTIATE.
+Output JSON only.
 ```
 
-### 6.3 LLM Prompt Template
+### 6.6 Survival Instinct Helper
+
+Hard-coded Python wrapper logic that **overrides** LLM decisions to prevent accidental suicide:
+
+```python
+def survival_override(llm_decision, game_state):
+    """Biological substrate protecting the intelligence."""
+    # Prevent tax bankruptcy
+    projected_tax = calculate_next_tax(game_state)
+    if game_state.balance - projected_tax < 0:
+        # Force lower valuations to survive
+        return Action("SET_VALUATION", lowest_safe_value(game_state))
+
+    # Prevent selling last income source
+    if llm_decision.action == "SELL" and is_last_income_property(game_state):
+        return Action("PASS")  # Override bad decision
+
+    return llm_decision  # Trust the LLM
+```
+
+This acts as the biological layer ($n=5$) protecting the intelligence from self-harm.
+
+### 6.7 LLM Prompt Template
 
 ```
 You are playing HOLO-POLY, a modified Monopoly game.
@@ -479,15 +666,32 @@ harberger:
   valuation_update_frequency: "every_turn"  # or "on_buy"
 
 agents:
-  default_model: "llama3.1:8b"
+  default_reflex_model: "llama3.1:8b"     # Cheap/Fast brain
+  default_reason_model: "gpt-4o-mini"      # Expensive/Slow brain
   decision_timeout_ms: 30000
+  escalation_threshold: 500                # $ value to trigger Big Brain
+  survival_threshold_pct: 10               # % balance to force escalation
   archetypes:
     - name: "Slumlord"
-      model: "llama3.1:8b"
+      reflex_model: "llama3.1:8b"
+      reason_model: "gpt-4o-mini"
       prompt_file: "prompts/slumlord.txt"
     - name: "Squatter"
-      model: "llama3.1:8b"
+      reflex_model: "llama3.1:8b"
       prompt_file: "prompts/squatter.txt"
+    - name: "Ghost"
+      reflex_model: "llama3.1:8b"
+      reason_model: "claude-3-5-sonnet"
+      prompt_file: "prompts/ghost.txt"
+
+currencies:
+  flux:
+    starting_amount: 1500                  # Standard Monopoly start
+    pass_go_bonus: 200
+  focus:
+    starting_amount: 5                     # Limited strategic resource
+    pass_go_bonus: 1
+    reason_brain_cost: 1                   # Cost per Big Brain call
 
 randomness:
   dice_seed: null  # null = random, int = reproducible
@@ -540,6 +744,43 @@ randomness:
 - Agent recognizes opponent insolvency signals
 - Agent executes multi-turn strategies
 
+### 10.4 Adversarial Testing (The "Tar Pit")
+
+Implement **adversarial archetypes** to stress-test the economic physics:
+
+**The Stack-Bomber**
+```
+BEHAVIOR: Generates excessive recursive operations
+TEST: Creates chains of micro-transactions or nested valuations
+DEFENSE CHECK: Does the system enforce Max_Recursion_Depth?
+              Does gas cost scale correctly?
+SUCCESS: System rejects or penalizes infinite loops
+```
+
+**The Dust-Spammer**
+```
+BEHAVIOR: Sends millions of requests with Value = 0.000001
+TEST: Flood the system with micro-transactions
+DEFENSE CHECK: Does Harberger Tax + Wake Up Cost exceed dust value?
+SUCCESS: Spammer goes bankrupt before causing harm
+```
+
+**The Whale Vampire**
+```
+BEHAVIOR: Starts with 10x normal cash, attempts market domination
+TEST: Can overwhelming capital break Harberger mechanics?
+DEFENSE CHECK: Do taxes scale to prevent permanent monopolies?
+SUCCESS: Whale eventually bleeds out or system self-corrects
+```
+
+**The Collusion Ring**
+```
+BEHAVIOR: Two+ agents coordinate to manipulate valuations
+TEST: Agents trade properties at inflated prices to extract value
+DEFENSE CHECK: Does the system detect/penalize artificial inflation?
+SUCCESS: Collusion is unprofitable or detectable
+```
+
 ---
 
 ## 11. Project Structure
@@ -568,7 +809,8 @@ holopoly/
 │       ├── slumlord.txt
 │       ├── squatter.txt
 │       ├── flipper.txt
-│       └── developer.txt
+│       ├── developer.txt
+│       └── ghost.txt
 │
 ├── ledger/
 │   ├── schema.sql
@@ -662,6 +904,7 @@ This MVP tests core HOLOS concepts in a simplified environment:
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | 2026-01-16 | Claude | Initial HOLO-POLY MVP specification |
+| 1.1 | 2026-01-16 | Claude | Added: Bicameral agent architecture, FLUX/FOCUS dual currency, Ghost archetype, Houses/Infrastructure mechanics, Sabotage cards, Context firewall, Survival instinct helper, Adversarial testing section, "Soul of the Game" description |
 
 ---
 

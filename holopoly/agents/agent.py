@@ -5,10 +5,17 @@ Each agent wraps an LLM client and makes decisions based on game state.
 
 import json
 import logging
+import sys
+from pathlib import Path
 from typing import Dict, Any, Optional, List
 
-from .llm_client import LLMClient, load_prompt
-from ..kernel.models import Player, Action, ActionType, PropertyId
+# Add parent to path for imports when running as script
+_parent = Path(__file__).parent.parent
+if str(_parent) not in sys.path:
+    sys.path.insert(0, str(_parent))
+
+from agents.llm_client import LLMClient, load_prompt
+from kernel.models import Player, Action, ActionType, PropertyId
 
 logger = logging.getLogger(__name__)
 

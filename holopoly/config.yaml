@@ -51,7 +51,7 @@ houses:
 
 llm:
   provider: "gemini"
-  model: "gemini-2.0-flash-exp"
+  model: "gemini-3-flash-preview"
   api_key_env: "GEMINI_API_KEY"   # Environment variable name
   temperature: 0.7
   max_tokens: 1000
@@ -60,7 +60,7 @@ llm:
   max_history_turns: 20       # Include last N turns in context
 
   # Fallback for testing without API
-  stub_mode: true             # Use random/rule-based decisions
+  stub_mode: true             # Using stub - API key returned 403
   stub_strategy: "random"     # "random", "conservative", "aggressive"
 
 randomness:

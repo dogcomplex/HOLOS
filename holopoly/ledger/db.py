@@ -6,11 +6,17 @@ Uses SQLite for persistence.
 import sqlite3
 import json
 import logging
+import sys
 from pathlib import Path
 from typing import Optional, List, Dict, Any
 from contextlib import contextmanager
 
-from ..kernel.models import (
+# Add parent to path for imports
+_parent = Path(__file__).parent.parent
+if str(_parent) not in sys.path:
+    sys.path.insert(0, str(_parent))
+
+from kernel.models import (
     GameState, GameConfig, GameStatus, Player, PlayerStatus,
     Property, PropertyId, Transaction
 )

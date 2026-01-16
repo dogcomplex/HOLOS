@@ -13,13 +13,60 @@ from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
-# Try to import Gemini SDK
+# Global token tracking for failsafe
+MAX_TOTAL_TOKENS = 100_000_000  # 100M token limit
+
+class TokenLimitExceeded(Exception):
+    """Raised when token limit is exceeded."""
+    pass
+
+class TokenTracker:
+    """Track total tokens used across all LLM calls."""
+    _instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance.total_tokens = 0
+            cls._instance.total_calls = 0
+        return cls._instance
+
+    def add_tokens(self, input_tokens: int, output_tokens: int):
+        """Add tokens to the running total."""
+        added = input_tokens + output_tokens
+        self.total_tokens += added
+        self.total_calls += 1
+
+        if self.total_tokens >= MAX_TOTAL_TOKENS:
+            logger.error(f"TOKEN LIMIT EXCEEDED: {self.total_tokens:,} >= {MAX_TOTAL_TOKENS:,}")
+            raise TokenLimitExceeded(
+                f"Token limit of {MAX_TOTAL_TOKENS:,} exceeded. "
+                f"Total used: {self.total_tokens:,} in {self.total_calls} calls."
+            )
+
+        if self.total_calls % 100 == 0:
+            logger.info(f"Token usage: {self.total_tokens:,} / {MAX_TOTAL_TOKENS:,} ({self.total_calls} calls)")
+
+    def get_usage(self) -> dict:
+        return {
+            "total_tokens": self.total_tokens,
+            "total_calls": self.total_calls,
+            "limit": MAX_TOTAL_TOKENS,
+            "remaining": MAX_TOTAL_TOKENS - self.total_tokens,
+        }
+
+# Global tracker instance
+token_tracker = TokenTracker()
+
+# Try to import requests for REST API
 try:
-    import google.generativeai as genai
-    GEMINI_AVAILABLE = True
+    import requests
+    REQUESTS_AVAILABLE = True
 except ImportError:
-    GEMINI_AVAILABLE = False
-    logger.warning("google-generativeai not installed. Using stub mode.")
+    REQUESTS_AVAILABLE = False
+
+# For now, skip the problematic SDK and use REST API
+GEMINI_AVAILABLE = REQUESTS_AVAILABLE
 
 
 class BaseLLMClient(ABC):
@@ -70,25 +117,26 @@ class BaseLLMClient(ABC):
 
 
 class GeminiClient(BaseLLMClient):
-    """Client for Google Gemini API."""
+    """Client for Google Gemini API using REST API directly."""
+
+    GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
 
     def __init__(
         self,
-        model: str = "gemini-2.0-flash-exp",
+        model: str = "gemini-3-flash-preview",
         api_key: Optional[str] = None
     ):
-        if not GEMINI_AVAILABLE:
-            raise RuntimeError("google-generativeai package not installed")
+        if not REQUESTS_AVAILABLE:
+            raise RuntimeError("requests package not installed")
 
         self.model_name = model
-        api_key = api_key or os.getenv("GEMINI_API_KEY")
+        self.api_key = api_key or os.getenv("GEMINI_API_KEY")
 
-        if not api_key:
+        if not self.api_key:
             raise ValueError("GEMINI_API_KEY not found in environment")
 
-        genai.configure(api_key=api_key)
-        self.model = genai.GenerativeModel(model)
-        logger.info(f"Initialized Gemini client with model: {model}")
+        self.api_url = self.GEMINI_API_URL.format(model=model)
+        logger.info(f"Initialized Gemini REST client with model: {model}")
 
     def generate(
         self,
@@ -96,18 +144,59 @@ class GeminiClient(BaseLLMClient):
         system_prompt: str = "",
         temperature: float = 0.7
     ) -> str:
-        """Generate a response from Gemini."""
+        """Generate a response from Gemini using REST API."""
         full_prompt = f"{system_prompt}\n\n{prompt}" if system_prompt else prompt
 
+        payload = {
+            "contents": [
+                {
+                    "parts": [
+                        {"text": full_prompt}
+                    ]
+                }
+            ],
+            "generationConfig": {
+                "temperature": temperature,
+                "maxOutputTokens": 1000,
+            }
+        }
+
         try:
-            response = self.model.generate_content(
-                full_prompt,
-                generation_config=genai.types.GenerationConfig(
-                    temperature=temperature,
-                    max_output_tokens=1000,
-                )
+            response = requests.post(
+                f"{self.api_url}?key={self.api_key}",
+                json=payload,
+                headers={"Content-Type": "application/json"},
+                timeout=30
             )
-            return response.text
+
+            if response.status_code != 200:
+                logger.error(f"Gemini API error {response.status_code}: {response.text[:500]}")
+                return '{"action": "PASS", "reasoning": "API error"}'
+
+            data = response.json()
+
+            # Extract text from response
+            text = ""
+            if "candidates" in data and len(data["candidates"]) > 0:
+                candidate = data["candidates"][0]
+                if "content" in candidate and "parts" in candidate["content"]:
+                    parts = candidate["content"]["parts"]
+                    text = "".join(p.get("text", "") for p in parts)
+
+            # Track token usage
+            usage = data.get("usageMetadata", {})
+            input_tokens = usage.get("promptTokenCount", len(full_prompt) // 4)
+            output_tokens = usage.get("candidatesTokenCount", len(text) // 4)
+
+            token_tracker.add_tokens(input_tokens, output_tokens)
+
+            return text
+
+        except TokenLimitExceeded:
+            raise  # Re-raise token limit errors
+        except requests.exceptions.Timeout:
+            logger.error("Gemini API timeout")
+            return '{"action": "PASS", "reasoning": "API timeout"}'
         except Exception as e:
             logger.error(f"Gemini API error: {e}")
             return '{"action": "PASS", "reasoning": "API error"}'
@@ -212,7 +301,7 @@ class LLMClient:
 
     def __init__(
         self,
-        model: str = "gemini-2.0-flash-exp",
+        model: str = "gemini-3-flash-preview",
         stub_mode: bool = False,
         stub_strategy: str = "random"
     ):

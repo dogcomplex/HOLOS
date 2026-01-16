@@ -221,6 +221,7 @@ class GameConfig:
     min_valuation: int
 
     # LLM
+    llm_provider: str
     llm_model: str
     llm_stub_mode: bool
     llm_temperature: float
@@ -250,7 +251,8 @@ class GameConfig:
             force_buy_enabled=config.get("harberger", {}).get("force_buy_enabled", True),
             min_valuation=config.get("harberger", {}).get("min_valuation", 1),
 
-            llm_model=config.get("llm", {}).get("model", "gemini-2.0-flash-exp"),
+            llm_provider=config.get("llm", {}).get("provider", "openai"),
+            llm_model=config.get("llm", {}).get("model", "gpt-4o-mini"),
             llm_stub_mode=config.get("llm", {}).get("stub_mode", True),
             llm_temperature=config.get("llm", {}).get("temperature", 0.7),
 

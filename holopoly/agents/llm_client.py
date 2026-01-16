@@ -202,6 +202,87 @@ class GeminiClient(BaseLLMClient):
             return '{"action": "PASS", "reasoning": "API error"}'
 
 
+class OpenAIClient(BaseLLMClient):
+    """Client for OpenAI API using REST API directly."""
+
+    OPENAI_API_URL = "https://api.openai.com/v1/chat/completions"
+
+    def __init__(
+        self,
+        model: str = "gpt-4o-mini",
+        api_key: Optional[str] = None
+    ):
+        if not REQUESTS_AVAILABLE:
+            raise RuntimeError("requests package not installed")
+
+        self.model_name = model
+        self.api_key = api_key or os.getenv("OPENAI_API_KEY")
+
+        if not self.api_key:
+            raise ValueError("OPENAI_API_KEY not found in environment")
+
+        logger.info(f"Initialized OpenAI REST client with model: {model}")
+
+    def generate(
+        self,
+        prompt: str,
+        system_prompt: str = "",
+        temperature: float = 0.7
+    ) -> str:
+        """Generate a response from OpenAI using REST API."""
+        messages = []
+        if system_prompt:
+            messages.append({"role": "system", "content": system_prompt})
+        messages.append({"role": "user", "content": prompt})
+
+        payload = {
+            "model": self.model_name,
+            "messages": messages,
+            "temperature": temperature,
+            "max_tokens": 1000,
+        }
+
+        try:
+            response = requests.post(
+                self.OPENAI_API_URL,
+                json=payload,
+                headers={
+                    "Content-Type": "application/json",
+                    "Authorization": f"Bearer {self.api_key}"
+                },
+                timeout=30
+            )
+
+            if response.status_code != 200:
+                logger.error(f"OpenAI API error {response.status_code}: {response.text[:500]}")
+                return '{"action": "PASS", "reasoning": "API error"}'
+
+            data = response.json()
+
+            # Extract text from response
+            text = ""
+            if "choices" in data and len(data["choices"]) > 0:
+                text = data["choices"][0].get("message", {}).get("content", "")
+
+            # Track token usage
+            usage = data.get("usage", {})
+            input_tokens = usage.get("prompt_tokens", len(prompt) // 4)
+            output_tokens = usage.get("completion_tokens", len(text) // 4)
+
+            token_tracker.add_tokens(input_tokens, output_tokens)
+
+            return text
+
+        except TokenLimitExceeded:
+            raise  # Re-raise token limit errors
+        except requests.exceptions.Timeout:
+            logger.error("OpenAI API timeout")
+            return '{"action": "PASS", "reasoning": "API timeout"}'
+        except Exception as e:
+            logger.error(f"OpenAI API error: {e}")
+            return '{"action": "PASS", "reasoning": "API error"}'
+
+
 class StubLLMClient(BaseLLMClient):
     """
     Stub LLM client for testing without API.
@@ -296,25 +377,36 @@ class StubLLMClient(BaseLLMClient):
 class LLMClient:
     """
     Factory class that creates appropriate LLM client.
-    Uses Gemini if available, otherwise falls back to stub.
+    Supports: openai, gemini, or falls back to stub.
     """
 
     def __init__(
         self,
-        model: str = "gemini-3-flash-preview",
+        provider: str = "openai",
+        model: str = "gpt-4o-mini",
         stub_mode: bool = False,
         stub_strategy: str = "random"
     ):
         self.stub_mode = stub_mode
+        self.provider = provider
 
-        if stub_mode or not GEMINI_AVAILABLE:
+        if stub_mode:
             self.client = StubLLMClient(strategy=stub_strategy)
-        else:
+        elif provider == "openai":
+            try:
+                self.client = OpenAIClient(model=model)
+            except (ValueError, RuntimeError) as e:
+                logger.warning(f"Could not initialize OpenAI: {e}. Using stub.")
+                self.client = StubLLMClient(strategy=stub_strategy)
+        elif provider == "gemini":
             try:
                 self.client = GeminiClient(model=model)
             except (ValueError, RuntimeError) as e:
                 logger.warning(f"Could not initialize Gemini: {e}. Using stub.")
                 self.client = StubLLMClient(strategy=stub_strategy)
+        else:
+            logger.warning(f"Unknown provider '{provider}'. Using stub.")
+            self.client = StubLLMClient(strategy=stub_strategy)
 
     def generate(
         self,

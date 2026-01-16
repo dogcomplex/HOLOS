@@ -122,6 +122,7 @@ def run_game(
 
     # Initialize LLM client
     llm_client = LLMClient(
+        provider=config.llm_provider,
         model=config.llm_model,
         stub_mode=config.llm_stub_mode,
     )

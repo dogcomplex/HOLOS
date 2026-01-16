@@ -50,9 +50,9 @@ houses:
   build_evenly: true          # Standard Monopoly rule
 
 llm:
-  provider: "gemini"
-  model: "gemini-3-flash-preview"
-  api_key_env: "GEMINI_API_KEY"   # Environment variable name
+  provider: "openai"
+  model: "gpt-4o-mini"
+  api_key_env: "OPENAI_API_KEY"   # Environment variable name
   temperature: 0.7
   max_tokens: 1000
   timeout_seconds: 30
@@ -60,7 +60,7 @@ llm:
   max_history_turns: 20       # Include last N turns in context
 
   # Fallback for testing without API
-  stub_mode: true             # Using stub - API key returned 403
+  stub_mode: false            # Use real Gemini API
   stub_strategy: "random"     # "random", "conservative", "aggressive"
 
 randomness:

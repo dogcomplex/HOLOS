@@ -3,12 +3,12 @@ economics:
   dividend_timing: on_go
   pass_go_salary: 200
   rent_rate: 0.1
-  tax_rate: 0.1
+  tax_rate: 0.15
   tax_timing: on_go
 game:
   id: game_001
   log_level: INFO
-  max_turns: 20
+  max_turns: 200
 harberger:
   auto_valuation_on_buy: true
   enabled: true
@@ -29,7 +29,7 @@ llm:
   max_tokens: 1000
   model: gpt-5-mini
   provider: openai
-  stub_mode: false
+  stub_mode: true
   stub_strategy: random
   temperature: 0.7
   timeout_seconds: 30

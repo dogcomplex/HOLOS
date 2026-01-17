@@ -509,16 +509,70 @@ class Game:
 
         return sorted(standings, key=lambda x: x["net_worth"], reverse=True)
 
-    def run_game(self, max_turns: Optional[int] = None) -> dict:
-        """Run the game to completion."""
+    def run_game(self, max_turns: Optional[int] = None, max_turns_this_run: Optional[int] = None) -> dict:
+        """Run the game to completion or for a limited number of turns.
+
+        Args:
+            max_turns: Maximum total turns for the game
+            max_turns_this_run: Maximum turns to run in this execution (for chunked runs)
+        """
         max_turns = max_turns or self.config.max_turns or 1000
+        start_turn = self.state.turn
+        turns_run = 0
 
         while not self.is_game_over() and self.state.turn < max_turns:
+            # Check if we've hit the per-run limit
+            if max_turns_this_run and turns_run >= max_turns_this_run:
+                logger.info(f"Chunk complete: ran {turns_run} turns (total: {self.state.turn})")
+                break
+
             self.execute_turn()
+            turns_run += 1
+
+            # Progress indicator every 10 turns
+            if turns_run % 10 == 0:
+                logger.info(f"[PROGRESS] Turn {self.state.turn}/{max_turns} (this run: {turns_run})")
 
         return {
             "turns": self.state.turn,
+            "turns_this_run": turns_run,
             "winner": self.get_winner(),
             "standings": self.get_standings(),
             "transactions": len(self.transaction_log),
+            "complete": self.is_game_over() or self.state.turn >= max_turns,
         }
+
+    def load_state(self, saved_state: dict):
+        """Load game state from saved data (for resume functionality)."""
+        if not saved_state:
+            return
+
+        # Restore turn counter
+        self.state.turn = saved_state.get('turn', 0)
+
+        # Restore player states
+        for player_data in saved_state.get('players', []):
+            player_id = player_data['id']
+            if player_id in self.state.players:
+                player = self.state.players[player_id]
+                player.balance = player_data.get('balance', player.balance)
+                player.position = player_data.get('position', player.position)
+                player.board_id = player_data.get('board_id', player.board_id)
+                player.properties = set(player_data.get('properties', []))
+                if player_data.get('status') == 'BANKRUPT':
+                    from kernel.models import PlayerStatus
+                    player.status = PlayerStatus.BANKRUPT
+
+        # Restore property states
+        for prop_data in saved_state.get('properties', []):
+            prop_id = prop_data['id']
+            if prop_id in self.state.properties:
+                prop = self.state.properties[prop_id]
+                prop.owner_id = prop_data.get('owner_id')
+                prop.valuation = prop_data.get('valuation', prop.valuation)
+                prop.houses = prop_data.get('houses', 0)
+
+        # Restore community pot
+        self.state.community_pot = saved_state.get('community_pot', 0)
+
+        logger.info(f"Loaded game state from turn {self.state.turn}")

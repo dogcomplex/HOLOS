@@ -84,7 +84,9 @@ def setup_database(config: GameConfig, db: Database):
 def run_game(
     config_path: str = "config.yaml",
     db_path: Optional[str] = None,
-    verbose: bool = False
+    verbose: bool = False,
+    max_turns_this_run: Optional[int] = None,
+    resume: bool = False
 ) -> dict:
     """
     Run a complete HOLO-POLY game.
@@ -93,6 +95,8 @@ def run_game(
         config_path: Path to configuration YAML
         db_path: Path to database file (optional)
         verbose: Enable verbose logging
+        max_turns_this_run: Run only this many turns then exit (for chunked runs)
+        resume: Resume from existing database state
 
     Returns:
         Game results dict
@@ -105,7 +109,10 @@ def run_game(
     config = GameConfig.from_yaml(raw_config)
 
     logger.info("=" * 60)
-    logger.info("HOLO-POLY Game Starting")
+    if resume:
+        logger.info("HOLO-POLY Game RESUMING")
+    else:
+        logger.info("HOLO-POLY Game Starting")
     logger.info("=" * 60)
     logger.info(f"Game ID: {config.game_id}")
     logger.info(f"Players: {config.num_players}")
@@ -113,12 +120,17 @@ def run_game(
     logger.info(f"Tax Timing: {config.tax_timing.value}")
     logger.info(f"Dividend Timing: {config.dividend_timing.value}")
     logger.info(f"LLM Stub Mode: {config.llm_stub_mode}")
+    if max_turns_this_run:
+        logger.info(f"Turns this run: {max_turns_this_run}")
     logger.info("=" * 60)
 
     # Initialize database
     db_path = db_path or raw_config.get("output", {}).get("database_path", "holopoly.db")
     db = Database(db_path)
-    setup_database(config, db)
+
+    # Only setup fresh game if not resuming
+    if not resume:
+        setup_database(config, db)
 
     # Initialize LLM client
     llm_client = LLMClient(
@@ -142,12 +154,29 @@ def run_game(
         agent_callback=agent_manager.agent_callback
     )
 
-    # Run game
-    logger.info("Starting game loop...")
-    results = game.run_game()
+    # Load state if resuming
+    start_turn = 0
+    if resume:
+        saved_state = db.load_game_state(config.game_id, config)
+        if saved_state:
+            # Replace game state with loaded state
+            game.state = saved_state
+            start_turn = saved_state.turn
+            logger.info(f"Resumed from turn {start_turn}")
+        else:
+            logger.warning("No saved state found, starting fresh")
 
-    # Save final state
+    # Run game (with optional turn limit for this run)
+    if resume:
+        logger.info(f"Continuing game from turn {start_turn}...")
+    else:
+        logger.info("Starting game loop...")
+
+    results = game.run_game(max_turns_this_run=max_turns_this_run)
+
+    # Save state after run (for resume)
     db.save_game_state(config.game_id, game.state)
+    logger.info(f"Game state saved at turn {game.state.turn}")
 
     # Log transactions
     for tx in game.transaction_log:
@@ -219,6 +248,17 @@ def main():
         default=None,
         help="Random seed for reproducibility"
     )
+    parser.add_argument(
+        "--turns",
+        type=int,
+        default=None,
+        help="Run only N turns then exit (for chunked execution)"
+    )
+    parser.add_argument(
+        "--resume",
+        action="store_true",
+        help="Resume from existing database state"
+    )
 
     args = parser.parse_args()
 
@@ -232,6 +272,8 @@ def main():
             config_path=args.config,
             db_path=args.database,
             verbose=args.verbose,
+            max_turns_this_run=args.turns,
+            resume=args.resume,
         )
         return 0
     except KeyboardInterrupt:

@@ -1,13 +1,13 @@
 economics:
   avg_circuit_length: 10
-  dividend_timing: on_go
+  dividend_timing: per_turn
   pass_go_salary: 200
   rent_rate: 0.1
-  tax_rate: 0.25
-  tax_timing: on_go
+  tax_rate: 0.15
+  tax_timing: per_turn
 game:
-  id: game_001
-  log_level: INFO
+  id: exp13_per_turn_per_turn
+  log_level: ERROR
   max_turns: 150
 harberger:
   auto_valuation_on_buy: true
@@ -23,16 +23,8 @@ houses:
   max_houses: 4
   require_monopoly: true
 llm:
-  api_key_env: OPENAI_API_KEY
-  include_history: true
-  max_history_turns: 20
-  max_tokens: 1000
-  model: gpt-5-mini
-  provider: openai
   stub_mode: true
   stub_strategy: random
-  temperature: 0.7
-  timeout_seconds: 30
 output:
   database_path: holopoly.db
   log_file: holopoly.log
@@ -46,7 +38,7 @@ players:
   count: 4
   starting_balance: 1500
 randomness:
-  seed: null
+  seed: 999
   shuffle_chance_deck: true
   shuffle_chest_deck: true
 universe:

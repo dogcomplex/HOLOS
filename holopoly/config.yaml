@@ -3,12 +3,12 @@ economics:
   dividend_timing: on_go
   pass_go_salary: 200
   rent_rate: 0.1
-  tax_rate: 0.1
+  tax_rate: 0.25
   tax_timing: on_go
 game:
   id: game_001
   log_level: INFO
-  max_turns: 200
+  max_turns: 150
 harberger:
   auto_valuation_on_buy: true
   enabled: true

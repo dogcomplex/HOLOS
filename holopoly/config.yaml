@@ -1,12 +1,12 @@
 economics:
   avg_circuit_length: 10
-  dividend_timing: per_turn
+  dividend_timing: on_go
   pass_go_salary: 200
-  rent_rate: 0.1
-  tax_rate: 0.15
-  tax_timing: per_turn
+  rent_rate: 0.05
+  tax_rate: 0.30
+  tax_timing: on_go
 game:
-  id: exp13_per_turn_per_turn
+  id: exp18_Very-Low-Rent-High-Tax
   log_level: ERROR
   max_turns: 150
 harberger:
@@ -14,21 +14,9 @@ harberger:
   enabled: true
   force_buy_enabled: true
   min_valuation: 1
-houses:
-  build_evenly: true
-  house_cost_cheap: 50
-  house_cost_high: 150
-  house_cost_mid: 100
-  house_cost_premium: 200
-  max_houses: 4
-  require_monopoly: true
 llm:
   stub_mode: true
   stub_strategy: random
-output:
-  database_path: holopoly.db
-  log_file: holopoly.log
-  save_llm_responses: true
 players:
   archetypes:
   - Slumlord
@@ -38,9 +26,7 @@ players:
   count: 4
   starting_balance: 1500
 randomness:
-  seed: 999
-  shuffle_chance_deck: true
-  shuffle_chest_deck: true
+  seed: 42
 universe:
   board_size: 40
   num_boards: 1

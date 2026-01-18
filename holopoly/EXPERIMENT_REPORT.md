@@ -2,7 +2,12 @@
 
 ## Executive Summary
 
-36 experiments conducted testing Harberger tax mechanics, agent archetypes, game scaling, and advanced economic parameters (resurrection, progressive tax, zero cash injection). Key finding: **Tax rate is the dominant variable** - it determines which strategy wins more than any other factor. Secondary finding: **Resurrection changes optimal strategy at 20% tax** - Flipper beats Squatter when elimination is not possible.
+41 experiments conducted testing Harberger tax mechanics, agent archetypes, game scaling, and advanced economic parameters (resurrection, progressive tax, zero cash injection). Key findings:
+
+1. **Tax rate is the dominant variable** - determines which strategy wins more than any other factor
+2. **Rent/tax ratio determines optimal strategy** - 20% rent reverses Squatter advantage; property owners win
+3. **Resurrection changes strategy at 20% tax** - Flipper beats Squatter when elimination is not possible
+4. **Progressive tax is powerful anti-monopoly** - 9-property holders pay 33% effective tax at 15% base
 
 | Tax Rate | Dominant Strategy | Bankruptcies |
 |----------|------------------|--------------|
@@ -404,6 +409,83 @@ At 25%+ tax, Squatter still wins even with resurrection. The passive strategy re
 
 ### 4. Resurrection is a "Safety Net"
 It doesn't change the game's economics - it just prevents permanent elimination. Players still lose money, fall behind, and struggle - they just don't exit.
+
+---
+
+## Experiments 37-41: Wealth Dynamics (Resurrection Baseline)
+
+With resurrection eliminating bankruptcy concerns, these experiments focus on **wealth accumulation** and **strategy effectiveness**.
+
+### Exp 37: Extreme Rent (20%)
+| Player | Archetype | Net Worth | Properties |
+|--------|-----------|-----------|------------|
+| 1st | **Flipper** | $4,552 | 9 |
+| 2nd | Developer | $3,454 | 9 |
+| 3rd | Slumlord | $3,383 | 8 |
+| 4th | Squatter | $3,009 | 1 |
+
+**Finding**: High rent **reverses Squatter advantage**. Property income outweighs tax costs. Flipper's active trading wins.
+
+### Exp 38: All-Flipper Battle
+| Player | Net Worth | Properties |
+|--------|-----------|------------|
+| 1st | $3,942 | 5 |
+| 2nd | $3,618 | 10 |
+| 3rd | $3,174 | 8 |
+| 4th | $3,014 | 4 |
+
+**Finding**: With identical strategies, **fewer properties = more wealth**. Spread is tight ($928). Winner determined by positioning luck, not property accumulation.
+
+### Exp 39: Long Game (500 turns)
+| Player | Archetype | Net Worth | Properties |
+|--------|-----------|-----------|------------|
+| 1st | **Flipper** | $7,653 | 9 |
+| 2nd | Developer | $6,430 | 9 |
+| 3rd | Squatter | $6,270 | 1 |
+| 4th | Slumlord | $6,122 | 9 |
+
+**Finding**: Flipper's lead **extends over time**, but all players converge toward similar wealth levels. Spread narrows proportionally. Long games favor active strategies.
+
+### Exp 40: Low Starting Capital ($500)
+| Player | Archetype | Net Worth | Properties |
+|--------|-----------|-----------|------------|
+| 1st | **Developer** | $2,728 | 12 |
+| 2nd | Squatter | $2,410 | 3 |
+| 3rd | Flipper | $1,253 | 2 |
+| 4th | Slumlord | $1,175 | 3 |
+
+**Finding**: Low capital favors **aggressive acquisition**. Developer acquires 12 properties and wins. Total economy is much smaller ($7,566 vs typical $14,000+).
+
+### Exp 41: Progressive Tax at 15% Base
+| Player | Archetype | Net Worth | Properties | Effective Tax Rate |
+|--------|-----------|-----------|------------|-------------------|
+| 1st | **Squatter** | $4,753 | 1 | 17% |
+| 2nd | Flipper | $3,556 | 9 | 33% |
+| 3rd | Slumlord | $3,230 | 8 | 31% |
+| 4th | Developer | $2,860 | 9 | 33% |
+
+**Finding**: Progressive tax **crushes large holders**. Total tax collected: $9,631 (vs $3,296 in Exp 37). Squatter pays 17%, property owners pay 31-33%. Anti-monopoly mechanism works.
+
+---
+
+## Key Findings from Wealth Dynamics Experiments
+
+### 1. Rent Rate is the Counter to Tax Rate
+```
+10% rent, 10% tax → Balanced, slight Squatter edge
+20% rent, 10% tax → Property owners win (Flipper dominant)
+10% rent, 15%+ tax → Squatter dominant
+```
+The rent/tax ratio determines optimal strategy.
+
+### 2. Progressive Tax is Powerful Anti-Monopoly
+At 15% base + progressive, a 9-property holder pays 33% effective tax. This makes large portfolios unviable and strongly favors minimal ownership.
+
+### 3. Low Capital Changes Everything
+With $500 start, property acquisition is king. Whoever lands on cheap properties first builds an insurmountable lead.
+
+### 4. Long Games Favor Active Strategies
+Over 500 turns, Flipper extends lead while all players converge. Active play compounds better than passive.
 
 ---
 

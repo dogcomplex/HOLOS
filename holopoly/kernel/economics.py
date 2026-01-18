@@ -110,22 +110,41 @@ class EconomicsEngine:
 
         # On-GO dividend distribution
         if self.config.dividend_timing == TaxTiming.ON_GO:
-            div_result = self._distribute_dividend(game_state, player)
-            transactions.extend(div_result.transactions)
+            if self.config.resurrection_enabled:
+                # Distribute to ALL players (including bankrupt) for resurrection
+                div_result = self._distribute_dividend_to_all(game_state)
+                transactions.extend(div_result.transactions)
+            else:
+                div_result = self._distribute_dividend(game_state, player)
+                transactions.extend(div_result.transactions)
 
         return EconomicsResult(success=True, transactions=transactions)
 
     def _pay_salary(self, game_state: GameState, player: Player) -> Transaction:
         """Pay the GO salary to a player."""
-        player.balance += self.pass_go_salary
-        logger.info(f"Player {player.id} collected ${self.pass_go_salary} salary")
+        if self.config.dynamic_go_salary:
+            # Dynamic salary: distribute from pot (no cash injection)
+            active_count = len(game_state.get_active_players())
+            if active_count > 0 and game_state.community_pot > 0:
+                salary = game_state.community_pot // active_count
+                game_state.community_pot -= salary
+                from_id = "POT"
+            else:
+                salary = 0
+                from_id = "POT"
+        else:
+            salary = self.pass_go_salary
+            from_id = "BANK"
+
+        player.balance += salary
+        logger.info(f"Player {player.id} collected ${salary} salary")
 
         return Transaction(
             turn=game_state.turn,
             transaction_type="SALARY",
-            from_id="BANK",
+            from_id=from_id,
             to_id=player.id,
-            amount=self.pass_go_salary,
+            amount=salary,
         )
 
     def _collect_tax(
@@ -135,7 +154,16 @@ class EconomicsEngine:
     ) -> EconomicsResult:
         """Collect Harberger tax from a player."""
         total_valuation = player.total_valuation(game_state.properties)
-        tax_amount = int(total_valuation * self.effective_tax_rate)
+
+        # Calculate effective rate (with progressive adjustment if enabled)
+        rate = self.effective_tax_rate
+        if self.config.progressive_tax_enabled:
+            # Progressive: +2% per property owned (e.g., 3 props = +6%)
+            prop_count = len(player.properties)
+            progressive_bonus = 0.02 * prop_count
+            rate = rate + progressive_bonus
+
+        tax_amount = int(total_valuation * rate)
 
         if tax_amount == 0:
             return EconomicsResult(success=True, transactions=[])
@@ -180,8 +208,12 @@ class EconomicsEngine:
         player: Player
     ) -> EconomicsResult:
         """Distribute UBI dividend to a player."""
-        active_players = game_state.get_active_players()
-        num_players = len(active_players)
+        # If resurrection enabled, count ALL players (including bankrupt) for fair share
+        if self.config.resurrection_enabled:
+            num_players = len(game_state.players)
+        else:
+            active_players = game_state.get_active_players()
+            num_players = len(active_players)
 
         if num_players == 0 or game_state.community_pot == 0:
             return EconomicsResult(success=True, transactions=[])
@@ -213,7 +245,55 @@ class EconomicsEngine:
             details={"pot_before": game_state.community_pot + share}
         )
 
+        # Check for resurrection
+        from .models import PlayerStatus
+        if self.config.resurrection_enabled and player.is_bankrupt() and player.balance > 0:
+            player.status = PlayerStatus.ACTIVE
+            logger.info(f"Player {player.id} RESURRECTED with ${player.balance}!")
+            tx.details["resurrected"] = True
+
         return EconomicsResult(success=True, transactions=[tx])
+
+    def _distribute_dividend_to_all(
+        self,
+        game_state: GameState
+    ) -> EconomicsResult:
+        """Distribute UBI dividend to ALL players equally (for resurrection mode)."""
+        from .models import PlayerStatus
+
+        num_players = len(game_state.players)
+        if num_players == 0 or game_state.community_pot == 0:
+            return EconomicsResult(success=True, transactions=[])
+
+        # Equal share for everyone
+        share = game_state.community_pot // num_players
+
+        if share == 0:
+            return EconomicsResult(success=True, transactions=[])
+
+        transactions = []
+        for player_id, player in game_state.players.items():
+            player.balance += share
+            game_state.community_pot -= share
+
+            tx = Transaction(
+                turn=game_state.turn,
+                transaction_type="DIVIDEND",
+                from_id="POT",
+                to_id=player.id,
+                amount=share,
+                details={"pot_before": game_state.community_pot + share, "universal": True}
+            )
+            transactions.append(tx)
+            logger.info(f"Player {player.id} received ${share} dividend (universal)")
+
+            # Check for resurrection
+            if self.config.resurrection_enabled and player.is_bankrupt() and player.balance > 0:
+                player.status = PlayerStatus.ACTIVE
+                logger.info(f"Player {player.id} RESURRECTED with ${player.balance}!")
+                tx.details["resurrected"] = True
+
+        return EconomicsResult(success=True, transactions=transactions)
 
     def calculate_rent(
         self,

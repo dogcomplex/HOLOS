@@ -231,6 +231,10 @@ class GameConfig:
 
     # Optional features
     chance_cards_enabled: bool = True
+    resurrection_enabled: bool = False  # Bankrupt players can be revived by UBI
+    dynamic_go_salary: bool = False  # GO salary = total taxes collected (no cash injection)
+    progressive_tax_enabled: bool = False  # Higher tax rate for more properties
+    bulk_colorset_buy: bool = False  # Buy entire color set at summed valuation
 
     @classmethod
     def from_yaml(cls, config: dict) -> "GameConfig":
@@ -262,6 +266,10 @@ class GameConfig:
             random_seed=config.get("randomness", {}).get("seed"),
 
             chance_cards_enabled=config.get("game", {}).get("chance_cards_enabled", True),
+            resurrection_enabled=config.get("game", {}).get("resurrection_enabled", False),
+            dynamic_go_salary=config.get("economics", {}).get("dynamic_go_salary", False),
+            progressive_tax_enabled=config.get("economics", {}).get("progressive_tax_enabled", False),
+            bulk_colorset_buy=config.get("harberger", {}).get("bulk_colorset_buy", False),
         )
 
 

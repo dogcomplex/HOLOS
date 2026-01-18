@@ -1,23 +1,21 @@
 economics:
-  avg_circuit_length: 40
-  dividend_timing: per_turn
+  avg_circuit_length: 10
+  dividend_timing: on_go
   pass_go_salary: 200
   rent_rate: 0.10
   tax_rate: 0.10
-  tax_timing: per_turn
+  tax_timing: on_go
 game:
-  id: exp25_circuit_40
+  id: exp31_harberger_on
   log_level: ERROR
   max_turns: 200
   chance_cards_enabled: true
 harberger:
-  auto_valuation_on_buy: true
   enabled: true
   force_buy_enabled: true
   min_valuation: 1
 llm:
   stub_mode: true
-  stub_strategy: random
 players:
   archetypes:
   - Slumlord
@@ -29,5 +27,4 @@ players:
 randomness:
   seed: 42
 universe:
-  board_size: 40
   num_boards: 1

@@ -227,6 +227,106 @@ class HarbergerEngine:
 
         return (True, new_valuation, "OK")
 
+    def execute_bulk_colorset_buy(
+        self,
+        game_state: GameState,
+        buyer: Player,
+        color_group: str
+    ) -> EconomicsResult:
+        """
+        Buy all properties in a color group at their summed valuations.
+        Price is locked at time of decision (seller can't change mid-transaction).
+
+        Rules:
+        - Must buy ALL properties in the color group at once
+        - Total price = sum of all individual valuations
+        - Buyer must afford the total
+        - All properties transfer atomically
+        """
+        if not self.config.bulk_colorset_buy:
+            return EconomicsResult(
+                success=False,
+                transactions=[],
+                message="Bulk color set purchase is disabled"
+            )
+
+        # Find all properties in this color group
+        color_properties = []
+        for prop_id, prop in game_state.properties.items():
+            if prop.color_group == color_group:
+                color_properties.append((prop_id, prop))
+
+        if not color_properties:
+            return EconomicsResult(
+                success=False,
+                transactions=[],
+                message=f"No properties in color group: {color_group}"
+            )
+
+        # Calculate total price and check ownership
+        total_price = 0
+        sellers = {}  # seller_id -> amount they receive
+        for prop_id, prop in color_properties:
+            if not prop.is_owned():
+                return EconomicsResult(
+                    success=False,
+                    transactions=[],
+                    message=f"Property {prop.name} is unowned, cannot bulk buy"
+                )
+            if prop.owner_id == buyer.id:
+                return EconomicsResult(
+                    success=False,
+                    transactions=[],
+                    message=f"You already own {prop.name}"
+                )
+            total_price += prop.valuation
+            sellers[prop.owner_id] = sellers.get(prop.owner_id, 0) + prop.valuation
+
+        # Check if buyer can afford
+        if buyer.balance < total_price:
+            return EconomicsResult(
+                success=False,
+                transactions=[],
+                message=f"Cannot afford ${total_price} (balance: ${buyer.balance})"
+            )
+
+        # Execute the bulk purchase
+        transactions = []
+        buyer.balance -= total_price
+
+        for seller_id, amount in sellers.items():
+            seller = game_state.players.get(seller_id)
+            if seller:
+                seller.balance += amount
+
+        # Transfer all properties
+        for prop_id, prop in color_properties:
+            old_owner = game_state.players.get(prop.owner_id)
+            if old_owner and prop_id in old_owner.properties:
+                old_owner.properties.remove(prop_id)
+            buyer.properties.append(prop_id)
+            prop.owner_id = buyer.id
+
+        logger.info(
+            f"BULK COLOR BUY: {buyer.id} bought all {color_group} properties "
+            f"for ${total_price}"
+        )
+
+        tx = Transaction(
+            turn=game_state.turn,
+            transaction_type="BULK_COLORSET_BUY",
+            from_id=buyer.id,
+            to_id="MULTIPLE",
+            amount=total_price,
+            details={
+                "color_group": color_group,
+                "properties": [p[1].name for p in color_properties],
+                "sellers": sellers
+            }
+        )
+
+        return EconomicsResult(success=True, transactions=[tx])
+
     def suggest_valuation(
         self,
         property: Property,

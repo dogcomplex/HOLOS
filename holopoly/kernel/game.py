@@ -115,14 +115,31 @@ class Game:
         actions_taken = []
 
         if not player.is_active():
-            return self._advance_to_next_player(TurnResult(
-                success=True,
-                player_id=player.id,
-                dice_roll=None,
-                actions_taken=[],
-                transactions=[],
-                message="Player is bankrupt, skipping"
-            ))
+            # If resurrection enabled, still process UBI for bankrupt players
+            if self.config.resurrection_enabled:
+                econ_result = self.economics.process_turn_start(self.state, player)
+                transactions.extend(econ_result.transactions)
+                # Check if resurrected
+                if player.is_active():
+                    logger.info(f"Player {player.id} has been RESURRECTED!")
+                else:
+                    return self._advance_to_next_player(TurnResult(
+                        success=True,
+                        player_id=player.id,
+                        dice_roll=None,
+                        actions_taken=[],
+                        transactions=transactions,
+                        message="Player is bankrupt, waiting for resurrection"
+                    ))
+            else:
+                return self._advance_to_next_player(TurnResult(
+                    success=True,
+                    player_id=player.id,
+                    dice_roll=None,
+                    actions_taken=[],
+                    transactions=[],
+                    message="Player is bankrupt, skipping"
+                ))
 
         logger.info(f"=== Turn {self.state.turn}: {player.id} ({player.archetype}) ===")
         logger.info(f"Balance: ${player.balance}, Position: {player.position}")

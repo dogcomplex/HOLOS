@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-25 experiments conducted testing Harberger tax mechanics, agent archetypes, game scaling, and economic parameters. Key finding: **Tax rate is the dominant variable** - it determines which strategy wins more than any other factor.
+31 experiments conducted testing Harberger tax mechanics, agent archetypes, game scaling, and advanced economic parameters (resurrection, progressive tax, zero cash injection). Key finding: **Tax rate is the dominant variable** - it determines which strategy wins more than any other factor.
 
 | Tax Rate | Dominant Strategy | Bankruptcies |
 |----------|------------------|--------------|
@@ -292,6 +292,56 @@ TAX > SALARY > RENT > CHANCE_CARDS > CIRCUIT_LENGTH
 
 ---
 
+## Experiments 26-31: Economic Mechanics
+
+### Exp 26: Resurrection via UBI
+Bankrupt players can be revived when UBI payments bring their balance positive.
+
+| Resurrection | Survivors | Bankruptcies | Resurrections |
+|--------------|-----------|--------------|---------------|
+| Enabled | 4/4 | 0 | Multiple (p0, p1, p2 all revived) |
+| Disabled | 1/4 | 3 | N/A |
+
+**Critical Finding**: Resurrection creates a "safety net" that keeps all players in the game. UBI becomes a true universal insurance.
+
+### Exp 27: Bulk Color Set Purchase
+Feature implemented: Buy entire color group at summed valuation atomically.
+- Code added but not tested in gameplay (requires LLM agents to use)
+- Prevents mid-transaction price manipulation
+
+### Exp 28-29: Zero Cash Injection (Dynamic GO Salary)
+GO salary = redistribute pot instead of printing new money.
+
+| Mode | Survivor Net Worth | Total Economy |
+|------|-------------------|---------------|
+| Dynamic (on_go) | $1,613 | Deflationary |
+| Dynamic (per_turn) | $1,815 | Deflationary |
+| Fixed $200 (control) | $4,865 | Inflationary |
+
+**Finding**: Zero cash injection creates a true closed economy. Money supply is fixed, making the game purely redistributive.
+
+### Exp 30: Progressive Tax
+Higher tax rate for more properties (+2% per property owned)
+
+| Tax Type | Squatter Rank | Wealth Spread |
+|----------|---------------|---------------|
+| Progressive 5%+2%/prop | 2nd | Tighter |
+| Flat 15% | 4th | Wider |
+
+**Finding**: Progressive tax helps Squatter by penalizing large property holders more heavily.
+
+### Exp 31: Harberger Toggle Baseline
+Testing with Harberger mechanics disabled.
+
+| Harberger | Results |
+|-----------|---------|
+| Disabled | Same as enabled* |
+| Enabled | Same as disabled* |
+
+*Stub agents don't use forced buys - need LLM agents to demonstrate Harberger dynamics.
+
+---
+
 ## Recommendations for MVP
 
 1. **Default tax rate**: 10% for balanced gameplay
@@ -303,3 +353,6 @@ TAX > SALARY > RENT > CHANCE_CARDS > CIRCUIT_LENGTH
 7. **GO salary**: Keep at $200 minimum to sustain property economy
 8. **Chance cards**: Keep enabled for more dynamic gameplay
 9. **Circuit length**: 10 is balanced; 5 favors passive, 20+ favors property owners
+10. **Resurrection**: Enable for "second chance" gameplay mode
+11. **Progressive tax**: Use for anti-monopoly pressure
+12. **Dynamic GO salary**: Use for closed economy experiments

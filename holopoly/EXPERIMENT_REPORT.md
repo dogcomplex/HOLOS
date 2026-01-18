@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-31 experiments conducted testing Harberger tax mechanics, agent archetypes, game scaling, and advanced economic parameters (resurrection, progressive tax, zero cash injection). Key finding: **Tax rate is the dominant variable** - it determines which strategy wins more than any other factor.
+36 experiments conducted testing Harberger tax mechanics, agent archetypes, game scaling, and advanced economic parameters (resurrection, progressive tax, zero cash injection). Key finding: **Tax rate is the dominant variable** - it determines which strategy wins more than any other factor. Secondary finding: **Resurrection changes optimal strategy at 20% tax** - Flipper beats Squatter when elimination is not possible.
 
 | Tax Rate | Dominant Strategy | Bankruptcies |
 |----------|------------------|--------------|
@@ -339,6 +339,71 @@ Testing with Harberger mechanics disabled.
 | Enabled | Same as disabled* |
 
 *Stub agents don't use forced buys - need LLM agents to demonstrate Harberger dynamics.
+
+---
+
+## Experiments 32-36: Resurrection Re-runs
+
+Re-testing previous high-bankruptcy experiments with `resurrection_enabled: true` and `bulk_colorset_buy: true`.
+
+### Exp 32: Re-run Exp 8 (25% Tax, 150 turns)
+| Metric | Original | With Resurrection |
+|--------|----------|-------------------|
+| Bankruptcies | 3/4 | **0/4** |
+| Winner | Squatter $3,227 | Squatter $3,543 |
+| All players | 1 survivor | All ACTIVE |
+
+### Exp 33: Re-run Exp 12 (30% Tax)
+| Metric | Original | With Resurrection |
+|--------|----------|-------------------|
+| Bankruptcies | 3/4 | **0/4** |
+| Winner | Squatter (only survivor) | Squatter $4,523 |
+| Spread | N/A (elimination) | $1,505 |
+
+### Exp 34: Re-run Exp 17 (Zero GO Salary)
+| Metric | Original | With Resurrection |
+|--------|----------|-------------------|
+| Bankruptcies | 3/4 | **0/4** |
+| Winner | Squatter | Squatter $1,605 |
+| Total Wealth | Low | Very Low ($2,604 total) |
+
+**Finding**: Even with resurrection, $0 salary creates a harsh deflationary economy.
+
+### Exp 35: Re-run Exp 18 (20% Tax)
+| Metric | Original | With Resurrection |
+|--------|----------|-------------------|
+| Bankruptcies | 3/4 | **0/4** |
+| Winner | Squatter $3,592 | **Flipper $3,948** |
+| Squatter Rank | 1st | 2nd ($3,923) |
+
+**Critical Finding**: **Resurrection changes the optimal strategy at 20% tax.** When players can't be eliminated, Flipper's active strategy beats passive Squatter.
+
+### Exp 36: Re-run Exp 23 (3 Slumlords vs 1 Squatter, 15% Tax)
+| Metric | Original | With Resurrection |
+|--------|----------|-------------------|
+| Bankruptcies | 0 | 0 |
+| Winner | Squatter $3,791 | Squatter $4,148 |
+| Finding | Squatter wins 3v1 | **Still wins 3v1** |
+
+---
+
+## Key Findings from Resurrection Re-runs
+
+### 1. Resurrection Eliminates ALL Bankruptcies
+Even under the harshest conditions (30% tax, $0 salary), resurrection via UBI keeps all players active.
+
+### 2. Strategy Shift at 20% Tax
+```
+WITHOUT Resurrection: Squatter wins (opponents eliminated)
+WITH Resurrection: Flipper wins (active strategy beats passive)
+```
+This is the most significant finding - resurrection fundamentally changes optimal strategy.
+
+### 3. Squatter Still Dominant at Extreme Tax
+At 25%+ tax, Squatter still wins even with resurrection. The passive strategy remains optimal when tax costs are too high for property ownership.
+
+### 4. Resurrection is a "Safety Net"
+It doesn't change the game's economics - it just prevents permanent elimination. Players still lose money, fall behind, and struggle - they just don't exit.
 
 ---
 

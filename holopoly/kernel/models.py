@@ -229,6 +229,9 @@ class GameConfig:
     # Randomness
     random_seed: Optional[int]
 
+    # Optional features
+    chance_cards_enabled: bool = True
+
     @classmethod
     def from_yaml(cls, config: dict) -> "GameConfig":
         """Parse configuration from YAML dict."""
@@ -257,6 +260,8 @@ class GameConfig:
             llm_temperature=config.get("llm", {}).get("temperature", 0.7),
 
             random_seed=config.get("randomness", {}).get("seed"),
+
+            chance_cards_enabled=config.get("game", {}).get("chance_cards_enabled", True),
         )
 
 

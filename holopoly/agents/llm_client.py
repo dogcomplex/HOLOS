@@ -376,6 +376,17 @@ class StubLLMClient(BaseLLMClient):
                     "reasoning": "Setting valuation for quick resale"
                 }
 
+        elif archetype == "developer":
+            # Try to build houses on monopolies
+            if random.random() < 0.5:
+                # Look for BUILD_HOUSE in available actions
+                if "BUILD_HOUSE" in prompt:
+                    return {
+                        "action": "BUILD_HOUSE",
+                        "params": {},  # Will pick first available property
+                        "reasoning": "Building houses to increase rent income"
+                    }
+
         return {"action": "PASS", "reasoning": "No market action this turn"}
 
 

@@ -283,30 +283,32 @@ class Game:
             logger.info(f"Player {player.id} sent to jail")
 
         elif tile.tile_type == "chance" or tile.tile_type == "chest":
-            # Simplified: Random cash event
-            event_amount = random.choice([-50, -25, 0, 25, 50, 100, 200])
-            if event_amount != 0:
-                if event_amount > 0:
-                    player.balance += event_amount
-                    from_id, to_id = "BANK", player.id
-                else:
-                    if player.balance >= abs(event_amount):
-                        player.balance += event_amount  # Negative
-                        self.state.community_pot += abs(event_amount)
+            # Skip if chance cards are disabled
+            if self.config.chance_cards_enabled:
+                # Simplified: Random cash event
+                event_amount = random.choice([-50, -25, 0, 25, 50, 100, 200])
+                if event_amount != 0:
+                    if event_amount > 0:
+                        player.balance += event_amount
+                        from_id, to_id = "BANK", player.id
                     else:
-                        bankruptcy = True
-                    from_id, to_id = player.id, "POT"
+                        if player.balance >= abs(event_amount):
+                            player.balance += event_amount  # Negative
+                            self.state.community_pot += abs(event_amount)
+                        else:
+                            bankruptcy = True
+                        from_id, to_id = player.id, "POT"
 
-                if not bankruptcy:
-                    transactions.append(Transaction(
-                        turn=self.state.turn,
-                        transaction_type="CHANCE_CHEST",
-                        from_id=from_id,
-                        to_id=to_id,
-                        amount=abs(event_amount),
-                        details={"card_type": tile.tile_type}
-                    ))
-                    logger.info(f"Card event: {'+' if event_amount > 0 else ''}{event_amount}")
+                    if not bankruptcy:
+                        transactions.append(Transaction(
+                            turn=self.state.turn,
+                            transaction_type="CHANCE_CHEST",
+                            from_id=from_id,
+                            to_id=to_id,
+                            amount=abs(event_amount),
+                            details={"card_type": tile.tile_type}
+                        ))
+                        logger.info(f"Card event: {'+' if event_amount > 0 else ''}{event_amount}")
 
         return TurnResult(
             success=not bankruptcy,

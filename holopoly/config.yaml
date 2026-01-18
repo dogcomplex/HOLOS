@@ -1,14 +1,15 @@
 economics:
-  avg_circuit_length: 10
-  dividend_timing: on_go
+  avg_circuit_length: 40
+  dividend_timing: per_turn
   pass_go_salary: 200
-  rent_rate: 0.05
-  tax_rate: 0.30
-  tax_timing: on_go
+  rent_rate: 0.10
+  tax_rate: 0.10
+  tax_timing: per_turn
 game:
-  id: exp18_Very-Low-Rent-High-Tax
+  id: exp25_circuit_40
   log_level: ERROR
-  max_turns: 150
+  max_turns: 200
+  chance_cards_enabled: true
 harberger:
   auto_valuation_on_buy: true
   enabled: true

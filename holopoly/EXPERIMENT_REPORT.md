@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-18 experiments conducted testing Harberger tax mechanics, agent archetypes, and game dynamics. Key finding: **Tax rate is the dominant variable** - it determines which strategy wins more than any other factor.
+25 experiments conducted testing Harberger tax mechanics, agent archetypes, game scaling, and economic parameters. Key finding: **Tax rate is the dominant variable** - it determines which strategy wins more than any other factor.
 
 | Tax Rate | Dominant Strategy | Bankruptcies |
 |----------|------------------|--------------|
@@ -212,6 +212,86 @@ Developer strategy produces most equal wealth distribution in same-archetype gam
 
 ---
 
+## Experiments 19-25: Advanced Dimensions
+
+### Exp 19: House Building / Monopoly Development
+- **Finding**: House building requires complete color monopolies
+- **Issue**: Random agents rarely acquire full monopolies
+- **Future Work**: Monopoly detection needs full implementation
+
+### Exp 20: Min Valuation Floor
+Testing Harberger minimum valuation ($1, $50, $100, $200)
+
+| Min Valuation | Effect |
+|---------------|--------|
+| $1 - $200 | No change |
+
+**Finding**: Min valuation has no effect when valuations are set to purchase price. Would matter if agents could undervalue properties.
+
+### Exp 21: Large-Scale Simulation (20 players, 5 boards)
+- **Config**: 20 players across 5 boards, 200 turns
+- **Result**: All 20 players survived
+- **Wealth spread**: $2,231 to $1,389 ($842 range)
+- **Finding**: More players = more stable economy, smaller wealth gaps
+
+### Exp 22: Long Game Evolution (500 turns)
+- **Result**: All 4 players survived 500 turns
+- **Winner**: Flipper with $7,570
+- **Squatter**: $5,426 (survived but lowest)
+- **Finding**: Long games don't change dynamics, just amplify wealth differences
+
+### Exp 23: Mixed Archetype Ratios
+Testing asymmetric compositions at 15% tax
+
+| Composition | Winner | Finding |
+|-------------|--------|---------|
+| 3 Slumlords vs 1 Squatter | **Squatter** $3,791 | Outnumbered but wins |
+| 2 Flippers vs 2 Developers | Flipper $4,156 | Transaction strategy wins |
+| 1 Slumlord vs 3 Squatters | **Squatter** $3,849 | Slumlord last place |
+
+**Critical Finding**: At 15% tax, Squatter wins even when outnumbered 3:1
+
+### Exp 24: Chance/Community Chest Toggle
+Testing the impact of luck (random cards)
+
+| Cards | Winner | Interpretation |
+|-------|--------|----------------|
+| Enabled | Flipper $3,993 | Cards favor active players |
+| Disabled | **Squatter** $3,336 | Pure economics favor passive |
+
+**Finding**: Chance cards inject wealth into the system, benefiting property owners. Without cards, Squatter strategy becomes optimal.
+
+### Exp 25: Circuit Length / Board Speed
+Testing avg_circuit_length with per_turn timing
+
+| Circuit | Squatter $ | Gap to Winner |
+|---------|------------|---------------|
+| 5 turns | $3,197 | $677 |
+| 10 turns | $2,822 | $1,197 |
+| 20 turns | $2,607 | $1,433 |
+| 40 turns | $2,454 | $1,571 |
+
+**Finding**: Shorter circuit = more frequent UBI = helps Squatter. Longer circuit favors property owners.
+
+---
+
+## Final Key Findings (25 Experiments)
+
+### Economic Hierarchy (Confirmed)
+```
+TAX > SALARY > RENT > CHANCE_CARDS > CIRCUIT_LENGTH
+```
+
+### New Insights from Exp 19-25
+
+1. **Scale Stabilizes**: 20-player games have smaller wealth gaps than 4-player games
+2. **Cards = Wealth Injection**: Disabling chance cards shifts advantage to passive players
+3. **Circuit Length Matters**: Shorter circuits help UBI recipients (Squatter)
+4. **Archetype Ratio Irrelevant at High Tax**: Squatter wins even when outnumbered 3:1
+5. **Long Games Don't Change Strategy**: 500 turns produces same winner as 200 turns
+
+---
+
 ## Recommendations for MVP
 
 1. **Default tax rate**: 10% for balanced gameplay
@@ -221,3 +301,5 @@ Developer strategy produces most equal wealth distribution in same-archetype gam
 5. **Harberger threshold**: Consider 15% as "hard mode"
 6. **Rent rate**: 10% default, increase for property-friendly games
 7. **GO salary**: Keep at $200 minimum to sustain property economy
+8. **Chance cards**: Keep enabled for more dynamic gameplay
+9. **Circuit length**: 10 is balanced; 5 favors passive, 20+ favors property owners

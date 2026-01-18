@@ -67,6 +67,7 @@ class Property:
     valuation: int = 0
     houses: int = 0
     is_mortgaged: bool = False
+    purchase_price: int = 0  # Track original purchase price for capital gains
 
     def is_owned(self) -> bool:
         return self.owner_id is not None
@@ -99,6 +100,7 @@ class Player:
     archetype: str = "default"
     turns_played: int = 0
     properties: List[PropertyId] = field(default_factory=list)
+    income_class: int = 0  # Index into income_inequality list for salary multiplier
 
     def is_active(self) -> bool:
         return self.status == PlayerStatus.ACTIVE
@@ -236,6 +238,14 @@ class GameConfig:
     progressive_tax_enabled: bool = False  # Higher tax rate for more properties
     bulk_colorset_buy: bool = False  # Buy entire color set at summed valuation
 
+    # Realism features
+    wealth_inequality: List[float] = field(default_factory=list)  # Starting balance multipliers [1.0, 0.5, 0.25, 0.1]
+    income_inequality: List[float] = field(default_factory=list)  # Salary multipliers per player
+    property_appreciation_rate: float = 0.0  # % value increase per circuit (e.g., 0.02 = 2%)
+    inflation_rate: float = 0.0  # % increase to rent/prices per circuit
+    debt_interest_rate: float = 0.0  # % charged on negative balance per turn
+    capital_gains_tax_rate: float = 0.0  # % tax on profit when selling property
+
     @classmethod
     def from_yaml(cls, config: dict) -> "GameConfig":
         """Parse configuration from YAML dict."""
@@ -270,6 +280,14 @@ class GameConfig:
             dynamic_go_salary=config.get("economics", {}).get("dynamic_go_salary", False),
             progressive_tax_enabled=config.get("economics", {}).get("progressive_tax_enabled", False),
             bulk_colorset_buy=config.get("harberger", {}).get("bulk_colorset_buy", False),
+
+            # Realism features
+            wealth_inequality=config.get("realism", {}).get("wealth_inequality", []),
+            income_inequality=config.get("realism", {}).get("income_inequality", []),
+            property_appreciation_rate=config.get("realism", {}).get("property_appreciation_rate", 0.0),
+            inflation_rate=config.get("realism", {}).get("inflation_rate", 0.0),
+            debt_interest_rate=config.get("realism", {}).get("debt_interest_rate", 0.0),
+            capital_gains_tax_rate=config.get("realism", {}).get("capital_gains_tax_rate", 0.0),
         )
 
 
@@ -285,6 +303,8 @@ class GameState:
     player_order: List[str]
     status: GameStatus = GameStatus.ACTIVE
     winner_id: Optional[str] = None
+    circuits_completed: int = 0  # Track total circuits for inflation/appreciation
+    current_inflation_multiplier: float = 1.0  # Current inflation factor
 
     def get_current_player(self) -> Player:
         return self.players[self.current_player_id]

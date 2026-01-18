@@ -1,0 +1,47 @@
+# Experiment 47: Full Realism Mode
+# Combines all realistic economic factors:
+# - Wealth inequality (10x/3x/1x/0.3x)
+# - Income inequality (2x/1x/0.5x/0.25x)
+# - 3% inflation + 5% property appreciation
+# - 5% debt interest
+# - 15% capital gains tax
+# Tests: Can poor player ever catch up? Does property beat cash?
+economics:
+  avg_circuit_length: 10
+  dividend_timing: on_go
+  pass_go_salary: 200
+  rent_rate: 0.10
+  tax_rate: 0.10
+  tax_timing: on_go
+game:
+  id: exp47_full_realism
+  log_level: ERROR
+  max_turns: 300
+  chance_cards_enabled: true
+  resurrection_enabled: true
+harberger:
+  enabled: true
+  force_buy_enabled: true
+  min_valuation: 1
+  bulk_colorset_buy: true
+llm:
+  stub_mode: true
+players:
+  archetypes:
+  - Slumlord
+  - Squatter
+  - Flipper
+  - Developer
+  count: 4
+  starting_balance: 1500
+randomness:
+  seed: 42
+universe:
+  num_boards: 1
+realism:
+  wealth_inequality: [10.0, 3.0, 1.0, 0.3]
+  income_inequality: [2.0, 1.0, 0.5, 0.25]
+  inflation_rate: 0.03
+  property_appreciation_rate: 0.05
+  debt_interest_rate: 0.05
+  capital_gains_tax_rate: 0.15

@@ -70,10 +70,18 @@ class Game:
         for i in range(self.config.num_players):
             player_id = f"player_{i}"
             archetype = self.config.archetypes[i % len(self.config.archetypes)]
+
+            # Apply wealth inequality if configured
+            starting_balance = self.config.starting_balance
+            if self.config.wealth_inequality and i < len(self.config.wealth_inequality):
+                multiplier = self.config.wealth_inequality[i]
+                starting_balance = int(starting_balance * multiplier)
+
             players[player_id] = Player(
                 id=player_id,
-                balance=self.config.starting_balance,
+                balance=starting_balance,
                 archetype=archetype,
+                income_class=i,  # Used for income inequality
             )
             player_order.append(player_id)
 

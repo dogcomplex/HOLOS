@@ -2,12 +2,13 @@
 
 ## Executive Summary
 
-41 experiments conducted testing Harberger tax mechanics, agent archetypes, game scaling, and advanced economic parameters (resurrection, progressive tax, zero cash injection). Key findings:
+47 experiments conducted testing Harberger tax mechanics, agent archetypes, game scaling, and real-world economic dynamics (wealth/income inequality, inflation, property appreciation). Key findings:
 
 1. **Tax rate is the dominant variable** - determines which strategy wins more than any other factor
-2. **Rent/tax ratio determines optimal strategy** - 20% rent reverses Squatter advantage; property owners win
-3. **Resurrection changes strategy at 20% tax** - Flipper beats Squatter when elimination is not possible
-4. **Progressive tax is powerful anti-monopoly** - 9-property holders pay 33% effective tax at 15% base
+2. **Rent/tax ratio determines optimal strategy** - 20% rent reverses Squatter advantage
+3. **Inflation inverts optimal strategy** - With inflation, property owners beat cash holders; Squatter goes from winner to loser
+4. **Wealth inequality is self-reinforcing** - Rich get richer; 33x starting gap becomes 40x ending gap
+5. **Property ownership is the great divider** - Those who can afford property build wealth; those who can't fall behind
 
 | Tax Rate | Dominant Strategy | Bankruptcies |
 |----------|------------------|--------------|
@@ -486,6 +487,93 @@ With $500 start, property acquisition is king. Whoever lands on cheap properties
 
 ### 4. Long Games Favor Active Strategies
 Over 500 turns, Flipper extends lead while all players converge. Active play compounds better than passive.
+
+---
+
+## Experiments 42-47: Real-World Economic Dynamics
+
+New realism features implemented:
+- **Wealth inequality**: Different starting balances per player
+- **Income inequality**: Different GO salaries per player class
+- **Property appreciation**: Values increase each circuit
+- **Inflation**: Rent and salaries scale with inflation multiplier
+- **Debt interest**: Negative balances incur interest charges
+- **Capital gains tax**: Tax on profit when selling above purchase price
+
+### Exp 42: Wealth Inequality
+Starting balances: $15,000 / $4,500 / $1,500 / $450 (10x / 3x / 1x / 0.3x)
+
+| Rank | Player | Net Worth | Started |
+|------|--------|-----------|---------|
+| 1st | Slumlord | $17,031 | $15,000 |
+| 2nd | Squatter | $6,228 | $4,500 |
+| 3rd | Flipper | $3,385 | $1,500 |
+| 4th | Developer | $3,256 | $450 |
+
+**Finding**: **Final ranking = starting ranking**. Initial wealth completely determines outcome.
+
+### Exp 43: Income Inequality
+Salaries: $400 / $200 / $100 / $50 (2x / 1x / 0.5x / 0.25x)
+
+| Rank | Player | Net Worth | Salary |
+|------|--------|-----------|--------|
+| 1st | Slumlord | $5,164 | $400 |
+| 2nd | Squatter | $3,637 | $200 |
+| 3rd | Flipper | $3,413 | $100 |
+| 4th | Developer | $258 | $50 |
+
+**Finding**: Minimum wage player ($50) ends with almost nothing ($258). Income strongly correlates with outcome.
+
+### Exp 44: Inflation (3%) + Property Appreciation (5%)
+| Rank | Player | Net Worth | Properties |
+|------|--------|-----------|------------|
+| 1st | Flipper | $19,256 | 9 |
+| 2nd | Developer | $18,204 | 9 |
+| 3rd | Slumlord | $17,114 | 9 |
+| 4th | **Squatter** | $8,579 | 1 |
+
+**Critical Finding**: **Squatter goes from typical winner to LAST PLACE**. Inflation erodes cash; property appreciation protects wealth. This perfectly models real-world dynamics where cash savers lose to property owners.
+
+### Exp 45: Debt Trap (10% interest)
+Limited effect - resurrection prevents negative balances, so interest rarely applies.
+
+### Exp 46: Capital Gains (5% appreciation + 20% CGT)
+Property owners still dominate. Capital gains only triggers on Harberger forced buys (stub agents don't use).
+
+### Exp 47: Full Realism Mode
+All features combined: wealth inequality + income inequality + inflation + appreciation + debt interest + capital gains tax
+
+| Rank | Player | Start | End | Properties | Multiplier |
+|------|--------|-------|-----|------------|------------|
+| 1st | Slumlord | $15,000 | $38,148 | 13 | 2.5x |
+| 2nd | Flipper | $1,500 | $16,087 | 9 | 10.7x |
+| 3rd | Squatter | $4,500 | $12,796 | 1 | 2.8x |
+| 4th | Developer | $450 | $951 | 0 | 2.1x |
+
+**Key Findings from Full Realism:**
+1. **Wealth gap widens**: Started 33x gap → ended **40x gap** ($38K vs $951)
+2. **Property is the great equalizer**: Middle-class Flipper overtook upper-class Squatter through property acquisition
+3. **Poor stay poor**: Can't afford properties → inflation erodes savings → trapped at bottom
+4. **Best ROI from middle**: Flipper achieved 1,072% return vs Slumlord's 254%
+
+---
+
+## Key Insights from Realism Experiments
+
+### 1. Wealth Inequality is Self-Reinforcing
+Initial wealth advantages compound over time. The rich can afford properties, properties appreciate, the rich get richer.
+
+### 2. Inflation Inverts Strategy
+```
+WITHOUT Inflation: Squatter (cash) wins by avoiding tax
+WITH Inflation: Property owners win, Squatter loses to inflation erosion
+```
+
+### 3. Income Matters Less Than Wealth
+High salary helps, but starting wealth matters more. A $15K start + $400 salary beats a $1.5K start + $400 salary.
+
+### 4. Property Ownership is the Key Divider
+The gap between property owners and non-owners grows over time with appreciation + inflation.
 
 ---
 

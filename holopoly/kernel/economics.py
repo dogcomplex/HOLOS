@@ -59,8 +59,13 @@ class EconomicsEngine:
         """
         Process economics at the start of a turn.
         Called for every turn, but only acts if timing is PER_TURN.
+        Also charges debt interest if applicable.
         """
         transactions = []
+
+        # Charge debt interest if player has negative balance
+        interest_result = self._charge_debt_interest(game_state, player)
+        transactions.extend(interest_result.transactions)
 
         # Per-turn tax collection
         if self.config.tax_timing == TaxTiming.PER_TURN:
@@ -89,8 +94,18 @@ class EconomicsEngine:
         """
         Process economics when a player passes GO.
         Always gives salary, conditionally does tax/dividend based on timing.
+        Also applies property appreciation and inflation.
         """
         transactions = []
+
+        # Track circuit completion for inflation/appreciation
+        game_state.circuits_completed += 1
+
+        # Apply property appreciation (all properties gain value)
+        self._apply_property_appreciation(game_state)
+
+        # Apply inflation (prices/rents increase)
+        self._apply_inflation(game_state)
 
         # Always collect GO salary
         salary_tx = self._pay_salary(game_state, player)
@@ -121,7 +136,7 @@ class EconomicsEngine:
         return EconomicsResult(success=True, transactions=transactions)
 
     def _pay_salary(self, game_state: GameState, player: Player) -> Transaction:
-        """Pay the GO salary to a player."""
+        """Pay the GO salary to a player (with income inequality if configured)."""
         if self.config.dynamic_go_salary:
             # Dynamic salary: distribute from pot (no cash injection)
             active_count = len(game_state.get_active_players())
@@ -135,6 +150,15 @@ class EconomicsEngine:
         else:
             salary = self.pass_go_salary
             from_id = "BANK"
+
+            # Apply income inequality multiplier if configured
+            if self.config.income_inequality and player.income_class < len(self.config.income_inequality):
+                multiplier = self.config.income_inequality[player.income_class]
+                salary = int(salary * multiplier)
+
+            # Apply inflation to salary
+            if self.config.inflation_rate > 0:
+                salary = int(salary * game_state.current_inflation_multiplier)
 
         player.balance += salary
         logger.info(f"Player {player.id} collected ${salary} salary")
@@ -295,6 +319,98 @@ class EconomicsEngine:
 
         return EconomicsResult(success=True, transactions=transactions)
 
+    def _apply_property_appreciation(
+        self,
+        game_state: GameState
+    ) -> List[Transaction]:
+        """Apply property appreciation when a circuit is completed."""
+        if self.config.property_appreciation_rate <= 0:
+            return []
+
+        transactions = []
+        for prop_id, prop in game_state.properties.items():
+            if prop.is_owned() and prop.valuation > 0:
+                old_val = prop.valuation
+                appreciation = int(prop.valuation * self.config.property_appreciation_rate)
+                if appreciation > 0:
+                    prop.valuation += appreciation
+                    logger.debug(f"Property {prop.name} appreciated: ${old_val} -> ${prop.valuation}")
+
+        return transactions
+
+    def _apply_inflation(self, game_state: GameState) -> None:
+        """Apply inflation when a circuit is completed."""
+        if self.config.inflation_rate <= 0:
+            return
+
+        game_state.current_inflation_multiplier *= (1 + self.config.inflation_rate)
+        logger.info(f"Inflation applied. New multiplier: {game_state.current_inflation_multiplier:.2f}")
+
+    def _charge_debt_interest(
+        self,
+        game_state: GameState,
+        player: Player
+    ) -> EconomicsResult:
+        """Charge interest on negative balance (debt)."""
+        if self.config.debt_interest_rate <= 0 or player.balance >= 0:
+            return EconomicsResult(success=True, transactions=[])
+
+        # Calculate interest on the debt (negative balance)
+        debt = abs(player.balance)
+        interest = int(debt * self.config.debt_interest_rate)
+
+        if interest > 0:
+            player.balance -= interest  # Make debt worse
+            logger.info(f"Player {player.id} charged ${interest} debt interest (debt: ${debt})")
+
+            tx = Transaction(
+                turn=game_state.turn,
+                transaction_type="INTEREST",
+                from_id=player.id,
+                to_id="BANK",
+                amount=interest,
+                details={"debt": debt, "rate": self.config.debt_interest_rate}
+            )
+            return EconomicsResult(success=True, transactions=[tx])
+
+        return EconomicsResult(success=True, transactions=[])
+
+    def process_capital_gains(
+        self,
+        game_state: GameState,
+        seller: Player,
+        property: Property,
+        sale_price: int
+    ) -> EconomicsResult:
+        """Calculate and collect capital gains tax on property sale."""
+        if self.config.capital_gains_tax_rate <= 0:
+            return EconomicsResult(success=True, transactions=[])
+
+        # Capital gain = sale price - purchase price
+        gain = sale_price - property.purchase_price
+        if gain <= 0:
+            return EconomicsResult(success=True, transactions=[])
+
+        # Tax the gain
+        tax = int(gain * self.config.capital_gains_tax_rate)
+        if tax > 0:
+            seller.balance -= tax
+            game_state.community_pot += tax
+            logger.info(f"Player {seller.id} paid ${tax} capital gains tax (gain: ${gain})")
+
+            tx = Transaction(
+                turn=game_state.turn,
+                transaction_type="CAPITAL_GAINS_TAX",
+                from_id=seller.id,
+                to_id="POT",
+                amount=tax,
+                property_id=property.id,
+                details={"gain": gain, "purchase_price": property.purchase_price, "sale_price": sale_price}
+            )
+            return EconomicsResult(success=True, transactions=[tx])
+
+        return EconomicsResult(success=True, transactions=[])
+
     def calculate_rent(
         self,
         property: Property,
@@ -346,6 +462,10 @@ class EconomicsEngine:
             multiplier = house_multipliers[min(property.houses, 5)]
             # Blend Harberger rent with house bonus
             base_rent = max(base_rent, property.face_value * multiplier // 10)
+
+        # Apply inflation multiplier to rent
+        if self.config.inflation_rate > 0:
+            base_rent = int(base_rent * game_state.current_inflation_multiplier)
 
         return base_rent
 
@@ -427,6 +547,7 @@ class EconomicsEngine:
         buyer.balance -= price
         property.owner_id = buyer.id
         property.valuation = price  # Initial valuation = purchase price
+        property.purchase_price = price  # Track for capital gains
         buyer.properties.append(property.id)
 
         logger.info(f"Player {buyer.id} bought {property.name} for ${price}")

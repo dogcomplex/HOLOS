@@ -1,0 +1,40 @@
+# Experiment 44: Inflation + Property Appreciation
+# Models: Real estate as inflation hedge
+# 3% inflation per circuit (reduces cash purchasing power)
+# 5% property appreciation (values increase)
+# Net effect: Property owners benefit, cash holders lose
+economics:
+  avg_circuit_length: 10
+  dividend_timing: on_go
+  pass_go_salary: 200
+  rent_rate: 0.10
+  tax_rate: 0.10
+  tax_timing: on_go
+game:
+  id: exp44_inflation_appreciation
+  log_level: ERROR
+  max_turns: 300
+  chance_cards_enabled: true
+  resurrection_enabled: true
+harberger:
+  enabled: true
+  force_buy_enabled: true
+  min_valuation: 1
+  bulk_colorset_buy: true
+llm:
+  stub_mode: true
+players:
+  archetypes:
+  - Slumlord
+  - Squatter
+  - Flipper
+  - Developer
+  count: 4
+  starting_balance: 1500
+randomness:
+  seed: 42
+universe:
+  num_boards: 1
+realism:
+  inflation_rate: 0.03
+  property_appreciation_rate: 0.05

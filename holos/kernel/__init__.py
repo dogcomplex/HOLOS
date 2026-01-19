@@ -6,11 +6,15 @@ Core abstractions for modeling ZK-proof bubbles (Holons) with:
 - Mantles (transferable authority)
 - Contracts (cooperation primitive)
 - Enclaves (compositional governance, fractal groups)
+- FlowRouter (flow-through economics - no treasury accumulation)
+- CrowdfundPool (voluntary funding for large projects)
 
 Taxonomy by scale:
 - Enclave: Base grouping (any size)
 - Collective: 100+ members
 - Kingdom: 1000+ members
+
+Key economic principle: Taxes flow DOWN as UBI, not UP to a treasury.
 """
 
 from .holon import Holon, HolonId, HolonStatus, Constitution, ExitSpec, create_holon
@@ -22,8 +26,13 @@ from .constitution import (
 )
 from .enclave import (
     Enclave, EnclaveType, EnclaveScale, MembershipRecord, MembershipStatus,
-    Treasury, DividendPolicy, VotingMechanism, Proposal, Vote,
-    create_enclave
+    FlowRouter, DistributionMethod, VotingMechanism, Proposal, Vote,
+    create_enclave,
+    Treasury,  # Legacy alias for FlowRouter
+)
+from .crowdfund import (
+    CrowdfundPool, PoolStatus, PoolType, PoolRegistry, Contribution,
+    create_pool
 )
 
 __all__ = [
@@ -38,6 +47,10 @@ __all__ = [
     'ConstitutionalReport', 'ViolationSeverity', 'create_checker',
     # Enclave
     'Enclave', 'EnclaveType', 'EnclaveScale', 'MembershipRecord', 'MembershipStatus',
-    'Treasury', 'DividendPolicy', 'VotingMechanism', 'Proposal', 'Vote',
+    'FlowRouter', 'DistributionMethod', 'VotingMechanism', 'Proposal', 'Vote',
     'create_enclave',
+    'Treasury',  # Legacy alias
+    # Crowdfund
+    'CrowdfundPool', 'PoolStatus', 'PoolType', 'PoolRegistry', 'Contribution',
+    'create_pool',
 ]

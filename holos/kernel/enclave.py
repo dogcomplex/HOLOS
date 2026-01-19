@@ -67,87 +67,102 @@ class MembershipRecord:
     status: MembershipStatus = MembershipStatus.PENDING
     joined_at: int = 0
 
+    # Stake (Sybil-resistant weight for UBI distribution)
+    # Prevents infinite node creation to farm UBI
+    stake: int = 0
+
     # Voting
     voting_weight: float = 1.0
     delegate_to: Optional[HolonId] = None  # For liquid democracy
 
     # Economics
     contribution_total: int = 0   # Total taxes/fees paid
-    dividend_received: int = 0    # Total dividends received
+    ubi_received: int = 0         # Total UBI received (renamed from dividend_received)
 
     def __hash__(self):
         return hash(self.holon_id)
 
 
-@dataclass
-class DividendPolicy:
-    """How treasury surplus is distributed."""
-    distribution_type: str = "EQUAL"  # EQUAL | STAKE_PROPORTIONAL | CONTRIBUTION_WEIGHTED
-    distribution_frequency: int = 10  # Every N turns
-    reserve_ratio: float = 0.2        # Keep 20% in treasury
+class DistributionMethod(Enum):
+    """How UBI is distributed among members."""
+    EQUAL = "EQUAL"                    # Equal shares regardless of stake
+    STAKE_WEIGHTED = "STAKE_WEIGHTED"  # Proportional to stake (Sybil-resistant)
 
 
 @dataclass
-class Treasury:
-    """Financial management for an Enclave."""
-    balance: int = 0
-    tax_rate: float = 0.10           # Internal tax on transactions
-    harberger_rate: float = 0.10     # Tax on member valuations
-    dividend_policy: DividendPolicy = field(default_factory=DividendPolicy)
+class FlowRouter:
+    """
+    Routes tax payments directly to members as UBI. NO STORAGE.
 
-    # Accounting
-    total_collected: int = 0
-    total_distributed: int = 0
+    Key insight: Tax collection and UBI distribution are the SAME EVENT.
+    There is no treasury to accumulate, no pot to capture, no attack target.
 
-    def collect_tax(self, amount: int) -> int:
-        """Collect tax, return amount collected."""
-        tax = int(amount * self.tax_rate)
-        self.balance += tax
-        self.total_collected += tax
-        return tax
+    Taxes flow DOWN, not UP:
+        Tax paid → Immediately split as UBI → Members receive
+    """
+    tax_rate: float = 0.10           # Tax on transactions
+    harberger_rate: float = 0.10     # Tax on valuations
+    distribution_method: DistributionMethod = DistributionMethod.STAKE_WEIGHTED
 
-    def collect_harberger(self, valuation: int) -> int:
-        """Collect Harberger tax on valuation."""
-        tax = int(valuation * self.harberger_rate)
-        self.balance += tax
-        self.total_collected += tax
-        return tax
+    # Accounting (for transparency, no balance stored)
+    total_routed: int = 0
 
-    def distribute_dividend(self, members: List[MembershipRecord]) -> Dict[HolonId, int]:
-        """Distribute dividends according to policy. Returns amounts per member."""
-        if not members or self.balance <= 0:
-            return {}
+    def route_tax(
+        self,
+        amount: int,
+        members: List[MembershipRecord]
+    ) -> Dict[HolonId, int]:
+        """
+        Route a tax payment immediately to all active members as UBI.
 
-        # Calculate distributable amount
-        distributable = int(self.balance * (1 - self.dividend_policy.reserve_ratio))
-        if distributable <= 0:
-            return {}
+        This is the core flow-through mechanism:
+        - NO balance accumulation
+        - Tax in = UBI out (same event)
+        - Stake-weighted to prevent Sybil attacks
 
+        Returns dict of holon_id -> amount received.
+        """
         active_members = [m for m in members if m.status == MembershipStatus.ACTIVE]
-        if not active_members:
+        if not active_members or amount <= 0:
             return {}
 
-        dividends = {}
+        distributions = {}
 
-        if self.dividend_policy.distribution_type == "EQUAL":
-            per_member = distributable // len(active_members)
+        if self.distribution_method == DistributionMethod.EQUAL:
+            per_member = amount // len(active_members)
             for member in active_members:
-                dividends[member.holon_id] = per_member
-                member.dividend_received += per_member
+                distributions[member.holon_id] = per_member
+                member.ubi_received += per_member
 
-        elif self.dividend_policy.distribution_type == "STAKE_PROPORTIONAL":
-            total_weight = sum(m.voting_weight for m in active_members)
-            if total_weight > 0:
+        elif self.distribution_method == DistributionMethod.STAKE_WEIGHTED:
+            total_stake = sum(m.stake for m in active_members)
+            if total_stake > 0:
                 for member in active_members:
-                    share = int(distributable * member.voting_weight / total_weight)
-                    dividends[member.holon_id] = share
-                    member.dividend_received += share
+                    share = int(amount * member.stake / total_stake) if member.stake > 0 else 0
+                    distributions[member.holon_id] = share
+                    member.ubi_received += share
+            else:
+                # Fallback to equal if no stakes
+                per_member = amount // len(active_members)
+                for member in active_members:
+                    distributions[member.holon_id] = per_member
+                    member.ubi_received += per_member
 
-        total_distributed = sum(dividends.values())
-        self.balance -= total_distributed
-        self.total_distributed += total_distributed
+        self.total_routed += sum(distributions.values())
+        return distributions
 
-        return dividends
+    def calculate_harberger_tax(self, valuation: int) -> int:
+        """Calculate Harberger tax on a valuation."""
+        return int(valuation * self.harberger_rate)
+
+    def calculate_transaction_tax(self, amount: int) -> int:
+        """Calculate tax on a transaction amount."""
+        return int(amount * self.tax_rate)
+
+
+# Legacy alias for backward compatibility
+Treasury = FlowRouter
+DividendPolicy = None  # Removed - no longer needed
 
 
 @dataclass
@@ -227,8 +242,14 @@ class Enclave:
     members: Dict[str, MembershipRecord] = field(default_factory=dict)  # holon_id -> record
     pending_applications: List[HolonId] = field(default_factory=list)
 
-    # Economics
-    treasury: Treasury = field(default_factory=Treasury)
+    # Economics (Flow-through - no treasury accumulation)
+    flow_router: FlowRouter = field(default_factory=FlowRouter)
+
+    # Legacy alias
+    @property
+    def treasury(self) -> FlowRouter:
+        """Legacy alias for flow_router."""
+        return self.flow_router
 
     # Governance
     voting_mechanism: VotingMechanism = VotingMechanism.ONE_HOLON_ONE_VOTE
@@ -292,17 +313,21 @@ class Enclave:
         holon_id_str = str(holon_id.value)
 
         # Create membership record
+        # Stake = vault + valuation (proof-of-skin-in-the-game)
+        member_stake = holon.vault + holon.valuation
+
         record = MembershipRecord(
             holon_id=holon_id,
             status=MembershipStatus.ACTIVE,
             joined_at=int(time.time()),
+            stake=member_stake,
         )
 
         # Calculate voting weight based on mechanism
         if self.voting_mechanism == VotingMechanism.STAKE_WEIGHTED:
-            record.voting_weight = float(holon.valuation)
+            record.voting_weight = float(member_stake)
         elif self.voting_mechanism == VotingMechanism.QUADRATIC:
-            record.voting_weight = float(holon.valuation) ** 0.5
+            record.voting_weight = float(member_stake) ** 0.5
 
         self.members[holon_id_str] = record
         self.pending_applications.remove(holon_id)
@@ -447,14 +472,25 @@ class Enclave:
         self.delegation_graph[delegator_str] = delegate_str
         return True
 
-    # === Economics ===
+    # === Economics (Flow-Through) ===
 
-    def collect_member_taxes(self, holons: Dict[str, Holon]) -> int:
+    def collect_and_distribute_taxes(self, holons: Dict[str, Holon]) -> Dict[str, Any]:
         """
-        Collect Harberger taxes from all members based on their valuations.
-        Returns total collected.
+        Collect Harberger taxes and IMMEDIATELY distribute as UBI.
+
+        This is the core flow-through mechanism:
+        - Tax collection and UBI distribution are the SAME EVENT
+        - No treasury accumulation, no pot to capture
+        - Stake-weighted to prevent Sybil attacks
+
+        Returns dict with:
+        - total_collected: int
+        - distributions: Dict[HolonId, int] (UBI received per member)
         """
         total_collected = 0
+        all_distributions: Dict[HolonId, int] = {}
+
+        active_members = [m for m in self.members.values() if m.status == MembershipStatus.ACTIVE]
 
         for holon_id_str, record in self.members.items():
             if record.status != MembershipStatus.ACTIVE:
@@ -464,21 +500,57 @@ class Enclave:
             if not holon:
                 continue
 
-            tax = self.treasury.collect_harberger(holon.valuation)
-            record.contribution_total += tax
+            # Calculate tax
+            tax = self.flow_router.calculate_harberger_tax(holon.valuation)
+            if tax <= 0:
+                continue
 
+            # Withdraw from payer
             if holon.withdraw(tax):
+                record.contribution_total += tax
                 total_collected += tax
 
-        return total_collected
+                # IMMEDIATELY route as UBI to all members (same event!)
+                distributions = self.flow_router.route_tax(tax, active_members)
+
+                # Merge distributions
+                for h_id, amount in distributions.items():
+                    all_distributions[h_id] = all_distributions.get(h_id, 0) + amount
+
+                    # Credit to recipient's vault
+                    recipient_holon = holons.get(str(h_id.value))
+                    if recipient_holon:
+                        recipient_holon.deposit(amount)
+
+                # Update payer's stake (they just paid tax)
+                record.stake = holon.vault + holon.valuation
+
+        return {
+            "total_collected": total_collected,
+            "distributions": all_distributions,
+        }
+
+    def update_member_stakes(self, holons: Dict[str, Holon]):
+        """Update all member stakes based on current vault + valuation."""
+        for holon_id_str, record in self.members.items():
+            if record.status != MembershipStatus.ACTIVE:
+                continue
+            holon = holons.get(holon_id_str)
+            if holon:
+                record.stake = holon.vault + holon.valuation
+
+    # Legacy method - redirects to new flow-through method
+    def collect_member_taxes(self, holons: Dict[str, Holon]) -> int:
+        """Legacy method. Use collect_and_distribute_taxes() instead."""
+        result = self.collect_and_distribute_taxes(holons)
+        return result["total_collected"]
 
     def distribute_dividends(self) -> Dict[HolonId, int]:
-        """Distribute treasury surplus to members."""
-        active_members = [
-            m for m in self.members.values()
-            if m.status == MembershipStatus.ACTIVE
-        ]
-        return self.treasury.distribute_dividend(active_members)
+        """
+        Legacy method - no longer needed with flow-through economics.
+        Taxes are distributed as UBI at collection time.
+        """
+        return {}  # No-op - distribution happens at collection
 
     # === Public View ===
 
@@ -491,7 +563,8 @@ class Enclave:
             "member_count": self.member_count,
             "is_collective": self.is_collective,
             "is_kingdom": self.is_kingdom,
-            "treasury_balance": self.treasury.balance,
+            "total_routed": self.flow_router.total_routed,  # No balance - flow-through
+            "distribution_method": self.flow_router.distribution_method.value,
             "voting_mechanism": self.voting_mechanism.value,
             "active_proposals": len(self.active_proposals),
             "holon_view": self.holon.to_public_view(),
@@ -502,25 +575,33 @@ class Enclave:
 
 def create_enclave(
     enclave_type: EnclaveType = EnclaveType.FUNCTIONAL,
-    initial_treasury: int = 0,
+    initial_balance: int = 0,
     tax_rate: float = 0.10,
+    harberger_rate: float = 0.10,
+    distribution_method: DistributionMethod = DistributionMethod.STAKE_WEIGHTED,
     voting_mechanism: VotingMechanism = VotingMechanism.ONE_HOLON_ONE_VOTE,
     constitution: Optional[Constitution] = None
 ) -> Enclave:
-    """Create a new Enclave."""
+    """
+    Create a new Enclave with flow-through economics.
+
+    Note: initial_balance goes to the Enclave's Holon vault, not a treasury.
+    There is no treasury accumulation - taxes flow directly to members as UBI.
+    """
     holon = create_holon(
-        initial_balance=initial_treasury,
+        initial_balance=initial_balance,
         constitution=constitution,
     )
 
-    treasury = Treasury(
-        balance=initial_treasury,
+    flow_router = FlowRouter(
         tax_rate=tax_rate,
+        harberger_rate=harberger_rate,
+        distribution_method=distribution_method,
     )
 
     return Enclave(
         holon=holon,
         enclave_type=enclave_type,
-        treasury=treasury,
+        flow_router=flow_router,
         voting_mechanism=voting_mechanism,
     )

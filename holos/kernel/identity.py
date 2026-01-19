@@ -317,3 +317,49 @@ class MantleRegistry:
     def get_available(self) -> List[Mantle]:
         """Get all unassigned Mantles."""
         return [m for m in self.mantles.values() if not m.is_held()]
+
+
+# === Standalone Factory Functions ===
+
+_name_counter = 0
+_mantle_counter = 0
+
+
+def create_name(
+    display_name: str,
+    owner_holon_id: str,
+    root_type: RootType = RootType.AI
+) -> Name:
+    """Create a new Name (standalone factory)."""
+    global _name_counter
+    _name_counter += 1
+    return Name(
+        name_id=f"name_{_name_counter}",
+        display_name=display_name,
+        owner_holon_id=owner_holon_id,
+        root_type=root_type,
+    )
+
+
+def create_mantle(
+    name: str,
+    issuing_sheaf_id: str,
+    holder_holon_id: Optional[str] = None,
+    rights: List[Right] = None,
+    responsibilities: List[Responsibility] = None,
+    bond_required: int = 0,
+    transferable: bool = True,
+) -> Mantle:
+    """Create a new Mantle (standalone factory)."""
+    global _mantle_counter
+    _mantle_counter += 1
+    return Mantle(
+        mantle_id=f"mantle_{_mantle_counter}",
+        name=name,
+        issuing_sheaf_id=issuing_sheaf_id,
+        holder_holon_id=holder_holon_id,
+        rights=rights or [],
+        responsibilities=responsibilities or [],
+        bond_required=bond_required,
+        transferable=transferable,
+    )

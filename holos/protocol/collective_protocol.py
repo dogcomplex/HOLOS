@@ -1,7 +1,7 @@
 """
 HOLOS Collective Protocol - Fractal Economic Sovereignty
 
-A protocol for building collectives that:
+A protocol for building enclaves that:
 1. Start small (10-100 members) and scale fractally
 2. Use ZK proofs for privacy-preserving wealth tracking
 3. Implement progressive extraction without central authority
@@ -11,16 +11,28 @@ Core insight: The protocol must make joining MORE attractive than staying
 outside at EVERY scale level, while extracting wealth progressively.
 
 Protocol Layers:
-1. Identity - ZK membership proofs, reputation
-2. Value - Staking, progressive fees, UBI
+1. Identity - ZK membership proofs, reputation (aligned with kernel Name/Holon)
+2. Value - Staking, progressive fees, flow-through UBI
 3. Trading - AMM liquidity pools, atomic swaps
 4. Information - Encrypted sharing, prediction markets
 5. Governance - Quadratic voting, parameter adjustment
+
+Naming Convention (aligned with holos/kernel):
+- Enclave: Base group of Holons (any size, <100)
+- Collective: 100+ members - mid-scale coordination
+- Kingdom: 1000+ members - large-scale governance
+
+Constitutional Invariants (from holos/kernel/constitution.py):
+1. Non-Blocking Exit - Sub-Holon can detach without parent permission
+2. Proof of Solvency - SUM(Inputs) >= SUM(Outputs), provable via ZK
+3. Explicit Consent - Membership requires bilateral cryptographic consent
+4. Sybil Resistance - Voting weight proportional to proven root
+5. Legible Interface - Public methods standardized; interior private
 """
 
 from dataclasses import dataclass, field
 from typing import Optional, List, Dict, Any, Tuple, Callable
-from enum import Enum
+from enum import Enum, auto
 from abc import ABC, abstractmethod
 import hashlib
 import secrets
@@ -28,33 +40,89 @@ import time
 
 
 # =============================================================================
-# ZK PRIMITIVES - Privacy-Preserving Proofs
+# SCALE TAXONOMY (aligned with holos/kernel/enclave.py)
 # =============================================================================
+
+class EnclaveScale(Enum):
+    """Scale taxonomy for fractal groups."""
+    ENCLAVE = auto()     # < 100 members - small group
+    COLLECTIVE = auto()  # 100-999 members - mid-scale
+    KINGDOM = auto()     # 1000+ members - large-scale
+
+    @classmethod
+    def from_member_count(cls, count: int) -> 'EnclaveScale':
+        if count >= 1000:
+            return cls.KINGDOM
+        elif count >= 100:
+            return cls.COLLECTIVE
+        return cls.ENCLAVE
+
+
+# =============================================================================
+# ZK PRIMITIVES - Aligned with holos/kernel/zk/mock_proof.py
+# =============================================================================
+
+class StatementType(Enum):
+    """
+    Types of ZK statements (aligned with kernel).
+
+    From holos/kernel/zk/mock_proof.py:
+    - SOLVENCY: Balance >= threshold
+    - RANGE: Value in [min, max]
+    - MEMBERSHIP: Member of set
+    - CONSTITUTIONAL: Transition obeys constitution
+    - EXIT_RIGHT: Has right to exit contract
+    - CREDENTIAL: Possesses credential
+    """
+    SOLVENCY = "solvency"
+    RANGE = "range"
+    MEMBERSHIP = "membership"
+    CONSTITUTIONAL = "constitutional"
+    EXIT_RIGHT = "exit_right"
+    CREDENTIAL = "credential"
+    WEALTH_BRACKET = "wealth_bracket"  # Protocol-specific
+    REPUTATION = "reputation"          # Protocol-specific
+
 
 @dataclass
 class ZKProof:
     """
-    Zero-knowledge proof stub.
+    Zero-knowledge proof stub (aligned with kernel's MockZKProof).
 
     In production, this would be a real ZK proof (e.g., Groth16, PLONK).
     For simulation, we use commitments with hidden values.
+
+    Aligned with holos/kernel/zk/mock_proof.py:MockZKProof
     """
-    commitment: bytes  # Hash commitment to hidden value
-    proof_type: str    # What this proves
+    commitment: bytes           # Hash commitment to hidden value
+    statement_type: StatementType  # What this proves (aligned with kernel)
     public_inputs: Dict[str, Any] = field(default_factory=dict)
 
-    # In real implementation: proof bytes, verification key, etc.
+    # Witness data (private - only for simulation)
+    _witness: Any = field(default=None, repr=False)
+
+    # Cost model (aligned with kernel - expensive to create, cheap to verify)
+    creation_cost: int = 100   # Prover pays
+    verification_cost: int = 1  # Cheap to verify
+
+    # Backward compatibility alias
+    @property
+    def proof_type(self) -> str:
+        return self.statement_type.value
 
 
 class ZKProofSystem:
     """
     ZK proof generation and verification.
 
+    Aligned with holos/kernel/zk/mock_proof.py:MockProver/MockVerifier
+
     Supports proofs for:
     - Membership: "I am a member" without revealing identity
     - Wealth bracket: "My wealth is in range [a,b]" without revealing exact amount
     - Reputation: "My reputation > threshold" without revealing score
-    - Trade validity: "This trade is valid" without revealing details
+    - Solvency: "My balance >= X"
+    - Constitutional: "My transition obeys constitution"
     """
 
     @staticmethod
@@ -70,17 +138,18 @@ class ZKProofSystem:
         return commitment, blinding
 
     @staticmethod
-    def prove_membership(member_id: str, guild_merkle_root: bytes) -> ZKProof:
+    def prove_membership(member_id: str, enclave_merkle_root: bytes) -> ZKProof:
         """
-        Prove membership in a guild without revealing identity.
+        Prove membership in an enclave without revealing identity.
 
         In production: Merkle proof that member_id is in the member tree.
         """
         commitment, _ = ZKProofSystem.commit(member_id)
         return ZKProof(
             commitment=commitment,
-            proof_type="membership",
-            public_inputs={"guild_root": guild_merkle_root.hex()},
+            statement_type=StatementType.MEMBERSHIP,
+            public_inputs={"enclave_root": enclave_merkle_root.hex()},
+            _witness=member_id,
         )
 
     @staticmethod
@@ -100,11 +169,12 @@ class ZKProofSystem:
         commitment, _ = ZKProofSystem.commit(actual_wealth)
         return ZKProof(
             commitment=commitment,
-            proof_type="wealth_bracket",
+            statement_type=StatementType.WEALTH_BRACKET,
             public_inputs={
                 "bracket_min": bracket_min,
                 "bracket_max": bracket_max,
             },
+            _witness=actual_wealth,
         )
 
     @staticmethod
@@ -118,8 +188,33 @@ class ZKProofSystem:
         commitment, _ = ZKProofSystem.commit(actual_rep)
         return ZKProof(
             commitment=commitment,
-            proof_type="reputation_threshold",
+            statement_type=StatementType.REPUTATION,
             public_inputs={"threshold": threshold},
+            _witness=actual_rep,
+        )
+
+    @staticmethod
+    def prove_solvency(balance: float, threshold: float) -> ZKProof:
+        """Prove balance >= threshold (aligned with kernel)."""
+        assert balance >= threshold, "Balance below threshold"
+
+        commitment, _ = ZKProofSystem.commit(balance)
+        return ZKProof(
+            commitment=commitment,
+            statement_type=StatementType.SOLVENCY,
+            public_inputs={"threshold": threshold},
+            _witness=balance,
+        )
+
+    @staticmethod
+    def prove_exit_right(holon_id: str, contract_id: str) -> ZKProof:
+        """Prove right to exit a contract (constitutional invariant)."""
+        commitment, _ = ZKProofSystem.commit(f"{holon_id}:{contract_id}")
+        return ZKProof(
+            commitment=commitment,
+            statement_type=StatementType.EXIT_RIGHT,
+            public_inputs={"contract_id": contract_id},
+            _witness=holon_id,
         )
 
     @staticmethod
@@ -129,37 +224,72 @@ class ZKProofSystem:
 
         In production: Full cryptographic verification.
         For simulation: Always returns True (proofs are honestly generated).
+
+        Aligned with holos/kernel/zk/mock_proof.py:MockVerifier
         """
         # In real implementation, this would verify the cryptographic proof
         return True
 
 
 # =============================================================================
-# IDENTITY LAYER - Sovereign Identity with Reputation
+# IDENTITY LAYER - Aligned with holos/kernel/identity.py and holon.py
 # =============================================================================
+
+class RootType(Enum):
+    """
+    Root of trust for identity (aligned with kernel).
+
+    From holos/kernel/identity.py:
+    Determines Sybil resistance weight.
+    """
+    HUMAN = "human"      # Proof of personhood
+    AI = "ai"           # Verified AI agent
+    CAPITAL = "capital"  # Capital-backed (can be purchased)
+    PROTOCOL = "protocol"  # System-generated
+
 
 @dataclass
 class SovereignIdentity:
     """
-    A sovereign identity in the collective.
+    A sovereign identity in the enclave.
+
+    Aligned with holos/kernel concepts:
+    - Holon: Fundamental computational entity with LOCUS (persistent) layer
+    - Name: Reputation-bearing identity that travels on exit
 
     Properties:
     - Self-sovereign: Only owner controls
     - Privacy-preserving: Can prove properties without revealing identity
-    - Portable: Reputation transfers across collectives
+    - Portable: Reputation transfers across enclaves (like kernel Name)
+    - Exit-guaranteed: Can always leave (constitutional invariant)
     """
-    # Core identity (private)
+    # Core identity (private) - analogous to Holon.private_key
     private_key: bytes = field(default_factory=lambda: secrets.token_bytes(32))
 
-    # Public commitment (derived from private key)
+    # Public commitment (derived from private key) - analogous to Holon.holon_id
     public_commitment: bytes = field(default=None)
 
+    # Root of trust (aligned with kernel Name.root_type)
+    root_type: RootType = RootType.HUMAN
+
+    # Display name (optional, aligned with kernel Name.display_name)
+    display_name: str = ""
+
     # Reputation scores (encrypted, self-attested with proofs)
+    # Aligned with kernel Name reputation fields
     reputation_commitment: bytes = field(default=None)
     _reputation: float = field(default=0.5, repr=False)
 
-    # Membership proofs for various collectives
+    # Transaction history (aligned with kernel Name fields)
+    contracts_completed: int = 0
+    contracts_breached: int = 0
+    exit_count: int = 0  # Times exercised exit right
+
+    # Membership proofs for various enclaves
     memberships: Dict[str, ZKProof] = field(default_factory=dict)
+
+    # History hash (aligned with kernel Name.history_hash)
+    history_hash: bytes = field(default_factory=lambda: b'\x00' * 32)
 
     def __post_init__(self):
         if self.public_commitment is None:
@@ -167,9 +297,14 @@ class SovereignIdentity:
         if self.reputation_commitment is None:
             self.reputation_commitment, _ = ZKProofSystem.commit(self._reputation)
 
-    def prove_membership(self, collective_id: str) -> Optional[ZKProof]:
-        """Generate proof of membership in a collective."""
-        return self.memberships.get(collective_id)
+    @property
+    def holon_id(self) -> bytes:
+        """Alias for public_commitment (kernel compatibility)."""
+        return self.public_commitment
+
+    def prove_membership(self, enclave_id: str) -> Optional[ZKProof]:
+        """Generate proof of membership in an enclave."""
+        return self.memberships.get(enclave_id)
 
     def prove_reputation(self, threshold: float) -> Optional[ZKProof]:
         """Prove reputation exceeds threshold."""
@@ -177,10 +312,37 @@ class SovereignIdentity:
             return ZKProofSystem.prove_reputation_threshold(self._reputation, threshold)
         return None
 
+    def prove_solvency(self, balance: float, threshold: float) -> Optional[ZKProof]:
+        """Prove balance >= threshold (kernel alignment)."""
+        if balance >= threshold:
+            return ZKProofSystem.prove_solvency(balance, threshold)
+        return None
+
     def update_reputation(self, delta: float):
         """Update reputation (would require proof in production)."""
         self._reputation = max(0, min(1, self._reputation + delta))
         self.reputation_commitment, _ = ZKProofSystem.commit(self._reputation)
+        # Update history hash
+        self._update_history()
+
+    def record_contract_completion(self, success: bool):
+        """Record contract completion (aligned with kernel Name)."""
+        if success:
+            self.contracts_completed += 1
+            self.update_reputation(0.01)
+        else:
+            self.contracts_breached += 1
+            self.update_reputation(-0.05)
+
+    def record_exit(self):
+        """Record exercise of exit right."""
+        self.exit_count += 1
+        self._update_history()
+
+    def _update_history(self):
+        """Update history hash commitment."""
+        data = f"{self.contracts_completed}:{self.contracts_breached}:{self.exit_count}:{self._reputation}"
+        self.history_hash = hashlib.sha256(data.encode()).digest()
 
 
 # =============================================================================
@@ -266,52 +428,121 @@ class ProgressiveFeeSchedule:
 
 
 @dataclass
-class UBIPool:
+class FlowRouter:
     """
-    Universal Basic Income distribution pool.
+    Flow-through UBI distribution (aligned with holos/kernel/enclave.py).
 
-    Collects fees and distributes equally to all members.
-    Uses merkle trees for efficient distribution claims.
+    KEY DESIGN: No treasury accumulation - taxes flow immediately as UBI.
+    This eliminates the treasury as an attack target.
+
+    From the plan:
+    > "The 'treasury' becomes a **routing function**, not a storage account."
+
+    Traditional:  Holon pays tax → Treasury accumulates → Later distributes
+                                           ↑ (Attack target!)
+
+    Flow-Through: Holon pays tax ═══════════════> Immediately split as UBI
+                                   (Same event, no storage)
     """
-    balance: float = 0.0
-    distribution_interval: float = 100.0  # Time units between distributions
+    distribution_method: str = "STAKE_WEIGHTED"  # or "EQUAL"
+    distribution_rate: float = 1.0  # 100% flow-through (no reserve)
+
+    # Merkle root of eligible recipients (for verification)
+    recipients_root: bytes = field(default_factory=lambda: b'\x00' * 32)
+
+    # Tracking (no balance stored!)
+    total_routed: float = 0.0
     last_distribution: float = 0.0
 
-    # Merkle root of eligible recipients
-    recipients_root: bytes = field(default_factory=lambda: b'\x00' * 32)
-    recipient_count: int = 0
+    def route_tax(
+        self,
+        amount: float,
+        members: Dict[bytes, 'StakePosition'],
+    ) -> Dict[bytes, float]:
+        """
+        Route tax payment immediately as UBI. Returns distribution per member.
 
-    # Claimed distributions (commitment -> claimed)
+        Key: No self.balance - nothing is stored, everything flows through.
+
+        Args:
+            amount: Tax amount to distribute
+            members: Dict of member commitment -> stake position
+
+        Returns:
+            Dict of member commitment -> UBI amount received
+        """
+        if not members:
+            return {}
+
+        distributions = {}
+        distributable = amount * self.distribution_rate
+
+        if self.distribution_method == "STAKE_WEIGHTED":
+            # Stake-weighted distribution (Sybil-resistant)
+            total_stake = sum(pos.amount for pos in members.values())
+            if total_stake == 0:
+                # Fall back to equal distribution
+                per_member = distributable / len(members)
+                return {commitment: per_member for commitment in members}
+
+            for commitment, position in members.items():
+                share = position.amount / total_stake
+                distributions[commitment] = distributable * share
+        else:
+            # Equal distribution
+            per_member = distributable / len(members)
+            distributions = {commitment: per_member for commitment in members}
+
+        self.total_routed += distributable
+        self.last_distribution = time.time()
+
+        return distributions
+
+    def update_recipients(self, members_root: bytes):
+        """Update merkle root of eligible recipients."""
+        self.recipients_root = members_root
+
+
+# Backward compatibility alias
+class UBIPool(FlowRouter):
+    """
+    Backward compatibility wrapper for FlowRouter.
+
+    DEPRECATED: Use FlowRouter directly. UBIPool is kept for
+    compatibility with existing simulations.
+    """
+    # Additional tracking for backward compatibility
+    _pending: float = 0.0  # Accumulates until distribution triggered
+    recipient_count: int = 0
     claims: Dict[bytes, bool] = field(default_factory=dict)
 
+    @property
+    def balance(self) -> float:
+        """Backward compat: returns pending amount (not a real treasury)."""
+        return self._pending
+
     def deposit(self, amount: float):
-        """Deposit fees into pool."""
-        self.balance += amount
+        """Accumulate pending (will be distributed on next cycle)."""
+        self._pending += amount
 
     def calculate_distribution(self) -> float:
         """Calculate per-member distribution amount."""
         if self.recipient_count == 0:
             return 0.0
-
-        # Distribute 80% of pool, keep 20% as reserve
-        distributable = self.balance * 0.8
+        distributable = self._pending * self.distribution_rate
         return distributable / self.recipient_count
 
     def claim(self, member_commitment: bytes, membership_proof: ZKProof) -> float:
-        """
-        Claim UBI distribution.
-
-        Requires proof of membership. Each member can claim once per period.
-        """
+        """Claim UBI distribution (backward compat interface)."""
         if not ZKProofSystem.verify(membership_proof):
             return 0.0
-
         if self.claims.get(member_commitment, False):
-            return 0.0  # Already claimed
+            return 0.0
 
         amount = self.calculate_distribution()
         self.claims[member_commitment] = True
-        self.balance -= amount
+        self._pending -= amount
+        self.total_routed += amount
 
         return amount
 
@@ -650,17 +881,94 @@ class CollectiveParameters:
 
 
 # =============================================================================
-# COLLECTIVE - The Full Protocol
+# CONSTITUTIONAL INVARIANTS (from holos/kernel/constitution.py)
+# =============================================================================
+
+class ConstitutionalInvariant(Enum):
+    """
+    The five constitutional invariants that cannot be violated.
+
+    From holos/kernel/constitution.py - these define HOLOS identity.
+    """
+    NON_BLOCKING_EXIT = "non_blocking_exit"     # Sub-Holon can detach without parent permission
+    PROOF_OF_SOLVENCY = "proof_of_solvency"     # SUM(Inputs) >= SUM(Outputs)
+    EXPLICIT_CONSENT = "explicit_consent"       # Membership requires bilateral consent
+    SYBIL_RESISTANCE = "sybil_resistance"       # Voting weight proportional to proven root
+    LEGIBLE_INTERFACE = "legible_interface"     # Public methods standardized
+
+
+@dataclass
+class ConstitutionalChecker:
+    """
+    Checks that operations respect constitutional invariants.
+
+    Enforced through reputation contagion, not authority.
+    Violations result in reputation hits and exclusion.
+    """
+
+    def check_exit_allowed(self, holon_id: bytes, enclave: 'Enclave') -> Tuple[bool, str]:
+        """
+        Check NON_BLOCKING_EXIT: Exit can never be blocked.
+
+        This is THE core right - without this, it's just another trap.
+        """
+        # Exit is ALWAYS allowed - this is a constitutional invariant
+        return True, "Exit always permitted (constitutional guarantee)"
+
+    def check_solvency(self, balance: float, withdrawal: float) -> Tuple[bool, str]:
+        """Check PROOF_OF_SOLVENCY: Outputs cannot exceed inputs."""
+        if withdrawal > balance:
+            return False, f"Withdrawal {withdrawal} exceeds balance {balance}"
+        return True, "Solvency maintained"
+
+    def check_consent(self, proposer: bytes, acceptor: bytes) -> Tuple[bool, str]:
+        """Check EXPLICIT_CONSENT: Both parties must agree."""
+        # In production, verify signatures from both parties
+        if proposer is None or acceptor is None:
+            return False, "Missing consent signature"
+        return True, "Bilateral consent verified"
+
+    def check_sybil_resistance(self, voter: SovereignIdentity, enclave: 'Enclave') -> Tuple[bool, float]:
+        """
+        Check SYBIL_RESISTANCE: Voting weight based on proven root.
+
+        Returns (valid, weight_multiplier).
+        """
+        # Root type determines weight
+        weights = {
+            RootType.HUMAN: 1.0,      # Full weight
+            RootType.AI: 0.5,         # Reduced (can be spawned)
+            RootType.CAPITAL: 0.25,   # Can be purchased
+            RootType.PROTOCOL: 0.1,   # System-generated
+        }
+        weight = weights.get(voter.root_type, 0.1)
+        return True, weight
+
+
+# =============================================================================
+# ENCLAVE - The Full Protocol (renamed from Collective for kernel alignment)
 # =============================================================================
 
 @dataclass
-class Collective:
+class Enclave:
     """
-    A HOLOS collective implementing the full protocol.
+    A HOLOS enclave implementing the full protocol.
 
     This is the fractal unit that scales from 10 people to global.
+
+    Aligned with holos/kernel/enclave.py:
+    - Enclave: Base group (<100 members)
+    - Collective: Mid-scale (100-999 members)
+    - Kingdom: Large-scale (1000+ members)
+
+    Constitutional guarantees:
+    1. Non-Blocking Exit - Members can always leave
+    2. Proof of Solvency - No hidden insolvency
+    3. Explicit Consent - No forced membership
+    4. Sybil Resistance - Weighted voting
+    5. Legible Interface - Standardized methods
     """
-    collective_id: str
+    enclave_id: str  # Renamed from collective_id
 
     # Parameters (governable)
     params: CollectiveParameters = field(default_factory=CollectiveParameters)
@@ -671,7 +979,12 @@ class Collective:
 
     # Financial infrastructure
     fee_schedule: ProgressiveFeeSchedule = field(default_factory=ProgressiveFeeSchedule)
-    ubi_pool: UBIPool = field(default_factory=UBIPool)
+    flow_router: FlowRouter = field(default_factory=FlowRouter)  # Renamed from ubi_pool
+
+    # Backward compatibility alias
+    @property
+    def ubi_pool(self) -> FlowRouter:
+        return self.flow_router
 
     # Liquidity pools (pair_id -> pool)
     liquidity_pools: Dict[str, LiquidityPool] = field(default_factory=dict)
@@ -686,9 +999,25 @@ class Collective:
     # Merkle root of members (for ZK proofs)
     members_root: bytes = field(default_factory=lambda: b'\x00' * 32)
 
-    # Parent/child collectives (fractal structure)
-    parent_collective: Optional[str] = None
-    child_collectives: List[str] = field(default_factory=list)
+    # Parent/child enclaves (fractal structure)
+    parent_enclave: Optional[str] = None  # Renamed from parent_collective
+    child_enclaves: List[str] = field(default_factory=list)  # Renamed from child_collectives
+
+    # Constitutional checker
+    constitution: ConstitutionalChecker = field(default_factory=ConstitutionalChecker)
+
+    # Backward compatibility aliases
+    @property
+    def collective_id(self) -> str:
+        return self.enclave_id
+
+    @property
+    def parent_collective(self) -> Optional[str]:
+        return self.parent_enclave
+
+    @property
+    def child_collectives(self) -> List[str]:
+        return self.child_enclaves
 
     # Metrics
     total_value_locked: float = 0.0
@@ -707,11 +1036,13 @@ class Collective:
 
     def join(self, identity: SovereignIdentity, stake_amount: float) -> bool:
         """
-        Join the collective.
+        Join the enclave.
 
-        Requires:
-        - Minimum stake
+        Constitutional requirements (EXPLICIT_CONSENT):
+        - Minimum stake (bilateral agreement on terms)
         - Stake is locked for vesting period
+
+        Returns True if join successful.
         """
         if stake_amount < self.params.min_stake:
             return False
@@ -738,20 +1069,28 @@ class Collective:
         # Generate membership proof
         self._update_merkle_root()
         proof = ZKProofSystem.prove_membership(str(commitment), self.members_root)
-        identity.memberships[self.collective_id] = proof
+        identity.memberships[self.enclave_id] = proof
 
         return True
 
     def leave(self, identity: SovereignIdentity) -> float:
         """
-        Leave the collective.
+        Leave the enclave.
+
+        Constitutional guarantee (NON_BLOCKING_EXIT):
+        Exit can NEVER be blocked - this is the core right.
 
         Returns stake minus any early exit penalty.
+        Penalty goes to flow-through UBI.
         """
         commitment = identity.public_commitment
 
         if commitment not in self.members:
             return 0.0
+
+        # Constitutional check: exit always allowed
+        allowed, _ = self.constitution.check_exit_allowed(commitment, self)
+        assert allowed, "Constitutional violation: exit must always be allowed"
 
         position = self.members[commitment]
         current_time = time.time()
@@ -759,7 +1098,7 @@ class Collective:
         penalty = position.early_exit_penalty(current_time, self.params.early_exit_penalty)
         refund = position.amount - penalty
 
-        # Penalty goes to UBI pool
+        # Penalty flows through to UBI
         self.ubi_pool.deposit(penalty)
         self.total_value_locked -= position.amount
 
@@ -767,21 +1106,23 @@ class Collective:
         self.member_count -= 1
         self._update_merkle_root()
 
-        # Revoke membership proof
-        if self.collective_id in identity.memberships:
-            del identity.memberships[self.collective_id]
+        # Revoke membership proof and record exit
+        if self.enclave_id in identity.memberships:
+            del identity.memberships[self.enclave_id]
+        identity.record_exit()
 
         return refund
 
     # =========================================================================
-    # FEES AND UBI
+    # FEES AND UBI (Flow-Through Pattern)
     # =========================================================================
 
-    def collect_fees(self, member_wealth: Dict[bytes, float]):
+    def collect_fees(self, member_wealth: Dict[bytes, float]) -> float:
         """
         Collect progressive fees from all members.
 
-        Fees go to UBI pool for redistribution.
+        Flow-through pattern: Fees are NOT accumulated in a treasury.
+        They are held temporarily for the next distribute_ubi call.
         """
         total_fees = 0.0
 
@@ -795,29 +1136,76 @@ class Collective:
             if ZKProofSystem.verify(proof):
                 total_fees += fee
 
-        self.ubi_pool.deposit(total_fees)
+        # Store temporarily for distribution (flow-through means no long-term storage)
+        self._pending_fees = getattr(self, '_pending_fees', 0.0) + total_fees
         self.total_fees_collected += total_fees
 
         return total_fees
 
     def distribute_ubi(self) -> Dict[bytes, float]:
         """
-        Distribute UBI to all members.
+        Distribute UBI to all members using flow-through pattern.
+
+        KEY: Taxes collected flow IMMEDIATELY as UBI - no treasury accumulation.
+        This eliminates the treasury as an attack target.
 
         Returns mapping of member -> distribution amount.
         """
-        self.ubi_pool.reset_period(self.members_root, self.member_count)
+        pending = getattr(self, '_pending_fees', 0.0)
+        if pending <= 0 or not self.members:
+            return {}
 
-        distributions = {}
-        per_member = self.ubi_pool.calculate_distribution()
+        # Update flow router's recipient root
+        self.flow_router.update_recipients(self.members_root)
 
-        for commitment in self.members:
-            proof = ZKProofSystem.prove_membership(str(commitment), self.members_root)
-            amount = self.ubi_pool.claim(commitment, proof)
-            distributions[commitment] = amount
+        # Route all pending fees immediately through to members
+        distributions = self.flow_router.route_tax(pending, self.members)
+
+        # Update tracking
+        for amount in distributions.values():
             self.total_ubi_distributed += amount
 
+        # Clear pending (flow-through complete)
+        self._pending_fees = 0.0
+
         return distributions
+
+    def collect_and_distribute(self, member_wealth: Dict[bytes, float]) -> Dict[bytes, float]:
+        """
+        Single-step fee collection and UBI distribution.
+
+        This is the recommended flow-through pattern:
+        Tax payment → Immediate UBI distribution (same event)
+
+        Returns mapping of member -> net change (UBI received - fee paid).
+        """
+        # Calculate fees
+        fees_by_member = {}
+        for commitment, wealth in member_wealth.items():
+            if commitment not in self.members:
+                continue
+            fee, _ = self.fee_schedule.calculate_fee(wealth)
+            fees_by_member[commitment] = fee
+
+        total_fees = sum(fees_by_member.values())
+        self.total_fees_collected += total_fees
+
+        # Immediately route as UBI (no storage!)
+        self.flow_router.update_recipients(self.members_root)
+        ubi_distributions = self.flow_router.route_tax(total_fees, self.members)
+
+        # Track UBI
+        for amount in ubi_distributions.values():
+            self.total_ubi_distributed += amount
+
+        # Return net change per member
+        net_changes = {}
+        for commitment in self.members:
+            fee_paid = fees_by_member.get(commitment, 0.0)
+            ubi_received = ubi_distributions.get(commitment, 0.0)
+            net_changes[commitment] = ubi_received - fee_paid
+
+        return net_changes
 
     # =========================================================================
     # TRADING
@@ -897,55 +1285,80 @@ class Collective:
     # FRACTAL OPERATIONS
     # =========================================================================
 
-    def create_child_collective(self, child_id: str) -> 'Collective':
-        """Create a child collective (fractal scaling)."""
-        child = Collective(
-            collective_id=child_id,
+    @property
+    def scale(self) -> EnclaveScale:
+        """Get current scale taxonomy based on member count."""
+        return EnclaveScale.from_member_count(self.member_count)
+
+    def create_child_enclave(self, child_id: str) -> 'Enclave':
+        """Create a child enclave (fractal scaling down)."""
+        child = Enclave(
+            enclave_id=child_id,
             params=CollectiveParameters(**vars(self.params)),  # Copy params
-            parent_collective=self.collective_id,
+            parent_enclave=self.enclave_id,
         )
-        self.child_collectives.append(child_id)
+        self.child_enclaves.append(child_id)
         return child
 
-    def join_parent(self, parent: 'Collective') -> bool:
-        """Join a parent collective (fractal scaling up)."""
-        # The collective itself becomes a member of the parent
-        # This allows nested collectives
-        self.parent_collective = parent.collective_id
+    # Backward compatibility alias
+    def create_child_collective(self, child_id: str) -> 'Enclave':
+        """Deprecated: Use create_child_enclave instead."""
+        return self.create_child_enclave(child_id)
+
+    def join_parent(self, parent: 'Enclave') -> bool:
+        """Join a parent enclave (fractal scaling up)."""
+        # The enclave itself becomes a member of the parent
+        # This allows nested enclaves
+        self.parent_enclave = parent.enclave_id
         return True
+
+
+# =============================================================================
+# BACKWARD COMPATIBILITY - Collective alias for Enclave
+# =============================================================================
+
+# Collective is now an alias for Enclave (kernel naming convention)
+Collective = Enclave
 
 
 # =============================================================================
 # PROTOCOL VALUE CALCULATION
 # =============================================================================
 
-def calculate_collective_value(collective: Collective) -> Dict[str, float]:
+def calculate_enclave_value(enclave: Enclave) -> Dict[str, float]:
     """
-    Calculate the value proposition of joining a collective.
+    Calculate the value proposition of joining an enclave.
 
     This determines whether rational actors will join.
+
+    Factors considered:
+    - Liquidity value (trading depth)
+    - Information value (shared knowledge, prediction markets)
+    - Network value (member count, network effects)
+
+    Returns dict with value breakdown and should_join recommendation.
     """
     # Liquidity value
     total_liquidity = sum(
         pool.token_a_reserve + pool.token_b_reserve
-        for pool in collective.liquidity_pools.values()
+        for pool in enclave.liquidity_pools.values()
     )
     liquidity_value = (total_liquidity / 10000) ** 0.5  # Sqrt for network effects
 
     # Information value
-    info_count = len(collective.shared_info)
-    prediction_count = len(collective.prediction_markets)
+    info_count = len(enclave.shared_info)
+    prediction_count = len(enclave.prediction_markets)
     info_value = (info_count + prediction_count) * 0.01
 
-    # Network value
-    network_value = (collective.member_count / 100) ** 0.8
+    # Network value (scale-aware)
+    network_value = (enclave.member_count / 100) ** 0.8
 
     # Total value
     total_value = 0.4 * liquidity_value + 0.35 * info_value + 0.25 * network_value
 
     # Cost (fees + staking)
-    avg_fee = collective.params.base_fee_rate * 1.5  # Assume middle bracket
-    stake_cost = collective.params.min_stake * 0.05  # Opportunity cost
+    avg_fee = enclave.params.base_fee_rate * 1.5  # Assume middle bracket
+    stake_cost = enclave.params.min_stake * 0.05  # Opportunity cost
     total_cost = avg_fee + stake_cost / 100
 
     return {
@@ -956,4 +1369,11 @@ def calculate_collective_value(collective: Collective) -> Dict[str, float]:
         "total_cost": total_cost,
         "net_value": total_value - total_cost,
         "should_join": total_value > total_cost,
+        "scale": enclave.scale.name,  # Scale taxonomy
     }
+
+
+# Backward compatibility alias
+def calculate_collective_value(collective: Enclave) -> Dict[str, float]:
+    """Deprecated: Use calculate_enclave_value instead."""
+    return calculate_enclave_value(collective)

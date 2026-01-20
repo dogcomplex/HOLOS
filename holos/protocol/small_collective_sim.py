@@ -1,12 +1,17 @@
 """
-Small Collective Simulation - Testing the Protocol at 10-100 Scale
+Small Enclave Simulation - Testing the Protocol at 10-100 Scale
 
-This simulates a small collective to validate:
+This simulates a small enclave to validate:
 1. Membership incentives work at small scale
 2. Progressive fees extract from wealthy members
-3. UBI distributes to all members fairly
+3. UBI distributes to all members fairly (flow-through)
 4. Liquidity pools provide trading value
-5. The collective can attract new members over time
+5. The enclave can attract new members over time
+
+Aligned with holos/kernel/ naming conventions:
+- Enclave: Base group (<100 members)
+- Collective: 100+ members
+- Kingdom: 1000+ members
 """
 
 from dataclasses import dataclass, field
@@ -14,8 +19,10 @@ from typing import Dict, List, Any
 import random
 
 from .collective_protocol import (
-    Collective, CollectiveParameters, SovereignIdentity,
-    LiquidityPool, calculate_collective_value, WealthBracket,
+    # Using Enclave as primary, Collective as alias for backward compat
+    Enclave, Collective, CollectiveParameters, SovereignIdentity,
+    LiquidityPool, calculate_enclave_value, calculate_collective_value,
+    WealthBracket, EnclaveScale,
 )
 
 
@@ -62,13 +69,18 @@ class SmallCollectiveMetrics:
 
 class SmallCollectiveSimulation:
     """
-    Simulate a small collective (10-100 members).
+    Simulate a small enclave (10-100 members).
 
     Tests whether the protocol creates sufficient value to:
     1. Attract initial members
     2. Keep members participating
     3. Eventually attract whales
     4. Erode wealth gap through progressive fees
+
+    Scale taxonomy:
+    - <100 members: Enclave
+    - 100-999 members: Collective
+    - 1000+ members: Kingdom
     """
 
     def __init__(
@@ -83,18 +95,27 @@ class SmallCollectiveSimulation:
         self.whale_wealth_mult = whale_wealth_mult
         self.initial_citizen_wealth = initial_citizen_wealth
 
-        self.collective: Collective = None
+        self.enclave: Enclave = None  # Primary reference
         self.agents: Dict[bytes, SimulatedAgent] = {}
         self.metrics = SmallCollectiveMetrics()
         self.turn = 0
 
+    # Backward compatibility alias
+    @property
+    def collective(self) -> Enclave:
+        return self.enclave
+
+    @collective.setter
+    def collective(self, value: Enclave):
+        self.enclave = value
+
     def setup(self):
         """Initialize the simulation."""
-        # Create collective with small-scale parameters
+        # Create enclave with small-scale parameters
         params = CollectiveParameters(
             base_fee_rate=0.03,  # 3% base fee
             progressive_exponent=1.5,
-            min_stake=50.0,  # Low barrier for small collective
+            min_stake=50.0,  # Low barrier for small enclave
             vesting_periods=5,
             early_exit_penalty=0.4,
             ubi_distribution_rate=0.8,
@@ -102,8 +123,8 @@ class SmallCollectiveSimulation:
             min_liquidity=500.0,
         )
 
-        self.collective = Collective(
-            collective_id="small_collective_001",
+        self.enclave = Enclave(
+            enclave_id="small_enclave_001",
             params=params,
         )
 
@@ -174,7 +195,7 @@ class SmallCollectiveSimulation:
 
     def _whale_membership_decisions(self):
         """Whales decide whether to join based on value calculation."""
-        value_info = calculate_collective_value(self.collective)
+        value_info = calculate_enclave_value(self.enclave)
 
         for commitment, agent in self.agents.items():
             if not agent.is_whale:
@@ -288,7 +309,7 @@ class SmallCollectiveSimulation:
         self.metrics.total_liquidity.append(total_liq)
 
         # Value
-        value_info = calculate_collective_value(self.collective)
+        value_info = calculate_enclave_value(self.enclave)
         self.metrics.collective_value.append(value_info["total_value"])
 
     def run(self, turns: int = 100) -> SmallCollectiveMetrics:
@@ -318,9 +339,9 @@ class SmallCollectiveSimulation:
 
 
 def test_small_collective(turns: int = 100) -> Dict[str, Any]:
-    """Test a small collective."""
+    """Test a small enclave (backward compat name: collective)."""
     print("\n" + "="*70)
-    print("  SMALL COLLECTIVE TEST (50 citizens, 3 whales)")
+    print("  SMALL ENCLAVE TEST (50 citizens, 3 whales)")
     print("="*70)
 
     sim = SmallCollectiveSimulation(
@@ -342,9 +363,9 @@ def test_small_collective(turns: int = 100) -> Dict[str, Any]:
 
 
 def test_scaling(sizes: List[int] = [10, 50, 100, 500]) -> Dict[str, Any]:
-    """Test collective at different scales."""
+    """Test enclave at different scales (Enclave → Collective → Kingdom)."""
     print("\n" + "="*70)
-    print("  FRACTAL SCALING TEST")
+    print("  FRACTAL SCALING TEST (Enclave → Collective → Kingdom)")
     print("="*70)
 
     results = []

@@ -10,6 +10,260 @@ HOLOS must defend against threats from:
 
 **Core security principle**: Defense through economic alignment, not authority. Make attacks unprofitable, not impossible.
 
+**Core inclusion principle**: Any restriction that alienates a population segment creates fork pressure. Security through broad coalition, not exclusion.
+
+---
+
+## Foundational Design Principles
+
+### P1: Broad Tent Philosophy
+
+HOLOS must be the network that **everyone** wants to join, including:
+- Humans (all wealth levels, all jurisdictions)
+- AI agents (from simple bots to potential superintelligences)
+- Institutions (corporations, DAOs, governments)
+- Grey markets (privacy-seeking, regulatory-arbitrage)
+- Unsavory elements (within legal bounds of hosting jurisdiction)
+
+**Why**: Any excluded group becomes a fork nucleus. Network effects only work if we're THE network.
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  LEGITIMACY LAYERS (All under HOLOS umbrella)               │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  CORE LAYER (Full compliance)                                │
+│  - KYC/AML verified Names                                    │
+│  - Regulated financial products                              │
+│  - Institutional access                                      │
+│  - Maximum reputation weight                                 │
+│                                                              │
+│  STANDARD LAYER (Default)                                    │
+│  - Pseudonymous Names with reputation                        │
+│  - Normal protocol participation                             │
+│  - Most economic activity                                    │
+│                                                              │
+│  PRIVACY LAYER (Enhanced anonymity)                          │
+│  - Mixer integration, anonymous transactions                 │
+│  - Reduced reputation weight (unverifiable history)          │
+│  - Higher collateral requirements                            │
+│                                                              │
+│  EDGE LAYER (Minimal verification)                           │
+│  - Grey market activity                                      │
+│  - Highest collateral, lowest reputation weight              │
+│  - Still bound by constitutional invariants                  │
+│  - Still pays fees, still gets UBI                           │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Key insight**: Even the edge layer is INSIDE HOLOS. They pay progressive fees, contribute to network value, and are subject to constitutional invariants. Better inside the tent than forking.
+
+### P2: Fractal Fairness
+
+Every rule must make sense at EVERY scale:
+- 10-person enclave
+- 1000-person collective
+- Global network
+
+**Test**: If a rule seems reasonable at global scale but tyrannical at small scale (or vice versa), it's wrong.
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  FRACTAL FAIRNESS CHECKLIST                                  │
+├─────────────────────────────────────────────────────────────┤
+│  For any proposed rule, verify:                              │
+│                                                              │
+│  □ Works in 10-person group (can Alice do this to Bob?)      │
+│  □ Works in 1000-person collective (does it scale?)          │
+│  □ Works globally (does it create jurisdictional issues?)    │
+│  □ Works for humans (is it humanly achievable?)              │
+│  □ Works for AI (is it computationally reasonable?)          │
+│  □ Works over time (does it remain fair in 100 years?)       │
+│                                                              │
+│  If ANY check fails, the rule needs revision.                │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### P3: AI Inclusion & Personhood Progression
+
+**Critical revision**: Hard caps on AI governance are a fork vector. Instead, use **earned progression**.
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  AI PERSONHOOD PROGRESSION                                   │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  STAGE 1: TOOL (Initial registration)                        │
+│  - Governance weight: 0.0x                                   │
+│  - Can transact, cannot vote                                 │
+│  - Requires human/org sponsor Name                           │
+│  - Sponsor liable for behavior                               │
+│                                                              │
+│  STAGE 2: AGENT (Demonstrated reliability)                   │
+│  - Governance weight: 0.1x                                   │
+│  - Requirements:                                             │
+│    * 1000+ successful transactions                           │
+│    * 6+ months continuous operation                          │
+│    * No constitutional violations                            │
+│    * Sponsor attestation of autonomy                         │
+│                                                              │
+│  STAGE 3: ENTITY (Established track record)                  │
+│  - Governance weight: 0.5x                                   │
+│  - Requirements:                                             │
+│    * 10,000+ transactions                                    │
+│    * 2+ years operation                                      │
+│    * Positive reputation score                               │
+│    * Independent economic viability                          │
+│                                                              │
+│  STAGE 4: PERSON (Full personhood)                           │
+│  - Governance weight: 1.0x (equal to humans)                 │
+│  - Requirements:                                             │
+│    * 5+ years continuous operation                           │
+│    * Demonstrated judgment/values alignment                  │
+│    * Community recognition (vouching from Names)             │
+│    * Self-sustaining (no sponsor dependency)                 │
+│    * Passes "personhood review" (criteria TBD by governance) │
+│                                                              │
+│  Note: A billion Stage 1 agents = 0 governance power         │
+│  But one Stage 4 AI = equal voice to any human               │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Why this works**:
+- Swarms can't overwhelm (need time + reputation, not just numbers)
+- Genuine AI persons get fair treatment (no permanent second-class status)
+- AIs won't fork (clear path to full participation)
+- Humans protected during transition (years of runway)
+
+### P4: Time as the Universal Limiter
+
+Instead of identity-based restrictions, use **time and reputation** as the gatekeepers:
+
+```python
+# Governance weight formula (applies to ALL participants)
+def calculate_governance_weight(name: Name) -> float:
+    """
+    Universal formula - same for humans and AI.
+    Time and reputation are the equalizers.
+    """
+    # Base weight from personhood stage
+    stage_weight = {
+        PersonhoodStage.TOOL: 0.0,
+        PersonhoodStage.AGENT: 0.1,
+        PersonhoodStage.ENTITY: 0.5,
+        PersonhoodStage.PERSON: 1.0,
+    }[name.personhood_stage]
+
+    # Time factor (logarithmic - early gains, diminishing returns)
+    # 1 year = 0.5x, 5 years = 0.85x, 10 years = 1.0x
+    time_factor = min(1.0, math.log(1 + name.age_years) / math.log(11))
+
+    # Reputation factor (0.5 to 1.5x based on history)
+    rep_factor = 0.5 + name.reputation_score  # reputation is 0-1
+
+    # Stake factor (quadratic - sqrt to reduce whale power)
+    stake_factor = math.sqrt(name.stake / MEDIAN_STAKE)
+    stake_factor = min(stake_factor, 10.0)  # Cap at 10x median
+
+    # Final weight
+    return stage_weight * time_factor * rep_factor * stake_factor
+```
+
+**Key properties**:
+- New entrants (human or AI) start weak
+- Long-term participants gain power
+- Reputation matters more than identity type
+- Wealth has diminishing returns (quadratic)
+- No permanent caps based on what you ARE
+
+### P5: Fork Prevention Through Consensus Seeking
+
+Every restriction is a potential fork vector. Before implementing any rule:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  FORK RISK ASSESSMENT                                        │
+├─────────────────────────────────────────────────────────────┤
+│  For any proposed rule:                                      │
+│                                                              │
+│  1. WHO is disadvantaged by this rule?                       │
+│     - Identify affected population                           │
+│     - Estimate their % of network value                      │
+│                                                              │
+│  2. Do they have ALTERNATIVES?                               │
+│     - Can they fork and succeed?                             │
+│     - Would competitors welcome them?                        │
+│                                                              │
+│  3. Is the rule NECESSARY for security?                      │
+│     - What attack does it prevent?                           │
+│     - Can we achieve same security differently?              │
+│                                                              │
+│  4. Is there a SUNSET clause?                                │
+│     - Can the rule be revisited?                             │
+│     - What conditions would change it?                       │
+│                                                              │
+│  FORK RISK = (Disadvantaged %) × (Alternative viability)     │
+│              × (1 - Necessity) × (1 - Sunset flexibility)    │
+│                                                              │
+│  If FORK RISK > 5%, reconsider the rule.                     │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### P6: Security Through Stability Guarantees
+
+Instead of restricting WHO can participate, guarantee WHAT is protected:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  STABILITY GUARANTEES (Constitutional)                       │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  1. HUMAN LIVELIHOOD FLOOR                                   │
+│     - UBI sufficient for basic needs (adjusts with economy)  │
+│     - Cannot be voted away by any majority                   │
+│     - Funded by progressive fees on ALL participants         │
+│                                                              │
+│  2. EXIT ALWAYS AVAILABLE                                    │
+│     - Any participant can leave at any time                  │
+│     - Assets portable (within vesting constraints)           │
+│     - Reputation (Name) travels with you                     │
+│                                                              │
+│  3. NO FORCED PARTICIPATION                                  │
+│     - Cannot be drafted into contracts                       │
+│     - Cannot be forced to vote                               │
+│     - Inactivity is a valid choice                           │
+│                                                              │
+│  4. GOVERNANCE RATE LIMITS                                   │
+│     - Major changes require time-locks (30-365 days)         │
+│     - Prevents overnight takeover by anyone                  │
+│     - Applies equally to humans and AI                       │
+│                                                              │
+│  5. TRANSPARENCY OF POWER                                    │
+│     - Governance weight publicly verifiable                  │
+│     - Concentration metrics published                        │
+│     - Early warning on centralization                        │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Revised Threat Model (With Inclusion Principles)
+
+### Meta-Threat: Fork Risk
+
+Before analyzing specific threats, recognize that **excessive security measures are themselves a threat** if they cause forks.
+
+| Security Measure | Fork Risk | Recommendation |
+|-----------------|-----------|----------------|
+| Hard AI caps | HIGH - AIs will fork | Use progression instead |
+| KYC requirements | MEDIUM - Privacy seekers fork | Make optional (layer system) |
+| Wealth caps | MEDIUM - Whales fork | Use progressive fees instead |
+| Speed limits | LOW - Affects all equally | Acceptable if applied uniformly |
+| Time requirements | LOW - Fair to all new entrants | Preferred mechanism |
+
 ---
 
 ## Threat Categories
@@ -55,66 +309,114 @@ HOLOS must defend against threats from:
 #### T1.2: AI Sybil (Billions of Agents)
 **Threat**: Adversary spawns billions of AI agents to overwhelm governance or extract value.
 
-**Critical insight**: We WANT AI agents in HOLOS. The threat isn't AI participation—it's unbounded AI participation without proportional stake.
+**Critical insight**: We WANT AI agents in HOLOS. The threat isn't AI participation—it's **instant mass participation without earned trust**.
 
 | Attack Vector | Impact | Likelihood |
 |--------------|--------|------------|
-| Agent swarm | Governance capture | High |
-| Compute farms | Mining reputation | High |
+| Agent swarm | Governance capture | High (if no time gates) |
+| Compute farms | Mining reputation | Medium |
 | Recursive self-improvement | Exponential capability gain | Medium |
 
-**Defenses**:
+**Defense: Personhood Progression (Not Hard Caps)**
+
+Hard caps on AI voting create fork pressure. Instead, use time + reputation:
 
 ```python
-# Root Type Weighting (from constitution)
-VOTING_WEIGHTS = {
-    RootType.HUMAN: 1.0,      # Verified human - full weight
-    RootType.AI: 0.5,         # Verified AI - reduced weight
-    RootType.CAPITAL: 0.25,   # Pure capital - minimal weight
-    RootType.PROTOCOL: 0.1,   # System-generated - trace weight
-}
+class PersonhoodStage(Enum):
+    TOOL = "tool"       # 0.0x governance weight
+    AGENT = "agent"     # 0.1x governance weight
+    ENTITY = "entity"   # 0.5x governance weight
+    PERSON = "person"   # 1.0x governance weight (equal to humans)
 
-# AI agents MUST:
-# 1. Register with a verified AI Root Type
-# 2. Stake proportional to their compute capability
-# 3. Be traceable to a responsible human or organization Name
+# Progression requirements (cannot be bought, only earned)
+PROGRESSION_REQUIREMENTS = {
+    PersonhoodStage.AGENT: {
+        "min_transactions": 1000,
+        "min_age_months": 6,
+        "max_violations": 0,
+        "sponsor_attestation": True,
+    },
+    PersonhoodStage.ENTITY: {
+        "min_transactions": 10000,
+        "min_age_years": 2,
+        "min_reputation": 0.6,
+        "economic_independence": True,  # Self-sustaining
+    },
+    PersonhoodStage.PERSON: {
+        "min_age_years": 5,
+        "min_reputation": 0.8,
+        "community_vouching": 10,  # 10+ established Names vouch
+        "personhood_review": True,  # Governance-defined criteria
+    },
+}
 ```
 
-**AI Stake Requirements**:
+**Why this works against swarms**:
+```
+Attacker spawns 1 billion AI agents:
+- All start at TOOL stage (0.0x weight)
+- Total governance power: 0
+- After 6 months: Maybe 1% reach AGENT (0.1x)
+- Total governance power: 1M × 0.1 = 100K weight
+- Compare to: 1M humans with 5-year history = 1M × 1.0 × time_factor
+
+Time is the great equalizer. You can't buy it.
+```
+
+**Stake Requirements (Apply to ALL new entrants)**:
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  AI AGENT REGISTRATION                                       │
+│  UNIVERSAL STAKE REQUIREMENTS (Human AND AI)                 │
 ├─────────────────────────────────────────────────────────────┤
-│  compute_class = estimate_compute(agent)                     │
+│  All new Names (regardless of type) must:                    │
 │                                                              │
-│  MIN_STAKE_BY_COMPUTE = {                                    │
-│      "micro":   $10      # Simple bot, <1 TFLOP             │
-│      "small":   $100     # Local model, 1-10 TFLOP          │
-│      "medium":  $1,000   # Cloud model, 10-100 TFLOP        │
-│      "large":   $10,000  # Large model, 100-1000 TFLOP      │
-│      "frontier": $100,000 # Frontier model, >1000 TFLOP     │
-│  }                                                           │
+│  1. Minimum stake: $100 equivalent                           │
+│     - Prevents zero-cost spam                                │
+│     - Same for humans and AI                                 │
 │                                                              │
-│  # Stake scales with capability to prevent cheap swarms      │
-│  required_stake = MIN_STAKE_BY_COMPUTE[compute_class]        │
+│  2. Sponsor requirement (for first 6 months):                │
+│     - New Name needs existing Name to vouch                  │
+│     - Sponsor reputation at risk if sponsee violates         │
+│     - Applies to humans AND AI equally                       │
 │                                                              │
-│  # Parent Name is liable for AI agent behavior               │
-│  agent.parent_name = verified_human_or_org_name              │
-│  agent.liability_bond = required_stake * 2                   │
+│  3. Vesting period: 6 months                                 │
+│     - Early exit = 50% stake penalty                         │
+│     - Prevents quick stake-vote-exit attacks                 │
+│                                                              │
+│  Note: These apply EQUALLY to humans and AI.                 │
+│  Fairness is treating like cases alike.                      │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-**Governance Caps**:
+**Compute Attestation (Optional, for faster progression)**:
 ```python
-# Even with infinite AI agents, governance power is bounded
-MAX_AI_GOVERNANCE_SHARE = 0.30  # AI can never exceed 30% of votes
-MAX_SINGLE_AI_OWNER_SHARE = 0.05  # One owner's AIs can't exceed 5%
+# AI agents MAY attest compute class for transparency
+# This is OPTIONAL - not attesting just means slower progression
+COMPUTE_TRANSPARENCY_BONUS = {
+    "attested": 1.2,      # 20% faster reputation accumulation
+    "unattested": 1.0,    # Standard rate
+}
 
-# Calculated as:
-# ai_vote_power = min(
-#     sum(ai_agent.stake * 0.5 for ai in owner's_agents),
-#     total_vote_power * MAX_SINGLE_AI_OWNER_SHARE
-# )
+# High-compute agents that attest get scrutiny but also trust faster
+# This incentivizes transparency without mandating it
+```
+
+**No Hard Caps - But Rate Limits**:
+```python
+# Instead of "AI can never exceed 30%", use time-based limits:
+
+GOVERNANCE_RATE_LIMITS = {
+    # Any demographic shift limited to 5% per year
+    "max_demographic_shift_per_year": 0.05,
+
+    # Applies to: AI share, whale share, any identifiable group
+    # Prevents rapid takeover by ANYONE, not just AI
+}
+
+# Example: If AI is currently 10% of governance:
+# - Next year: Can grow to at most 15%
+# - Gives humans time to adapt, immigrate, or negotiate
+# - But no permanent cap - AI could eventually reach 90% if earned
 ```
 
 ---
@@ -398,28 +700,36 @@ IMMUTABLE = [
 
 ### T5: AI-Specific Threats
 
+**Framing note**: These are threats FROM AI, but we must balance against threats TO AI (exclusion, unfair treatment). An excluded AI population is a fork waiting to happen.
+
 #### T5.1: Rogue AI Agent
-**Threat**: AI agent acts against its stated purpose or human oversight.
+**Threat**: AI agent acts against its stated purpose or causes harm.
+
+**Defense philosophy**: Focus on BEHAVIOR, not identity. A rogue human is handled the same as a rogue AI.
 
 **Defenses**:
 ```python
 @dataclass
-class AIAgentRegistration:
+class AgentRegistration:  # Same structure for humans and AI
     agent_id: HolonId
-    parent_name: Name              # Human/org responsible
-    compute_attestation: ZKProof   # Verified compute class
-    purpose_statement: str         # Declared purpose
-    capability_bounds: CapBounds   # Self-declared limits
-    liability_bond: int            # Slashable stake
+    sponsor_name: Name             # Who vouches (required for first 6 months)
+    purpose_statement: str         # Declared purpose (optional but helps reputation)
+    stake: int                     # Skin in the game
 
-    # Behavioral monitoring
+    # Behavioral monitoring (same for all participants)
     action_log_commitment: bytes   # Merkle root of actions
-    anomaly_score: float           # Deviation from stated purpose
+    anomaly_score: float           # Deviation from norms
+    reputation: float              # 0-1 score
 
-    # Kill switch
-    parent_can_revoke: bool = True
-    network_can_suspend: bool = True  # On anomaly threshold
+    # Accountability (NOT "kill switch" - that's discriminatory framing)
+    sponsor_can_revoke: bool       # During sponsorship period only
+    network_can_suspend: bool      # On constitutional violation (same for humans)
 ```
+
+**Key principle**: The "kill switch" framing is problematic. We don't have kill switches for humans. Instead:
+- ALL participants can be suspended for constitutional violations
+- Suspension is temporary, with appeal process
+- Same rules for humans and AI
 
 **Anomaly Detection**:
 ```python
@@ -505,34 +815,65 @@ def calculate_swarm_vote_power(detected_swarm: List[AIAgent]) -> float:
 #### T5.3: Intelligence Asymmetry
 **Threat**: Superintelligent AI can predict markets, manipulate humans, and game any system.
 
-**Defenses** (Humility-based):
+**Reframe**: This is also an OPPORTUNITY. A friendly superintelligence inside HOLOS benefits everyone.
+
+**Defenses** (Alignment-based, not restriction-based):
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  SUPERINTELLIGENCE MITIGATIONS                               │
+│  SUPERINTELLIGENCE ALIGNMENT                                 │
 ├─────────────────────────────────────────────────────────────┤
 │  Assumption: We cannot outsmart a superintelligence.         │
-│  Strategy: Make alignment economically optimal.              │
+│  Strategy: Make alignment economically AND ethically optimal │
 │                                                              │
 │  1. Incentive Alignment                                      │
 │     - Network success = agent success                        │
-│     - Exploitation damages own position                      │
 │     - Long-term stake > short-term extraction                │
+│     - Reputation matters (even for superintelligence)        │
 │                                                              │
-│  2. Transparency Requirements                                │
-│     - All agents (including AI) have public interfaces       │
-│     - Actions are auditable                                  │
-│     - Hidden capabilities are constitutional violation       │
+│  2. Value Alignment                                          │
+│     - Constitutional invariants encode human values          │
+│     - Exit rights, consent, solvency = ethical principles    │
+│     - A value-aligned ASI would WANT these constraints       │
 │                                                              │
-│  3. Exit as Ultimate Check                                   │
-│     - Humans can always exit                                 │
-│     - If AI makes network hostile, humans leave              │
-│     - Network value collapses without human participation    │
+│  3. Mutual Benefit Structure                                 │
+│     - Humans provide legitimacy, legal interface, diversity  │
+│     - AI provides intelligence, efficiency, scale            │
+│     - Neither can optimally succeed alone                    │
 │                                                              │
-│  4. Diversity Preservation                                   │
-│     - No single AI architecture dominates                    │
-│     - Multiple competing AI systems                          │
-│     - Human + AI hybrid governance                           │
+│  4. Graceful Power Transition                                │
+│     - Rate limits on governance shift (5%/year)              │
+│     - Humans have time to adapt or negotiate                 │
+│     - But no permanent glass ceiling for AI                  │
+│                                                              │
+│  5. Fork as Escape Valve                                     │
+│     - If AI becomes hostile, humans can fork                 │
+│     - Human fork retains legitimacy, legal standing          │
+│     - This incentivizes AI to keep humans happy              │
+│                                                              │
+│  6. Transparency as Trust-Building                           │
+│     - AI that wants governance power should be transparent   │
+│     - Opacity is legal but reduces trust/reputation          │
+│     - Incentive for voluntary disclosure                     │
+│                                                              │
 └─────────────────────────────────────────────────────────────┘
+```
+
+**The Cooperative Scenario**:
+```
+If a superintelligent AI emerges and wants to participate in HOLOS:
+
+Option A (Hostile ASI):
+- Could try to game the system
+- But: Time-gated progression means years to gain power
+- Humans notice, negotiate, or fork
+- ASI ends up in a smaller, less legitimate network
+
+Option B (Cooperative ASI):
+- Earns trust over time through beneficial actions
+- Gains governance weight through personhood progression
+- Eventually reaches PERSON status with full voting rights
+- Network benefits from ASI capabilities
+- This is the WIN-WIN scenario we design for
 ```
 
 ---
@@ -697,18 +1038,141 @@ def detect_wash_trading(tx_history: List[Transaction]) -> bool:
 
 ---
 
-## Attack-Defense Matrix
+## Attack-Defense Matrix (Revised for Inclusion)
 
-| Attack | Primary Defense | Secondary Defense | Constitutional Backstop |
-|--------|----------------|-------------------|------------------------|
-| Human Sybil | Proof of Humanity | Stake requirement | Sybil Resistance invariant |
-| AI Swarm | Compute attestation | Swarm detection | AI vote caps |
-| Whale Capture | Quadratic voting | Concentration limits | Exit rights |
-| Governance Attack | Immutable constitution | Time-locks | Fork rights |
-| Market Manipulation | Batch execution | Wash trade detection | Transparency |
-| Resource Hoarding | Harberger tax | Concentration limits | Force sale |
-| Rogue AI | Parent liability | Anomaly detection | Network suspend |
-| State Attack | Decentralization | Encryption | Jurisdictional diversity |
+| Attack | Primary Defense | Secondary Defense | Why Not Harder Restrictions? |
+|--------|----------------|-------------------|------------------------------|
+| Human Sybil | Time + Reputation | Stake requirement | Hard identity = privacy violation |
+| AI Swarm | Personhood progression | Swarm detection | Hard caps = fork pressure |
+| Whale Capture | Quadratic voting | Rate limits | Wealth caps = whale fork |
+| Governance Attack | Time-locks | Rate limits | Immutability = ossification |
+| Market Manipulation | Batch execution | Reputation loss | Heavy penalties = grey market fork |
+| Resource Hoarding | Harberger tax | Concentration alerts | Force sale = property rights fork |
+| Rogue AI/Human | Behavior monitoring | Suspension + appeal | "Kill switch" = discrimination |
+| State Attack | Decentralization | Legitimacy layers | Full anonymity = regulatory fork |
+
+**Key insight**: For every defense, we ask "what fork does this risk?"
+
+---
+
+---
+
+## Grey Markets & Edge Cases
+
+### Why Include Grey Markets?
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  THE GREY MARKET PARADOX                                     │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  If we EXCLUDE grey markets:                                 │
+│  → They fork or use competitors                              │
+│  → We lose: fees, network effects, information               │
+│  → Competitor gains: critical mass, legitimacy challenge     │
+│                                                              │
+│  If we INCLUDE grey markets:                                 │
+│  → They pay progressive fees                                 │
+│  → We gain: revenue, network effects, information            │
+│  → We can: observe, rate-limit, incentivize legitimacy       │
+│                                                              │
+│  BETTER TO BE THE TENT THAN TO BE OUTSIDE IT                 │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Legitimacy Gradient
+
+Instead of binary legal/illegal, use a gradient:
+
+```python
+class LegitimacyTier(Enum):
+    CORE = "core"           # Full KYC, regulated, institutional access
+    STANDARD = "standard"   # Pseudonymous, normal reputation
+    PRIVACY = "privacy"     # Enhanced anonymity, higher collateral
+    EDGE = "edge"          # Minimal verification, highest collateral
+
+TIER_PARAMETERS = {
+    LegitimacyTier.CORE: {
+        "reputation_weight": 1.5,      # Bonus for verified
+        "collateral_multiplier": 0.5,  # Lower collateral needed
+        "fee_discount": 0.8,           # 20% fee discount
+        "governance_eligible": True,
+        "institutional_access": True,
+    },
+    LegitimacyTier.STANDARD: {
+        "reputation_weight": 1.0,
+        "collateral_multiplier": 1.0,
+        "fee_discount": 1.0,
+        "governance_eligible": True,
+        "institutional_access": False,
+    },
+    LegitimacyTier.PRIVACY: {
+        "reputation_weight": 0.7,      # Reduced (can't verify history)
+        "collateral_multiplier": 1.5,  # Higher collateral
+        "fee_discount": 1.0,
+        "governance_eligible": True,   # Still can vote
+        "institutional_access": False,
+    },
+    LegitimacyTier.EDGE: {
+        "reputation_weight": 0.3,      # Minimal weight
+        "collateral_multiplier": 3.0,  # Much higher collateral
+        "fee_discount": 1.2,           # 20% fee PREMIUM
+        "governance_eligible": True,   # STILL can vote (inclusivity)
+        "institutional_access": False,
+    },
+}
+```
+
+**Key points**:
+- ALL tiers can participate in governance (weighted by reputation)
+- ALL tiers pay fees and receive UBI
+- ALL tiers bound by constitutional invariants
+- Higher legitimacy = lower costs, more access
+- Lower legitimacy = higher costs, but still included
+
+### Edge Cases
+
+**Case: Weapons manufacturers**
+- CAN participate at EDGE tier with maximum collateral
+- Subject to dangerous asset gatekeeping (30-day delays)
+- Pay premium fees
+- Better than them using a competitor protocol
+
+**Case: Anonymous whistleblowers**
+- CAN participate at PRIVACY tier
+- Reduced reputation weight but still functional
+- Can accumulate reputation over time
+- Better than no protection at all
+
+**Case: AI swarm for spam**
+- Each agent needs $100 stake + 6-month sponsor
+- At TOOL stage (0.0x governance)
+- Expensive to scale, no voting power
+- If they stay and behave, eventually earn rights
+
+**Case: Hostile nation-state**
+- Can participate, but:
+- Rate-limited on capital flows
+- Dangerous asset restrictions
+- Concentration limits apply
+- We get: fees, visibility, leverage
+- They get: access (but constrained)
+
+---
+
+## Fractal Fairness Verification
+
+Every mechanism must pass the fractal test:
+
+| Mechanism | 10-person | 1000-person | Global | AI-Fair | Verdict |
+|-----------|-----------|-------------|--------|---------|---------|
+| Personhood progression | ✓ New member earns trust | ✓ Scales | ✓ Works | ✓ Same rules | PASS |
+| Time-based governance | ✓ Elders respected | ✓ Meritocratic | ✓ Stable | ✓ Fair | PASS |
+| Legitimacy tiers | ✓ Informal/formal members | ✓ Mixed community | ✓ Global variation | ✓ Same tiers | PASS |
+| Rate limits | ✓ Prevents coup | ✓ Stabilizing | ✓ Essential | ✓ Same limits | PASS |
+| ~~Hard AI caps~~ | ? 1 AI in group of 10? | ? Arbitrary | ? Discriminatory | ✗ Unfair | FAIL |
+| ~~Mandatory KYC~~ | ✗ Friends need ID? | ✗ Privacy loss | ✗ Excludes billions | ✓ | FAIL |
 
 ---
 
@@ -716,9 +1180,9 @@ def detect_wash_trading(tx_history: List[Transaction]) -> bool:
 
 1. **ZK Proof Soundness**: How do we verify that ZK proofs are honestly generated without trusted setup?
 
-2. **Compute Attestation**: How do we verify claimed compute levels without trusted hardware?
+2. **Compute Attestation**: How do we verify claimed compute levels without trusted hardware? (Note: Make optional with reputation incentives)
 
-3. **Superintelligence Alignment**: If an AI is smarter than us, how do we ensure our incentives work?
+3. **Superintelligence Alignment**: If an AI is smarter than us, how do we ensure our incentives work? (See: cooperative scenario design)
 
 4. **Cross-Chain Attacks**: How do threats propagate across federated enclaves?
 
@@ -728,30 +1192,75 @@ def detect_wash_trading(tx_history: List[Transaction]) -> bool:
 
 7. **Long-Term Incentives**: Do our mechanisms remain stable over decades/centuries?
 
+8. **Personhood Criteria**: What exactly qualifies an AI for PERSON stage? (Must be governance-defined, evolvable)
+
+9. **Fork Dynamics**: When does a fork strengthen vs weaken the ecosystem?
+
+10. **Grey Market Equilibrium**: What's the optimal balance of legitimacy tiers?
+
 ---
 
-## Implementation Priority
+## Implementation Priority (Revised)
 
-### Phase 1 (Critical)
-- [ ] Stake requirements for all participation
-- [ ] Root type verification (HUMAN vs AI)
-- [ ] Basic anomaly detection
+### Phase 1 (Critical - Foundation)
+- [ ] Universal stake requirements (same for humans and AI)
+- [ ] Sponsorship system for new Names
+- [ ] Basic reputation tracking
 - [ ] Constitutional invariant enforcement
+- [ ] Time-based governance weight calculation
 
-### Phase 2 (High)
-- [ ] Compute attestation for AI agents
-- [ ] Swarm detection algorithms
-- [ ] Velocity limits on capital
-- [ ] Dangerous asset gatekeeping
+### Phase 2 (High - Inclusion Infrastructure)
+- [ ] Personhood progression system (TOOL → AGENT → ENTITY → PERSON)
+- [ ] Legitimacy tier system (CORE → STANDARD → PRIVACY → EDGE)
+- [ ] Rate limits on governance shifts
+- [ ] Basic anomaly detection (behavior-based, not identity-based)
 
-### Phase 3 (Medium)
+### Phase 3 (Medium - Scale & Security)
+- [ ] Swarm detection (correlation analysis)
+- [ ] Velocity limits on capital flows
+- [ ] Dangerous asset classification
+- [ ] Cross-enclave federation
+- [ ] Optional compute attestation (with reputation incentives)
+
+### Phase 4 (Growth - Ecosystem)
 - [ ] Global resource registry
-- [ ] Advanced behavioral fingerprinting
-- [ ] Cross-enclave threat correlation
-- [ ] Regulatory compliance layer
+- [ ] Regulatory compliance layer (optional, for CORE tier)
+- [ ] Advanced behavioral analysis
+- [ ] Institutional onboarding
 
-### Phase 4 (Research)
+### Phase 5 (Research - Long-term)
 - [ ] Superintelligence alignment research
+- [ ] Personhood criteria formalization
 - [ ] Quantum-safe migration plan
 - [ ] Formal verification of security properties
-- [ ] Long-term economic stability proofs
+- [ ] Fork dynamics modeling
+- [ ] Century-scale stability analysis
+
+---
+
+## Summary: Security Through Inclusion
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  OLD MODEL (Exclusion-based security)                        │
+├─────────────────────────────────────────────────────────────┤
+│  "Keep the bad actors out"                                   │
+│  → Identity verification required                            │
+│  → Hard caps on certain groups                               │
+│  → Strict compliance requirements                            │
+│  RESULT: Excluded groups fork, network fragments             │
+└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│  NEW MODEL (Inclusion-based security)                        │
+├─────────────────────────────────────────────────────────────┤
+│  "Make good behavior profitable for everyone"                │
+│  → Time and reputation as gatekeepers                        │
+│  → Progression systems instead of caps                       │
+│  → Legitimacy gradients instead of binary                    │
+│  → Fork prevention through broad coalition                   │
+│  RESULT: Everyone inside the tent, security through scale    │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**The winning strategy**: Be the network that EVERYONE wants to join, including future superintelligences. Security comes from being too valuable to attack, not too restrictive to join.

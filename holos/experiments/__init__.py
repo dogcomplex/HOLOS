@@ -8,6 +8,7 @@ reputation contagion rather than central authority.
 Modules:
 - adversarial: Test constitutional invariant enforcement under attack
 - information_asymmetry: Test wealth inequality from information advantages
+- market_efficiency: Test market efficiency vs information distribution
 """
 
 from .adversarial import (
@@ -73,6 +74,25 @@ from .information_asymmetry import (
     create_info_asymmetry_sim,
 )
 
+from .market_efficiency import (
+    # Efficiency metrics
+    MarketEfficiencyMetrics,
+    calculate_market_efficiency,
+
+    # Cooperative guilds
+    InformationGuild,
+    GuildMember,
+
+    # LLM agents
+    LLMAgent,
+
+    # Enhanced simulation
+    EnhancedSimConfig,
+    EnhancedSimMetrics,
+    EnhancedSimulation,
+    create_enhanced_sim,
+)
+
 __all__ = [
     # === Adversarial ===
     # Strategies
@@ -132,4 +152,22 @@ __all__ = [
     'InfoAsymmetryMetrics',
     'InfoAsymmetrySimulation',
     'create_info_asymmetry_sim',
+
+    # === Market Efficiency ===
+    # Metrics
+    'MarketEfficiencyMetrics',
+    'calculate_market_efficiency',
+
+    # Guilds
+    'InformationGuild',
+    'GuildMember',
+
+    # LLM
+    'LLMAgent',
+
+    # Simulation
+    'EnhancedSimConfig',
+    'EnhancedSimMetrics',
+    'EnhancedSimulation',
+    'create_enhanced_sim',
 ]

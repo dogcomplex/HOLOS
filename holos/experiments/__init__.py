@@ -9,6 +9,7 @@ Modules:
 - adversarial: Test constitutional invariant enforcement under attack
 - information_asymmetry: Test wealth inequality from information advantages
 - market_efficiency: Test market efficiency vs information distribution
+- guild_victory: Test paths for cooperative guilds to overcome legacy advantages
 """
 
 from .adversarial import (
@@ -93,6 +94,31 @@ from .market_efficiency import (
     create_enhanced_sim,
 )
 
+from .guild_victory import (
+    # Reputation market
+    TradingReputation,
+    ReputationMarket,
+
+    # Prediction market
+    Prediction,
+    PredictionMarket,
+
+    # Counter-surveillance
+    CounterSurveillanceGuild,
+    CounterSurveillanceAgent,
+
+    # Simulation
+    GuildVictoryConfig,
+    GuildVictoryMetrics,
+    GuildVictorySimulation,
+
+    # Test functions
+    test_pure_time_erosion,
+    test_counter_surveillance,
+    test_all_mechanisms,
+    find_victory_conditions,
+)
+
 __all__ = [
     # === Adversarial ===
     # Strategies
@@ -170,4 +196,28 @@ __all__ = [
     'EnhancedSimMetrics',
     'EnhancedSimulation',
     'create_enhanced_sim',
+
+    # === Guild Victory ===
+    # Reputation market
+    'TradingReputation',
+    'ReputationMarket',
+
+    # Prediction market
+    'Prediction',
+    'PredictionMarket',
+
+    # Counter-surveillance
+    'CounterSurveillanceGuild',
+    'CounterSurveillanceAgent',
+
+    # Simulation
+    'GuildVictoryConfig',
+    'GuildVictoryMetrics',
+    'GuildVictorySimulation',
+
+    # Test functions
+    'test_pure_time_erosion',
+    'test_counter_surveillance',
+    'test_all_mechanisms',
+    'find_victory_conditions',
 ]

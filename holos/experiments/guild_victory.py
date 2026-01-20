@@ -465,6 +465,7 @@ class GuildVictoryConfig:
     # Legacy advantage
     legacy_coverage: float = 0.9
     legacy_fidelity: float = 0.85
+    legacy_capital_advantage: float = 1.0  # Capital multiplier (2.0 = 2x starting wealth)
 
     # Markets
     enable_reputation_market: bool = True
@@ -555,15 +556,16 @@ class GuildVictorySimulation:
             membership_stake=50,
         )
 
-        # Create legacy traders
+        # Create legacy traders (with optional capital advantage)
         legacy_surv = LegacyAdvantage(
             coverage=self.config.legacy_coverage,
             base_fidelity=self.config.legacy_fidelity,
         )
+        legacy_wealth = int(self.config.initial_wealth * self.config.legacy_capital_advantage)
         for i in range(self.config.num_legacy):
             holon = create_holon(
-                initial_balance=self.config.initial_wealth,
-                valuation=self.config.initial_wealth,
+                initial_balance=legacy_wealth,
+                valuation=legacy_wealth,
             )
             strategy = InformedTrader(surveillance=legacy_surv, aggression=0.5)
             self._register_agent(holon, strategy, "legacy")
@@ -963,3 +965,239 @@ def find_victory_threshold() -> Dict[str, Any]:
         "threshold_fidelity": 0.5 if winning else None,
         "losing_boundary": losing_high,
     }
+
+
+# =============================================================================
+# CAPITAL + INFORMATION WHALE TESTS
+# =============================================================================
+
+def test_capital_whale(
+    capital_advantage: float = 2.0,
+    turns: int = 500,
+) -> Dict[str, Any]:
+    """
+    Test guild vs legacy with BOTH capital AND information advantage.
+
+    This is the "whale" scenario - legacy traders have:
+    - High surveillance (90% coverage, 85% fidelity)
+    - Capital multiplier (default 2x starting wealth)
+
+    The question: Can counter-surveillance guilds beat whales?
+    """
+    config = GuildVictoryConfig(
+        num_legacy=3,
+        num_counter_guild=30,  # Outnumber whales
+        num_regular_guild=0,
+        num_blind=17,
+        legacy_coverage=0.9,
+        legacy_fidelity=0.85,
+        legacy_capital_advantage=capital_advantage,
+        enable_reputation_market=True,
+        enable_prediction_market=True,
+        erosion_mechanisms=["rotation", "churn"],
+        turns=turns,
+    )
+    sim = GuildVictorySimulation(config)
+    sim.setup()
+    sim.run()
+    return sim.summary()
+
+
+def test_capital_vs_guild_convergence(
+    capital_advantage: float = 2.0,
+    turns: int = 1000,
+    sample_interval: int = 50,
+) -> Dict[str, Any]:
+    """
+    Analyze if guild wealth converges toward whales over time.
+
+    Returns convergence trajectory - does the gap shrink in long games?
+    """
+    config = GuildVictoryConfig(
+        num_legacy=3,
+        num_counter_guild=30,
+        num_regular_guild=0,
+        num_blind=17,
+        legacy_coverage=0.9,
+        legacy_fidelity=0.85,
+        legacy_capital_advantage=capital_advantage,
+        enable_reputation_market=True,
+        enable_prediction_market=True,
+        erosion_mechanisms=["rotation", "churn", "noise"],
+        turns=turns,
+    )
+    sim = GuildVictorySimulation(config)
+    sim.setup()
+    sim.run()
+
+    # Sample ratios over time
+    ratios = []
+    sampled_turns = []
+    for i in range(0, len(sim.metrics.legacy_vs_guild_ratio), sample_interval):
+        ratios.append(sim.metrics.legacy_vs_guild_ratio[i])
+        sampled_turns.append(i)
+
+    # Calculate trend
+    if len(ratios) >= 3:
+        early_ratio = ratios[2] if len(ratios) > 2 else ratios[0]
+        late_ratio = ratios[-1]
+        trend = "converging" if late_ratio < early_ratio else "diverging"
+    else:
+        early_ratio = late_ratio = ratios[0] if ratios else 1.0
+        trend = "insufficient_data"
+
+    return {
+        **sim.summary(),
+        "convergence_trend": trend,
+        "early_ratio": early_ratio,
+        "late_ratio": late_ratio,
+        "ratio_change": late_ratio - early_ratio,
+        "sampled_ratios": ratios[-10:],  # Last 10 samples
+    }
+
+
+def find_whale_victory_conditions(turns: int = 500, runs: int = 3) -> Dict[str, Any]:
+    """
+    Systematically search for conditions that let guilds beat capital whales.
+
+    Tests combinations of:
+    - Capital advantage (1.5x, 2.0x, 2.5x)
+    - Guild size (outnumber whales)
+    - Erosion mechanisms
+    - Game length
+    """
+    print("\n" + "="*70)
+    print("  WHALE VICTORY SEARCH: Can Guilds Beat Capital + Info Whales?")
+    print("="*70)
+
+    best_guild_result = None
+    all_results = []
+
+    test_configs = [
+        # Baseline: Equal capital
+        {"name": "Equal capital", "capital": 1.0, "guild_size": 30, "erosion": ["rotation", "churn"]},
+
+        # Moderate whale
+        {"name": "1.5x whale", "capital": 1.5, "guild_size": 30, "erosion": ["rotation", "churn"]},
+
+        # Full whale
+        {"name": "2x whale", "capital": 2.0, "guild_size": 30, "erosion": ["rotation", "churn"]},
+
+        # Maximum erosion
+        {"name": "2x + max erosion", "capital": 2.0, "guild_size": 35, "erosion": ["rotation", "churn", "noise", "zk"]},
+
+        # Outnumber significantly
+        {"name": "2x + 50 guild", "capital": 2.0, "guild_size": 50, "erosion": ["rotation", "churn"]},
+
+        # Long game + erosion
+        {"name": "2x + long game", "capital": 2.0, "guild_size": 30, "erosion": ["rotation", "churn"], "turns": 1000},
+
+        # Weakened whale (reduced surveillance)
+        {"name": "2x + weak info (60%)", "capital": 2.0, "guild_size": 30, "erosion": ["rotation", "churn"],
+         "coverage": 0.6, "fidelity": 0.6},
+
+        # Extreme: Everything stacked for guild
+        {"name": "Guild-favored", "capital": 2.0, "guild_size": 50, "erosion": ["rotation", "churn", "noise", "zk"],
+         "coverage": 0.5, "fidelity": 0.5, "turns": 1000},
+    ]
+
+    for test in test_configs:
+        guild_wins = 0
+        ratios = []
+
+        for run in range(runs):
+            config = GuildVictoryConfig(
+                num_legacy=3,
+                num_counter_guild=test["guild_size"],
+                num_regular_guild=0,
+                num_blind=max(5, 50 - test["guild_size"]),  # Fill to ~50 agents
+                legacy_coverage=test.get("coverage", 0.9),
+                legacy_fidelity=test.get("fidelity", 0.85),
+                legacy_capital_advantage=test["capital"],
+                enable_reputation_market=True,
+                enable_prediction_market=True,
+                erosion_mechanisms=test["erosion"],
+                turns=test.get("turns", turns),
+            )
+            sim = GuildVictorySimulation(config)
+            sim.setup()
+            sim.run()
+            summary = sim.summary()
+
+            if summary.get("guild_won", False):
+                guild_wins += 1
+            ratios.append(summary.get("legacy_vs_counter", float('inf')))
+
+        avg_ratio = sum(r for r in ratios if r != float('inf')) / max(1, len([r for r in ratios if r != float('inf')]))
+        guild_win_rate = guild_wins / runs
+
+        result = {
+            "name": test["name"],
+            "guild_win_rate": guild_win_rate,
+            "avg_legacy_vs_guild": avg_ratio,
+            **test
+        }
+        all_results.append(result)
+
+        # Track best
+        if best_guild_result is None or guild_win_rate > best_guild_result.get("guild_win_rate", 0):
+            best_guild_result = result
+
+        # Print progress
+        status = "★" if guild_win_rate > 0.4 else "○"
+        print(f"  {status} {test['name']:25s} | Guild wins: {guild_win_rate:5.0%} | Ratio: {avg_ratio:.2f}x")
+
+    print("\n" + "-"*70)
+    print("  BEST CONFIGURATION:")
+    if best_guild_result:
+        print(f"    {best_guild_result['name']}")
+        print(f"    Guild win rate: {best_guild_result['guild_win_rate']:.0%}")
+        print(f"    Legacy/Guild ratio: {best_guild_result['avg_legacy_vs_guild']:.2f}x")
+
+    return {
+        "all_results": all_results,
+        "best": best_guild_result,
+    }
+
+
+def run_infinite_whale_test(turns: int = 2000) -> Dict[str, Any]:
+    """
+    Run a very long simulation to test if guild can ever beat 2x whales.
+
+    This answers: In an infinite game, would guild eventually win?
+    """
+    print("\n" + "="*70)
+    print("  INFINITE WHALE TEST (2000 turns)")
+    print("="*70)
+
+    config = GuildVictoryConfig(
+        num_legacy=3,
+        num_counter_guild=40,
+        num_regular_guild=0,
+        num_blind=7,
+        legacy_coverage=0.9,
+        legacy_fidelity=0.85,
+        legacy_capital_advantage=2.0,
+        enable_reputation_market=True,
+        enable_prediction_market=True,
+        erosion_mechanisms=["rotation", "churn", "noise"],
+        turns=turns,
+    )
+    sim = GuildVictorySimulation(config)
+    sim.setup()
+    sim.run()
+    summary = sim.summary()
+
+    # Track ratio trajectory
+    print("\n  Wealth Ratio Trajectory (Legacy / Guild):")
+    ratios = sim.metrics.legacy_vs_guild_ratio
+    for i in range(0, len(ratios), 200):
+        bar = "█" * min(50, int(ratios[i] * 10))
+        print(f"    Turn {i:4d}: {bar} {ratios[i]:.2f}x")
+
+    print(f"\n  FINAL:")
+    print(f"    Legacy/Guild ratio: {summary.get('legacy_vs_counter', 0):.2f}x")
+    print(f"    Guild victory turn: {summary.get('guild_victory_turn', 'NEVER')}")
+    print(f"    Converging: {summary.get('converging', False)}")
+
+    return summary

@@ -1297,6 +1297,114 @@ def run_long_game_test(turns: int = 500, runs: int = 3) -> dict:
     return {"results": results}
 
 
+def analyze_convergence(turns: int = 1000, sample_interval: int = 50) -> dict:
+    """
+    Analyze if wealth ratio is CONVERGING toward parity over time.
+
+    This answers: In an infinite game, would guild eventually win?
+
+    Returns:
+    - convergence_rate: How fast the ratio approaches 1.0 (positive = converging)
+    - projected_crossover: Estimated turn when guild would equal legacy
+    - trend: "converging", "diverging", or "stable"
+    """
+    print("\n" + "="*70)
+    print("  CONVERGENCE ANALYSIS")
+    print("="*70)
+    print(f"  Running {turns} turn game, sampling every {sample_interval} turns...")
+
+    config = InformationWarsConfig(
+        num_legacy=1,
+        num_blind=0,
+        num_guild=4,
+        legacy_sees_balances=True,
+        legacy_sees_cards=True,
+        legacy_capital_advantage=2.0,
+        guild_can_share_balances=True,
+        resurrection_enabled=True,
+        tax_rate=0.20,
+        max_turns=turns,
+        progressive_tax_enabled=True,
+        capital_gains_tax_rate=0.20,
+        inflation_rate=0.05,
+    )
+
+    game = InformationWarsGame(config, seed=42)
+    game.setup()
+    game.run()
+
+    metrics = game.metrics
+
+    # Sample ratios at intervals
+    sampled_ratios = []
+    sampled_turns = []
+
+    for i in range(0, len(metrics.legacy_wealth), sample_interval):
+        if metrics.legacy_wealth[i] > 0:
+            ratio = metrics.guild_wealth[i] / metrics.legacy_wealth[i]
+            sampled_ratios.append(ratio)
+            sampled_turns.append(i)
+
+    # Calculate trend using linear regression
+    if len(sampled_ratios) >= 3:
+        n = len(sampled_ratios)
+        sum_x = sum(sampled_turns)
+        sum_y = sum(sampled_ratios)
+        sum_xy = sum(x * y for x, y in zip(sampled_turns, sampled_ratios))
+        sum_xx = sum(x * x for x in sampled_turns)
+
+        # Slope of trend line
+        slope = (n * sum_xy - sum_x * sum_y) / (n * sum_xx - sum_x * sum_x) if (n * sum_xx - sum_x * sum_x) != 0 else 0
+        intercept = (sum_y - slope * sum_x) / n
+
+        # Projected crossover (when ratio = 1.0)
+        if slope > 0:
+            projected_crossover = int((1.0 - intercept) / slope) if slope != 0 else None
+        else:
+            projected_crossover = None
+
+        # Determine trend
+        if slope > 0.0001:
+            trend = "converging"
+        elif slope < -0.0001:
+            trend = "diverging"
+        else:
+            trend = "stable"
+    else:
+        slope = 0
+        projected_crossover = None
+        trend = "insufficient_data"
+
+    # Print results
+    print(f"\n  Wealth Ratio Over Time (Guild/Legacy):")
+    for t, r in zip(sampled_turns[::4], sampled_ratios[::4]):  # Every 4th sample
+        bar = "█" * int(r * 20)
+        print(f"    Turn {t:4d}: {bar:20s} {r:.3f}x")
+
+    print(f"\n  Analysis:")
+    print(f"    Initial ratio: {sampled_ratios[0]:.3f}x")
+    print(f"    Final ratio:   {sampled_ratios[-1]:.3f}x")
+    print(f"    Trend slope:   {slope:.6f} per turn")
+    print(f"    Trend:         {trend.upper()}")
+
+    if projected_crossover and projected_crossover > 0:
+        print(f"    Projected crossover: Turn {projected_crossover}")
+    else:
+        print(f"    Projected crossover: NEVER (at current trend)")
+
+    return {
+        "sampled_turns": sampled_turns,
+        "sampled_ratios": sampled_ratios,
+        "slope": slope,
+        "trend": trend,
+        "projected_crossover": projected_crossover,
+        "initial_ratio": sampled_ratios[0] if sampled_ratios else 0,
+        "final_ratio": sampled_ratios[-1] if sampled_ratios else 0,
+    }
+
+    return {"results": results}
+
+
 if __name__ == "__main__":
     print("\n" + "="*70)
     print("  HOLOPOLY: INFORMATION WARS - Victory Condition Tuning")

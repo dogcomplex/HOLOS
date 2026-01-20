@@ -765,3 +765,169 @@ def test_real_world_collective(turns: int = 200) -> Dict[str, Any]:
         print("\n  ○ FAILURE: Gap not eroding")
 
     return s
+
+
+# =============================================================================
+# CRITICAL MASS ANALYSIS - Path to Guild Dominance
+# =============================================================================
+
+def guild_network_value(liquidity_share: float, info_share: float, pop_share: float) -> float:
+    """
+    Calculate value of being in the guild based on network coverage.
+
+    Value comes from:
+    - Liquidity: Better prices, less slippage (quadratic network effects)
+    - Information: Collective intelligence advantage (log scale)
+    - Network: Trading partners, reputation (sublinear)
+    """
+    liq_value = liquidity_share ** 1.5  # Quadratic network effects
+    info_value = math.log(1 + info_share * 10) / math.log(11)  # Diminishing returns
+    network_value = pop_share ** 0.8  # Sublinear - don't need everyone
+
+    return 0.4 * liq_value + 0.35 * info_value + 0.25 * network_value
+
+
+def outside_network_value(liquidity_share: float, info_share: float, pop_share: float) -> float:
+    """Calculate value of staying outside the guild."""
+    outside_liq = 1 - liquidity_share
+    outside_info = 1 - info_share * 0.5  # Outsiders still have some info
+    outside_network = 1 - pop_share
+
+    return (0.4 * (outside_liq ** 1.5) +
+            0.35 * math.log(1 + outside_info * 10) / math.log(11) +
+            0.25 * (outside_network ** 0.8))
+
+
+def analyze_critical_mass() -> Dict[str, Any]:
+    """
+    Analyze at what coverage levels whales are forced to join.
+
+    Key finding: ~65% coverage is the critical threshold where
+    guild value exceeds outside value + extraction costs.
+    """
+    print("\n" + "="*70)
+    print("  CRITICAL MASS ANALYSIS")
+    print("="*70)
+
+    results = []
+
+    for coverage in [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.65, 0.7, 0.8, 0.9]:
+        gv = guild_network_value(coverage, coverage, coverage)
+        ov = outside_network_value(coverage, coverage, coverage)
+
+        # Whale joins if guild value - extraction > outside
+        extraction_cost = 0.15  # 15% wealth extraction
+        whale_joins = (gv - extraction_cost) > ov
+        max_extraction = max(0, gv - ov)
+
+        result = {
+            "coverage": coverage,
+            "guild_value": gv,
+            "outside_value": ov,
+            "whale_joins": whale_joins,
+            "max_extraction": max_extraction,
+        }
+        results.append(result)
+
+        status = "★" if whale_joins else "○"
+        print(f"  {status} {coverage:4.0%} coverage: Guild={gv:.2f} Outside={ov:.2f} | Max extract: {max_extraction:.0%}")
+
+    # Find threshold
+    threshold = None
+    for r in results:
+        if r["whale_joins"]:
+            threshold = r["coverage"]
+            break
+
+    print(f"\n  CRITICAL THRESHOLD: {threshold:.0%} coverage")
+
+    return {
+        "results": results,
+        "critical_threshold": threshold,
+    }
+
+
+def analyze_bootstrap_sequence() -> Dict[str, Any]:
+    """
+    Analyze the tier-by-tier adoption sequence.
+
+    Key insight: Build bottom-up. Start with those who have
+    most to gain (bottom 50%) and least to lose.
+    """
+    print("\n" + "="*70)
+    print("  BOOTSTRAP SEQUENCE ANALYSIS")
+    print("="*70)
+
+    # Real-world wealth distribution tiers
+    TIERS = [
+        {"name": "Bottom 50%", "wealth_share": 0.02, "pop_share": 0.50, "join_threshold": 0.05},
+        {"name": "Middle 40%", "wealth_share": 0.28, "pop_share": 0.40, "join_threshold": 0.20},
+        {"name": "Top 9%", "wealth_share": 0.40, "pop_share": 0.09, "join_threshold": 0.45},
+        {"name": "Top 1%", "wealth_share": 0.20, "pop_share": 0.01, "join_threshold": 0.60},
+        {"name": "Billionaires", "wealth_share": 0.10, "pop_share": 0.0001, "join_threshold": 0.70},
+    ]
+
+    current_liq = 0.0
+    current_info = 0.0
+    current_pop = 0.0
+
+    sequence = []
+
+    for tier in TIERS:
+        # Add tier
+        current_liq += tier["wealth_share"]
+        current_info += tier["pop_share"] * 0.8
+        current_pop += tier["pop_share"]
+
+        gv = guild_network_value(current_liq, current_info, current_pop)
+        ov = outside_network_value(current_liq, current_info, current_pop)
+
+        step = {
+            "tier": tier["name"],
+            "cumulative_liquidity": current_liq,
+            "cumulative_info": current_info,
+            "cumulative_pop": current_pop,
+            "guild_value": gv,
+            "outside_value": ov,
+            "max_extraction": gv - ov,
+        }
+        sequence.append(step)
+
+        print(f"  After {tier['name']:12s}: Liq={current_liq:5.0%} Pop={current_pop:5.0%} | Value={gv:.2f} | Extract={gv-ov:.0%}")
+
+    return {
+        "sequence": sequence,
+        "final_coverage": {"liquidity": current_liq, "info": current_info, "population": current_pop},
+    }
+
+
+# Real-world growth milestones
+GROWTH_MILESTONES = """
+PRACTICAL PATH TO GUILD DOMINANCE
+=================================
+
+PHASE 1: Bottom 50% (~4 billion people)
+- Zero-cost entry, mobile-first
+- AI financial advisor, collective bargaining
+- Coverage: ~2% wealth, ~40% information
+
+PHASE 2: Middle 40% (~3 billion people)
+- Guild proves value from Phase 1
+- Better products than banks
+- Coverage: ~30% wealth, ~70% information
+- Extraction possible: ~14%
+
+PHASE 3: Top 9% (~700 million people)
+- Guild liquidity rivals traditional markets
+- Professional-grade tools
+- Coverage: ~70% wealth, ~99% population
+- TOP 1% AND BILLIONAIRES NOW FORCED TO JOIN
+
+PHASE 4: Extraction Regime
+- Progressive fees, Harberger tax, UBI
+- Maximum sustainable extraction: ~75%
+- Wealth gap erodes from 100x to ~1.5x
+
+CRITICAL THRESHOLD: ~65% coverage
+KEY INSIGHT: Build BOTTOM-UP - wealthy join LAST
+"""

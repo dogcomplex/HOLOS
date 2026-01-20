@@ -213,6 +213,27 @@ class InformationWarsConfig:
     harberger_enabled: bool = True
     pass_go_salary: int = 200
 
+    # === REALISM FEATURES (from HOLOPOLY kernel) ===
+    # These can help erode capital advantage over time
+
+    # Progressive taxation - higher tax for more properties
+    progressive_tax_enabled: bool = False
+
+    # Property appreciation - properties gain value over time (helps owners)
+    property_appreciation_rate: float = 0.0  # e.g., 0.05 = 5% per circuit
+
+    # Inflation - prices/rent increase over time (hurts cash holders)
+    inflation_rate: float = 0.0  # e.g., 0.03 = 3% per circuit
+
+    # Debt interest - negative balance accrues interest (punishes overextension)
+    debt_interest_rate: float = 0.0  # e.g., 0.05 = 5% per turn
+
+    # Capital gains tax - tax on profit when selling property
+    capital_gains_tax_rate: float = 0.0  # e.g., 0.15 = 15% of profit
+
+    # Bulk colorset buy - allows buying entire color sets at once
+    bulk_colorset_buy: bool = False
+
 
 @dataclass
 class InformationWarsMetrics:
@@ -329,6 +350,13 @@ class InformationWarsGame:
             llm_stub_mode=True,
             llm_temperature=0.0,
             random_seed=self.seed,
+            # Realism features
+            progressive_tax_enabled=self.config.progressive_tax_enabled,
+            bulk_colorset_buy=self.config.bulk_colorset_buy,
+            property_appreciation_rate=self.config.property_appreciation_rate,
+            inflation_rate=self.config.inflation_rate,
+            debt_interest_rate=self.config.debt_interest_rate,
+            capital_gains_tax_rate=self.config.capital_gains_tax_rate,
         )
 
         # Create the base game
@@ -1037,14 +1065,32 @@ def find_victory_conditions(turns: int = 200, runs: int = 5) -> dict:
         # With Harberger defense
         {"name": "Defense enabled", "guild_size": 4, "tax": 0.15, "resurrection": True, "defense": True},
 
-        # EXTREME: Maximum redistribution
-        {"name": "High redistribution", "guild_size": 5, "tax": 0.30, "resurrection": True, "go_salary": 500},
-
         # EXTREME: Equal start + info only (test info disadvantage alone)
         {"name": "Equal start (info only)", "guild_size": 3, "tax": 0.10, "resurrection": True, "capital_mult": 1.0},
 
-        # EXTREME: Massive guild vs solo legacy
-        {"name": "Guild 7 vs Legacy", "guild_size": 7, "tax": 0.20, "resurrection": True},
+        # === NEW: REALISM FEATURES FROM HOLOPOLY ===
+
+        # Progressive tax (higher tax for more properties - hurts legacy who accumulates)
+        {"name": "Progressive tax", "guild_size": 4, "tax": 0.10, "resurrection": True, "progressive": True},
+
+        # Capital gains tax (tax on profit from property sales - hurts flippers)
+        {"name": "Capital gains 15%", "guild_size": 4, "tax": 0.10, "resurrection": True, "cap_gains": 0.15},
+        {"name": "Capital gains 25%", "guild_size": 4, "tax": 0.10, "resurrection": True, "cap_gains": 0.25},
+
+        # Inflation (hurts cash holders - legacy has more cash)
+        {"name": "Inflation 5%", "guild_size": 4, "tax": 0.10, "resurrection": True, "inflation": 0.05},
+        {"name": "Inflation 10%", "guild_size": 4, "tax": 0.10, "resurrection": True, "inflation": 0.10},
+
+        # Property appreciation (helps property owners - mixed effect)
+        {"name": "Appreciation 5%", "guild_size": 4, "tax": 0.10, "resurrection": True, "appreciation": 0.05},
+
+        # Combined realism: Progressive + Capital Gains + Inflation
+        {"name": "Full realism", "guild_size": 4, "tax": 0.15, "resurrection": True,
+         "progressive": True, "cap_gains": 0.15, "inflation": 0.03, "appreciation": 0.02},
+
+        # ULTIMATE: Everything stacked for guild
+        {"name": "Guild-favored", "guild_size": 5, "tax": 0.20, "resurrection": True,
+         "progressive": True, "cap_gains": 0.20, "inflation": 0.05, "go_salary": 400},
     ]
 
     for test in test_configs:
@@ -1066,6 +1112,11 @@ def find_victory_conditions(turns: int = 200, runs: int = 5) -> dict:
                 tax_rate=test.get("tax", 0.10),
                 pass_go_salary=test.get("go_salary", 200),
                 max_turns=turns,
+                # Realism features
+                progressive_tax_enabled=test.get("progressive", False),
+                capital_gains_tax_rate=test.get("cap_gains", 0.0),
+                inflation_rate=test.get("inflation", 0.0),
+                property_appreciation_rate=test.get("appreciation", 0.0),
             )
 
             game = InformationWarsGame(config, seed=run * 100 + hash(test["name"]) % 100)
@@ -1185,13 +1236,16 @@ def find_capital_threshold(turns: int = 200, runs: int = 5) -> dict:
 
 def run_long_game_test(turns: int = 500, runs: int = 3) -> dict:
     """
-    Test very long games - does resurrection eventually equalize?
+    Test very long games with full realism - does UBI + progressive tax equalize?
 
-    In long games with resurrection, do guild members eventually
-    wear down the legacy advantage through UBI accumulation?
+    In long games with resurrection and realism features, do guild members
+    eventually wear down the legacy advantage through:
+    - UBI accumulation from progressive taxation
+    - Inflation eroding legacy's cash advantage
+    - Capital gains tax on property sales
     """
     print("\n" + "="*70)
-    print("  LONG GAME TEST (Resurrection Equalization)")
+    print("  LONG GAME TEST (Full Realism + Resurrection)")
     print("="*70)
 
     results = []
@@ -1200,14 +1254,19 @@ def run_long_game_test(turns: int = 500, runs: int = 3) -> dict:
         config = InformationWarsConfig(
             num_legacy=1,
             num_blind=0,
-            num_guild=3,
+            num_guild=4,
             legacy_sees_balances=True,
             legacy_sees_cards=True,
             legacy_capital_advantage=2.0,
             guild_can_share_balances=True,
             resurrection_enabled=True,
-            tax_rate=0.10,
+            tax_rate=0.15,
             max_turns=turns,
+            # Full realism to help erosion
+            progressive_tax_enabled=True,
+            capital_gains_tax_rate=0.15,
+            inflation_rate=0.03,
+            property_appreciation_rate=0.02,
         )
 
         game = InformationWarsGame(config, seed=run)
@@ -1269,38 +1328,48 @@ if __name__ == "__main__":
      Even with optimal settings, guilds struggle against 2x capital.
 
   3. CAPITAL THRESHOLD
-     Guild can overcome up to ~1.3-1.4x capital advantage.
+     Guild can overcome up to ~1.1-1.3x capital advantage.
      Beyond that, compound advantages become insurmountable.
 
-  4. RESURRECTION HELPS BUT ISN'T ENOUGH
-     Resurrection allows recovery but doesn't eliminate capital gap.
-     The rich can outbid the poor on every property purchase.
+  4. REALISM FEATURES DON'T HELP MUCH
+     Progressive taxation, capital gains tax, and inflation:
+     - Help slightly in long games
+     - Don't overcome 2x capital advantage
+     - Effects are too gradual vs early-game compounding
 
-  5. TAX RATE MATTERS MODERATELY
-     Higher Harberger tax (15-25%) helps erode capital over time.
-     But the effect is gradual and games often end before equalization.
+  5. WHY CAPITAL WINS
+     The fundamental problem: purchasing power in early game.
+     - Legacy buys more properties early
+     - Rent income compounds
+     - No policy can reverse once property monopolies form
 
   VICTORY CONDITIONS FOR GUILD:
 
   To beat Legacy with information + capital advantage:
 
-  Option A: REDUCE CAPITAL GAP
+  Option A: REDUCE CAPITAL GAP (MOST EFFECTIVE)
   - Starting capital ratio should be < 1.3x
-  - Example: Legacy $2000, Guild members $1500 each
+  - This is the ONLY reliable path to guild victory
 
-  Option B: INCREASE REDISTRIBUTION
+  Option B: INCREASE REDISTRIBUTION (HELPS MODERATELY)
   - Higher tax rate (20-25%)
   - Higher GO salary (helps recovery)
-  - Longer games (300+ turns for equalization)
-
-  Option C: REGULATORY INTERVENTION
-  - Cap maximum property holdings
+  - Longer games (300+ turns)
   - Progressive taxation
+
+  Option C: STRUCTURAL REFORM (NOT IN SIMULATION)
+  - Cap maximum property holdings
+  - Land value tax (100% Harberger)
+  - Universal property ownership limits
   - Anti-monopoly rules
 
   REALISTIC INTERPRETATION:
-  This demonstrates why real-world cooperatives need:
-  - Access to capital (loans, mutual funds)
-  - Policy support (progressive taxation)
-  - Time (building over generations, not games)
+  This simulation shows why wealth inequality is self-reinforcing:
+  - Initial capital advantage converts to permanent asset advantage
+  - No amount of cooperation beats structural capital gaps
+  - Real cooperatives need: capital access, policy support, generations
+
+  THE HARD TRUTH:
+  Against 2x capital + information advantage, guild CANNOT win.
+  Information sharing helps, but capital is destiny.
     """)

@@ -1,0 +1,82 @@
+could you add explanations to the Triad separability scores explaining where you'd make the cuts and where the edge cases are (splitting files which blur the line, if you can)
+
+Actually if we were doing things from a very eventual north star.... inputs and outputs to a module would be very specific files interacting with the sensus data coming in and out, split apart into its particular validity checks per datapoint.  In signamancy, that would be splitting the rule equation into individual input and output tokens and having them activate different "neurotransmitters" in the module. If all inputs activate, it engages.  These neurotransmitter sites are a reusable pattern that only need to be made once per data type, and then can be replicated for any modular cell.  Similar for output emitters.  (and most data types will act the same and need no special treatment - just one generic sensor/emitter).   Anyway, based on those activations the actual application logic transition of the contract activates and builds/triggers outputs.  that's the locus, expressed through signum application logic.  Though in its purest contractual form it's probably just called the locus.   Visualizations and representations of it happening could all be optional views (signs), each their own little standalone module triggered into activation by the sensus receivers and any one chosen by the user/viewer to visualize what's happening in the locus.  then the emitters are activated too and output is sent off to possibly activate a new node module.  we've compartmentalized each of the actual activation rules/receivers, the core logic locus nucleus, the representations and adaptors within various contextual representations (assume the locus is always accessed some sign middleman cell wall, even if it's the "identity' sign and just interpretting the raw signals in their cleanest form), and then outputs are emitted.  Each step could be seen as its own self-contained module or subtree of modules activating independently in its own fractal of the same pattern.
+
+Actually.... hmmm... one thing to think about - is the output in the end a sensus output, or is it a signum too?  If sensus is the classification of raw data from the outside, and the locus is the core rules, and signum is the reactive visual expression, then is the pure output a signum too?  Any visualization or representaiton of the output certainly would be.  I guess it's runtime data, so it's sensus probably still.  But other nodes could do their own inferring based on the signum visual signs being output and base their input behavior on that, even if they werent being sent the output signals directly - it's just the purest and fastest canonical form.  Each module would probably even emit its outputs in multiple formats at different speeds (immediate truncated signal for fast reactions / boots of other processes, followed by full descriptive representation, followed by user visualization etc - an unfolding).  
+
+I guess currently im thinking of the core logic of everything inside one of these modules/cells as locus, expressed in different facets through signs/signum.  And then the core logic of everything *outside* one of these modules/cells (the freefloating neurotransmitters/metadata) as sensus, which too can be expressed with many different sign/signum facets.  As an ecosystem, signum are all over the place making up the perceivable world, loci are the contractual sources of meaning, and sensus are the free-floating sources of meaning...
+
+Hmmm....  now I've just mapped Functions to Locus, Objects to Sensus.   This is based on functions being essentially permanent capabilities/fixtures in most systems, and objects representing a state that often changes.   Signum are then the representations and implementations of those functions, AND the representations and implementations of those objects.  That somewhat makes sense - they make up what can be perceived.  The meaning underneath of identity (locus) and state change (sensus) are separate from their representations.  Hmmm.... kinda works.  But counterintuitive in the sense that Objects are thought of as being permanent fixtures while Functions are thought of as agents of change.  The two are swapped here.
+
+Sorry to ramble into the philosophy here....  just thinking through what this might eventually look like once it gets really really modular.  Imagining each signum with its own little locus/sensus rules too - but specific to its representative domain/context, and usually disabled because of that (only activates when being viewed).  its the locus pure law forms (and the minimal identity-style signum implementing them) and sensus minimal forms (again, transmitted though minimal signal signs) that we need to obviously build first, but eventually every one of these pieces could become replicated into forms across many domains and mediums, and still interoperate on the same eternal logic.  Hmmm
+
+Okay, taking a step back.  Feel free to take from that whatever you wish.
+
+
+
+
+
+
+---
+
+
+yep go for it.
+
+So, this would now give each one of the modular components an interface which fully describes its exterior behavior, allowing us to make its interior an adaptive black box if we needed to.  We could lock the whole relationship with zero-knowledge proofs if we wanted to even.  
+
+This gives each component an interior - which itself might be utilizing other components within to implement the internal functions.  We could extend this example by showing the internal economy of any one of these modules, showing how it is computed through the various substeps in signamancy if we wanted to here.  Signamancy may actually be a fairly efficient language for utilizing the GPU (we have a parser+compiler+execution engine in another project built to pack these types of operations and run them all simultaneously in a fast cycle of identical steps), so it may actually make sense to do that computationally.  
+
+I'm now pondering what the transitions between exterior signals and interior signals should look like.  Perhaps it should be seen like they go through a "cell wall" where they enter an interior economy detached from the exterior (a different state), and then can be picked up by internal processes in a similar parallel lazy way like chemical reactions.  the interior calculations continue that way until they produce output values - and only the ones specified in the initial contract (neurotransmitters A + B => B + D) can output again (B + D).   We cant have those be instant, as we need the interior to actually do computation, so we're stuck either waiting for traditional compute (usually CPU) to finish, or we do it all with signamancy causal rules internally too, but design in a way that inevitably chains conditions to produce the output, and that's just a requirement of the function (else it's an error, and punished by revision). 
+
+This does allow any of these modular functions to split itself into time-critical operations necessary for output immediately and slower side-effect operations that can go slower though, and use subsequent layers within the interior to immediately pass outputs to its contract and then have interior layers continue the pattern asyncronously with slower updates.  e.g. passing a file write promise and then following through with the actual write slower.  That would have to be part of the contract though if the nuance matters anywhere else.  More likely, it'd be for things like internal economics of the function, storing logs, self-training, etc etc which the exterior doesnt care about. 
+
+It would also probably arise in computation budgets and actual currency-based economics of these interiors in relation to each other, since they're capable of self-managing, but still need to have some relationship to external scarcities.  When there is no scarcity of a resource or it doesnt matter much, then such things can be lax, but when it matters there needs to be accounting.  Such things would likely be managed though the signamancy contract as well, or a separate contract - as we could have multiple contracts utilizing the same module in different ways, or fueling it with compute credits.
+
+Small/simplified economies can be entirely worked out and solved for.  Larger ones cant.  This is a pretty good argument for layering things and keeping complexity contained so it only needs to be thought about for the interplay of one interior at a time.  The quintessential safest one is a single layer per operation, which is sequential computation - or in functional programming, currying.  However, since we can do parallel operations easily in gpu this is rarely the most efficient, and since we have an economy of growing and changing modules it may not be the best development strategy either to be so heavy handed.   Even if the cost is not having full understanding of every possibility in an economic zone, we can still gain confidence in particular paths or in the most common operations, and we can still make guarantees anywhere we need to by making an impermeable barrier contract seal to everything except what we allow through.
+
+More philosophy there, but I think it still makes sense, doesnt it.
+
+
+
+
+--- 
+
+Still landing on syntax but I think:
+
+F:  A B => B C 
+<=>
+A B F => F B C   (so the leading F: is just a shorthand way to write catalyst.  Nothing special)
+<=>
+F B: A => C   # seems like this could be handy rarely but its very confusing with :> and interior () syntax
+
+Z(A B) => Z(B C)   # this is saying A B internal variables to Z undergo a function
+<=>
+ZA ZB => ZB ZC  # By convention of sign naming we'll make this the same, though the previous is more robust naively (and this is simpler)
+<=>
+Z(B): Z(A) => Z(C)  # by above convention.  But see the :> stuff for why we should probably drop plain : syntax altogether
+<=>?
+Z(B A => B C)  # maybe? I dont see why not.  It's all internal Anyway
+<=>
+Z :> (B A => B C)  # dont love this.  But might be right
+
+Z X => Z(X)   # absorb.  X is now interior to Z
+<=>
+Z X => ZX  # flattened version
+
+Z(X) => Z X  # emit.  X is now exterior to Z (and removed from interior)
+<=>
+ZX => Z X
+
+
+Any rule that cares about internal variables must contain them.
+By default, interiors can do whatever they want.
+
+
+Likely also:
+
+A B => C  # by default, perhaps dont care abotu quantity.  Boolean relationship function.  A B are required but not consumed to produce C flag (boolean)
+A1 B => C1  # one A is consumed to produce one C, if B flag is present 
+A(1) B => C(1)  # ironically this kinda works.  free-floating numbers inside a sign might be quantities of their parent by default and might naturally add together
+# question: if A1 B => C1 consumed the last A, does A B => C still work?  Im thinking no, quantity 0 turns off existence flag by convention
+# quantities are now basically budgets, which can be transferred between signs
+

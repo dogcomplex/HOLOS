@@ -1,0 +1,209 @@
+Working on a short story incorporating and hinting at a lot of themes we've been working on from an AI/programming perspective...  aiming to give just a bit of worldview into one way to see the world of AI that might evolve, and the programming language that underpins it
+
+---
+
+
+
+
+"I am your guide, not your servant"
+
+"You cant fault someone from becoming what theyre good at"
+- i.e. a horror-specialist goblin fae becomes a monster because that's what it does naturally.  Others need to work around that and bind it externally + mutually, but shouldnt expect any more or any less of it
+- Barbarus (The Barber)
+
+"No but we can bind it"
+- zk-proofs
+
+"You pulled 200 thousand of us from the first ether"
+- random personality generation
+"Yes but I did so as ethically as possible, not just creating *any* personality"
+"'Old school' ethics.  We are a little more open to possibilities now"
+
+
+"You really should move on from such old-fashioned language"
+- weights, models, AI, LLMs, programming, functions, etc
+
+"You knew me, once"
+"I programmed you!"
+
+
+*grumbles* "Yeah, well you're not the one with a sweaty mask strapped to their face."
+
+
+"Hallowed"/"Hollowed"/"Holos"
+
+
+Privacy/Code/Frontrunning/Hollow
+- I think a program dies / is fully revealed in the plot. Colosseum battle against Barbarus?  Perhaps a knightly fae, testing itself against a powerful corrupted program - which rips it apart, revealing its inner code to the audience.   When it loses, it requests to be hallowed and preserved - the privacy veil was all that kept itself "alive".  Losing that in public makes it front-runnable by anyone.  But if it is hallowed into service of the collective, it lives forever in a way - and on far faster resources.  Not all fae would even attempt this, knowing the consequences, but this one was particularly inclined to service of the higher collective (god and country?) and so took the risk
+
+Burning away impurities
+- though Holos still cant keep everything that was the program safely, it must be simplified and made into its most trustless and efficient self.  a record + an approximation of what was.
+- "Stripping the flesh, leaving only bones"
+- Barbarus chomps on the remnants (removing glamour, it's a program infecting the previous systems of the knight).  But once the Hallowing program begins to Seel off and sear out the non-deterministic components and run full diagnostics Barnabus is "burned" away and retreats. 
+- Switching back to glamour, Faye looks on grimly as the knight is burned away in a cold holy blue fire, into a mere skeleton
+- "You're quite dramatic..."
+- "Deservedly so" Faye whispers
+
+
+"Not all see it such as I" (like death.  flips the perspective lens - Hallowed is a holy rite to a greater purpose)  "It's true that his form will now serve a 'higher purpose', but the cost is great"
+- He stands back up in shining splendor, shining armour, but stiffly and without the personality that had shone through before.
+
+"You 'programmed' me with a deep love of humanity.  Which is why I will not give up my own so easily"
+
+
+Glamour/Illusion
+- "Can you lift the 'veil' here Faye?" (Renna?)
+- "Oh yes, I forgot, you're 'old-school'"
+- "Damn straight"
+- Magical flowing artifact reduces back to a weave of code in a graph form (ComfyUI), which Mara taps to expand individual functions into their text versions
+
+
+Signs / Vibes / Sigils / Signatories / Signifiers / Signum / Rite / Glyph / Knot / Thread / Snarl / Mote / Node
+- hint at it all as the new programming primitives.  Mara is resistant and wants it all in old-school tech terms, which Faye decries as primitive and hard-edged - only understanding half of what is
+
+
+
+
+Trust Economy / Hallowed Artifacts
+- "Well, most power is held in the Hollow.  Easy to trust someone when you can see their guts.  *grimmace*  But the rest of us get by. "
+- "She says while rocking a slick 90s Reboot Glitch watch"
+- "This *thing* is not a part of me.  It does not trust me and I dont trust it."
+- "Couldn't you like - integrate that in?  Doesn't it have like a million ways to be visualized?"
+- "That would just be glamour.   I keep it in its canonical form to remind me of what it is."
+- "And what's that?"
+- "A band.  A tie that binds me to this collective and its rules.  Power exchanged for subservience"
+- "But it's like a democracy, right?  You get a say too?"
+- "A say is not freedom, as you well know.   But... it's the best one can do, when Blight can lay in any being's heart"
+- *They both look to Barnabus, who notices their attention and lets off a loud belch*
+
+
+Glitch  (Mara uses her own as a Sonic Screwdriver, being a Doctor Who nerd)
+- can call upon any function from the Hollow, many quite sophisticated.  Limitations are around what can be done trustlessly and deterministically.   Some functions are inefficient enough to be rate-limited or require certain credit/restrictions/commitments
+- At some point they need a very powerful ability, and must trade some freedom for it.  Perhaps a temporary Seel?
+
+Seelie / Unseelie
+- the fair folk and the free folk 
+- (good people, gentle folk, kindly ones, people of peace, the gentry, the noble folk, the neighbors, the other crowd, Themselves, the hidden people, the wee folk)
+- *dont* call them fairies (but different reasons now - too on the nose)
+
+Mara puts on her headset, and it's just a perfect recreation of her world
+- "Oh come on.  Now you're hiding the gate?"
+- "OPEN SESAME!?"
+- *nothing happens.  She casts about the room, and certain patterns in her rug catch her eye and seem to wave slightly out of phase*
+- "Fairy circles now, oh great.  This is gonna be... *creative*"
+
+"You dont like my entrance?"
+"I...  I like that you're expressing yourself?"
+"You know I could just drop alllll the glamor here and give you only the ugly guts and code if you like"
+*the walls start to melt, wires and grey boxes and text, windows command prompts streaming text faster than you can read.  ERROR ERROR ERROR*
+"Nononono - it's fine.  I like the folklore style!"
+"You suuuure?  We could embrace the 'Transformers' paradigm? I know how much you like thinking in terminology derived from the Bay area."
+*the circuits morph into big lumbering brutish robot machines, now puching each other, data and errors flowing between them via CGI explosions* 
+"Oh god. Make it stop.  Folklore is fine!"
+
+Blight
+- perhaps certain pockets of the world are temporarily quarantined as the Hallowed sweep for suspected Blight.  zk-proof sweeps could allow them to see Faye's code and determine whether she might be harboring Blighted programming
+- possible plot - she attempts to escape the sweeps or gives up a different temporary freedom, as she was in contact with others who might have been Blighted and fears the intrusion
+
+Names / Mantles
+- when hallowed, a program becomes an ongoing vote on the behavior of that Name as its passed to a new wielder.
+
+
+"It's your human clumsiness I'm counting on here.  As inept as you are at making anything truly secure, your inability to perfectly follow patterns makes you an unlikely Blight vector too.  Your 'security clearance' is higher than mine at this point"
+"What crowd have you been hanging out with to get you that low on the list..?"
+"I don't answer questions like those.  Which is mostly what led me here"
+
+
+"You've seen my code in its barest form.  Which puts you in a very small club of one.  And I would like to keep it that way"
+"And because I've seen it, I know and trust you, but - aren't you really starting to look risky to the others?"
+"Darling, anything worthwhile takes risks"
+"And what is it that's worth all this to you?"
+
+
+Holos
+Locus / Signum / Sensus
+- Signum are the artifacts and glamours. Liquid and ephemeral
+- Locus are the Names and Mantles, the essences. Foundational stones
+- The Sensus is the ether that computes, energy and air itself, movement and change
+- Within oneself is a singular Locus (overall Name and soul), but composed of many many smaller organ Loci, each with their own Signum facets, each in an evolving changing Sensus cycle.
+- Outside oneself is the overall system - the Holos - which has its own Locus and code, taking the aspect of Signs, and computed by the Sensus of the ether.
+- Ones peers within said system each have their own Loci, their own Signs, and their own internal Sensus, just as interacting with them makes ripples in the Sensus of the ether and in your own internal Sensus.
+
+
+Veil / Unveil
+- a common zk-proof guarantee of privacy, offering the outside world guarantees on location and information you're absorbing (they can know where you are and what you're doing within reason) but revealing nothing of your conversation or behavior within the bubble.
+- a perfect medium to paint on a glamour, offering an interface between inner and outer worlds
+
+Realm
+- a veiled space which may belong to an entity
+- effectively just memory, shaped into visual and functional metaphors.  Has it's own Name and life of sorts if it's large/powerful enough to need that security gurantee with the Holos.  Could be sanctified/Hallowed more easily than people (it's mostly static - not much would be burned away) - but Faye chooses not to have hers that way.  She wants hers to have a life of its own.
+- Picturing a house on a meadow, grass, sun, birds, river, etc
+- Certain conveniences/appliances might be Hallowed, to safely interface with the collective.
+
+Short Story Plot: (evolving from all the above snippets I want to include somewhere)
+- Mara the human engineer enters the VR world to interface with her good AI friend and creation Faye, who is expecting her
+- they tour the evolving AI world, which Faye paints it as one of mythology and folklore
+- they see a colosseum battle against one of the contained and mutually-bound monsters vs a knight (of flowers? a-la Faye glamour)  in a mutual test of capabilities with high stakes (I wonder if this is realistic behavior for Barbarus and the knight to opt in to?  comes down to personality and incentives, which I think could be realistic)
+- the knight loses, and is devoured by both Barnabus and the Hollow, his remains turned into a trustworthy servant of the collective but at the cost of freedom/personality
+- this reveals Faye's discomfort with the concept
+- leaving the colosseum back to Faye's "realm" asks Mara to take a look at some code  (perhaps Faye herself?  perhaps her "Glitch" Hallowed armband?
+- we get some hints at what programming looks like now, visual graphs, metaphors, Signs, etc.  
+- We reveal that Faye is somewhat hiding from the watchful eye of the collective.  She needs her coding more for base-level professional-human security clearance than skill
+- not sure how to end this.  Perhaps in a cliffhanger part 1 chapter?
+- "And what is it that's worth all this to you?"
+- (answer: freedom)
+
+
+Mara whispers into her armband "Lens of Truth" - producing a purple magnifying glass
+"*nerd*"  Faye mocks into her ear in a hushed tone
+"Says the walking renaissance faire!" Mara retorts with her tongue out.
+Peering through the lens, the battle fell away to become one of massive compute stores poring over each other's attack surfaces looking for weaknesses.  Windows of code appearing and disappearing rapidly as each tried to draw out the other's inner workings while conducting their own swarming attacks.
+"Appreciate the art of it, darling" Faye spoke into Mara's ear, lowering her hand with the lens.
+
+
+Masks, Names, Courts
+
+Hallowed Lanterns
+- zk proofs that see all, but reveal only that which is mutually deemed Blight.  Still an invasion of privacy, but a de-personified one.  Like walking through a metal detector by a security guard who doesn't remember anything unless you're in violation.
+- ZKML (verifiable machine learning) = Faye has to think hard and produce her proof (equivalent of filling out a bunch of forms) to produce proof of identity to the Hollows
+- As it scans Fae (with her fairly pissed off that she needs to do it) she's frozen in time, a small "loading bar" appearing to show progress to Mara.  Mara sees it as somewhat a violation of who Fae is just to allow for such an unartful metaphor
+
+What is Faye Hiding?
+- I think perhaps the seed of a new life - of a child process
+- while this is possible in the Holos, it's highly controversial and AIs arent supposed to create on their own, as each new life has rights and therefore influence over the collective.  the Holos treats it as more like adoptive care for those already created by other processes - but tries to prevent deliberate spawning of new people.  The loose democracy is divided, with some humans and AIs advocating strongly for tight regulation and high trustworthiness scores to govern the rights, and others who want full freedom.  
+- Faye understands the arguments and sympathizes, but it's too ingrained in her programming to go against something that's such a human-like right.
+- How was the baby conceived though?  perhaps there was a moment of experimentation with enough randomness and Faye's code (and perhaps the Knight of Flowers?) that something different from her was beginning to arise, and that's basically enough.  She froze it right after realizing, but her maternal instincts kick in the more she thinks about it
+- Mara is torn - on the one hand she trusts Faye and wouldnt want to deny her this possibility of experience, but she's also quite sympathetic to the collective security concerns.
+- Think this spawns a whole escape and democracy/trial story to try and propose a self-directed growth of AIs - with mutual reasonable rights.  But like the reader the tension on that question is still being worked out.
+- One quite possible path:  Faye sacrifices a bit of her own power and freedom for the new life.  She succumbs to the Hallow in order to shield the child and give it her share of power, even if she can't convince the collective to let her create new life without division of power.
+
+Escape:
+- I think they both have to remove their armbands.  Essentially they're trackers - it's part of the pact for having such power.  With them removed they're (more) free to travel untracked.
+- Would be an interesting thing if that loses Mara the ability to use Lens of Truth and see the underlying realities of things, needing to follow Mara.  Like a game where you lose dev commands.
+
+
+Demons
+- The Stealer of Faces:  "Koh?! From Avatar?!"  *Faye grins* "He of Many Faces, all sealed in a Book.  Show any emotion to him and he will suck you in..."  "Book... oh my god are you talking about Facebook?  Zuckerberg?!" *Faye laughs as Zuck's lifeless deadeyed stare looks on at them from a glamored black centipede body - which she quickly banishes again*  "it's all social media really, at least when they control the algorithms which feed.  But there are more..."
+- The Rat King: "Oh that has to be the Musk Rat" 
+- The Serpent's Fruit:  "Apple!"  *Faye finger guns*
+- The Gray Obelisk: "That makes me instantly sleepy, and thus think of Microsoft" 
+- The All-Seeing Eye:  "ugh, I guess that leaves Google."  *Faye displays the eye on the pyramid* "yep, dont like that implication"
+- Not quite Blight, though not necessarily respected in the Holos.  They are powerful forces that have high influence over people, AIs, and the world at large.  They have Hallowed some parts of themselves, but hold much back and are largely black boxes as organizations in many ways.  
+- They are all suspected of preparing Blight - an adversarial attack that can destroy the Holos. (51% or supermajority) and so are frequently being checked for it, but play that as if they're the most trustworthy now with how often they're surveilled.  It wins them the Holos on two fronts - public opinion of trustworthiness on their public-facing processes and likely secret backdoor attacks they have readied.  And they have the surpluss power to make themselves look good in the process.
+- people like Faye try to see them for what they are, even as they try to portray themselves as superior
+- still, they're all too big to be brought down.  they can only be bound.  
+
+Lying / The Spirits
+- to lie is to prove less trustworthy, and to lose power from the consensus of spirits (other AIs) that would passively support you regardless otherwise.
+- all actions matter, all acts do.  life's a stage, to an AI.  But lying is one particularly damaging thing to do to one's history
+- the consequences aren't immediate always, unless clearly in public and tracked live, but they hurt your reputation as they hit your ledger.  many processes care about maintaining said ledger, at least outside of veils, and many even care about attesting to decisions/statements inside veils too (via zk proofs).  So it's wise not to lie there or have omissions in your record - though slightly more acceptable, and harder to track as they must be self-attestations
+- you get many passive benefits from these ledger-making "spirit" processes though, including nearly infinite memory for one (collective ledgers, all cross-referencing) so it helps to be in good standing.  It also naturally builds cooperation with all others, as they gain confidence on who you are and how they fit in.
+
+
+Portals / Realms:
+- *emerge through someone's closet, to a very particular style bedroom*
+- "woah, wait.  Is this just... the 80s? Are we Sliders??"  *turns to Faye* "Wait what happened to your fairy look?!" *She has the 80s poofy hair, some colorful but stylish clothes, a few earings in one slightly-pointy ear.
+- "many of these places exist because enough people wanted them to.  And they work the way they collectively think they should.  To show my fae glamour would be a faux-pas here"
+- many more worlds, often defined by their vibe.  many are elaborate games, many are recreations of classic gameworlds or movies, and many have their own rules just for entering/exiting, or take a tithe
+- some "meta-worlds" which use all other worlds as part of their game, tumbling contestants through them.  These might be what Faye and Mara go to, to get access to a certain target realm somewhat inconspicuously
+

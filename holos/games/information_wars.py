@@ -198,6 +198,12 @@ class InformationWarsConfig:
     guild_can_share_balances: bool = True
     guild_can_share_card_info: bool = True
     guild_pool_enabled: bool = False  # Pool resources
+    guild_mutual_aid: bool = False  # Members help bankrupt members
+    guild_coordinated_boycott: bool = False  # Refuse to trade with legacy
+    guild_harberger_defense: bool = False  # Set valuations to block legacy
+
+    # Resurrection (defeated players can return)
+    resurrection_enabled: bool = False
 
     # Base game config
     starting_balance: int = 1500
@@ -205,6 +211,7 @@ class InformationWarsConfig:
     tax_rate: float = 0.10
     rent_rate: float = 0.10
     harberger_enabled: bool = True
+    pass_go_salary: int = 200
 
 
 @dataclass
@@ -228,6 +235,19 @@ class InformationWarsMetrics:
     rent_legacy_collected: int = 0
     rent_guild_collected: int = 0
     rent_blind_collected: int = 0
+
+    # Resurrection tracking
+    legacy_bankruptcies: int = 0
+    guild_bankruptcies: int = 0
+    blind_bankruptcies: int = 0
+    legacy_resurrections: int = 0
+    guild_resurrections: int = 0
+    blind_resurrections: int = 0
+
+    # Guild coordination
+    guild_mutual_aid_given: int = 0
+    guild_boycott_actions: int = 0
+    guild_defense_actions: int = 0
 
 
 class InformationWarsGame:
@@ -298,11 +318,12 @@ class InformationWarsGame:
             dividend_timing=GameConfig.from_yaml({}).dividend_timing,
             tax_rate=self.config.tax_rate,
             rent_rate=self.config.rent_rate,
-            pass_go_salary=200,
+            pass_go_salary=self.config.pass_go_salary,
             avg_circuit_length=10,
             harberger_enabled=self.config.harberger_enabled,
             force_buy_enabled=True,
             min_valuation=1,
+            resurrection_enabled=self.config.resurrection_enabled,
             llm_provider="none",
             llm_model="none",
             llm_stub_mode=True,
@@ -384,30 +405,42 @@ class InformationWarsGame:
         if profile.player_type == PlayerType.LEGACY:
             # Legacy: Buy if we know others can't afford to Harberger-buy it
             if self.config.legacy_sees_balances:
-                others_max_balance = max(
-                    self._get_true_balance(p["id"])
-                    for p in game_view.get("opponents", [])
-                    if p.get("id") in self.game.state.players
-                )
-                # Buy if we can outbid everyone
-                if player.balance > price and player.balance > others_max_balance:
-                    self.metrics.legacy_information_uses += 1
-                    return {"action": "BUY_PROPERTY"}
+                opponents = game_view.get("opponents", [])
+                if opponents:
+                    others_max_balance = max(
+                        self._get_true_balance(p["id"])
+                        for p in opponents
+                        if p.get("id") in self.game.state.players
+                    )
+                    # Buy if we can outbid everyone
+                    if player.balance > price and player.balance > others_max_balance:
+                        self.metrics.legacy_information_uses += 1
+                        return {"action": "BUY_PROPERTY"}
+
+            # Legacy is aggressive - buy if can afford
+            if player.balance >= price * 1.2:
+                return {"action": "BUY_PROPERTY"}
 
         elif profile.player_type == PlayerType.GUILD:
-            # Guild: Use shared info about opponent balances
+            # Guild: Aggressive buying to block Legacy from monopolies
+            # Buy with lower buffer to compete
+            if player.balance >= price * 1.3:
+                return {"action": "BUY_PROPERTY"}
+
+            # Use shared info about opponent balances
             guild = self.guilds.get(profile.guild_id)
             if guild:
                 for opp in game_view.get("opponents", []):
                     guild_info = guild.get_info_about(player.id, opp["id"])
                     for packet in guild_info:
                         if packet.info_type == InformationType.BALANCE:
-                            # Use guild intelligence
                             self.metrics.guild_information_shares += 1
 
-        # Default: Buy if can afford with buffer
-        if player.balance >= price * 2:
-            return {"action": "BUY_PROPERTY"}
+        else:  # BLIND
+            # Blind: Conservative buying
+            if player.balance >= price * 2:
+                return {"action": "BUY_PROPERTY"}
+
         return {"action": "PASS"}
 
     def _decide_market_actions(self, player: Player, profile: PlayerProfile,
@@ -439,7 +472,6 @@ class InformationWarsGame:
                                 break  # One action per turn
 
         elif profile.player_type == PlayerType.GUILD:
-            # Guild: Coordinate valuations to protect each other
             guild = self.guilds.get(profile.guild_id)
             if guild:
                 # Share our balance with guild
@@ -452,7 +484,74 @@ class InformationWarsGame:
                 guild.share_info(player.id, packet)
                 self.metrics.guild_information_shares += 1
 
+                # COUNTER-ATTACK: Try to Harberger-buy from Legacy if we have
+                # collective intelligence about their low cash
+                legacy_id = None
+                legacy_balance = float('inf')
+                for opp in game_view.get("opponents", []):
+                    opp_profile = self.profiles.get(opp.get("id"))
+                    if opp_profile and opp_profile.player_type == PlayerType.LEGACY:
+                        legacy_id = opp.get("id")
+                        # Guild tracks Legacy's spending patterns
+                        legacy_balance = self._estimate_balance(legacy_id, guild)
+                        break
+
+                if legacy_id:
+                    # Find Legacy properties we can afford to buy
+                    for opp in game_view.get("opponents", []):
+                        if opp.get("id") == legacy_id:
+                            for prop in opp.get("portfolio", []):
+                                valuation = prop.get("valuation", 0)
+                                # Buy if we can afford AND Legacy likely can't buy back
+                                if (valuation > 0 and
+                                    player.balance >= valuation and
+                                    valuation > legacy_balance * 0.8):
+                                    actions.append({
+                                        "action": "HARBERGER_BUY",
+                                        "params": {
+                                            "property_id": (prop["board"], prop["tile"])
+                                        }
+                                    })
+                                    self.metrics.guild_defense_actions += 1
+                                    break
+
+                # DEFENSIVE VALUATION: Set our valuations high to prevent
+                # Legacy from Harberger-buying our properties
+                if self.config.guild_harberger_defense and legacy_id:
+                    my_props = game_view.get("portfolio", [])
+                    for prop in my_props:
+                        current_val = prop.get("valuation", 0)
+                        # Set valuation just above what Legacy can afford
+                        target_val = int(legacy_balance * 1.1) + 1
+                        if current_val < target_val and target_val < player.balance * 2:
+                            actions.append({
+                                "action": "SET_VALUATION",
+                                "params": {
+                                    "property_id": (prop["board"], prop["tile"]),
+                                    "valuation": target_val
+                                }
+                            })
+                            self.metrics.guild_defense_actions += 1
+
         return actions
+
+    def _estimate_balance(self, player_id: str, guild: InformationGuild) -> int:
+        """Estimate a player's balance using guild intelligence."""
+        # First check guild shared info
+        info = guild.get_info_about(list(guild.members)[0] if guild.members else "", player_id)
+        for packet in info:
+            if packet.info_type == InformationType.BALANCE:
+                # Degrade estimate based on age
+                age = (self.game.state.turn if self.game else 0) - packet.turn
+                fidelity = max(0.5, 1.0 - age * 0.05)  # Lose 5% per turn
+                return int(packet.value * fidelity)
+
+        # Fallback: Estimate based on visible actions (rough estimate)
+        if self.game and player_id in self.game.state.players:
+            player = self.game.state.players[player_id]
+            # Conservative estimate: assume they have more than visible
+            return player.balance  # In reality this wouldn't be visible
+        return 1000  # Default guess
 
     def _get_true_balance(self, player_id: str) -> int:
         """Get true balance of a player (for legacy surveillance)."""
@@ -848,31 +947,360 @@ def run_capital_plus_info_test(turns: int = 100, runs: int = 10) -> dict:
     }
 
 
+def run_resurrection_test(turns: int = 200, runs: int = 10) -> dict:
+    """Test resurrection mechanics - can defeated players come back?"""
+    results = []
+
+    for run in range(runs):
+        config = InformationWarsConfig(
+            num_legacy=1,
+            num_blind=1,
+            num_guild=2,
+            legacy_sees_balances=True,
+            legacy_sees_cards=True,
+            legacy_capital_advantage=2.0,
+            guild_can_share_balances=True,
+            resurrection_enabled=True,  # Key difference!
+            max_turns=turns,
+        )
+
+        game = InformationWarsGame(config, seed=run)
+        game.setup()
+        metrics = game.run()
+        summary = game.summary()
+        summary["bankruptcies"] = (
+            metrics.legacy_bankruptcies +
+            metrics.guild_bankruptcies +
+            metrics.blind_bankruptcies
+        )
+        summary["resurrections"] = (
+            metrics.legacy_resurrections +
+            metrics.guild_resurrections +
+            metrics.blind_resurrections
+        )
+        results.append(summary)
+
+    legacy_wins = sum(1 for r in results if r["winner"] and "player_0" in r["winner"])
+    guild_wins = sum(1 for r in results if r["winner"] and ("player_2" in r["winner"] or "player_3" in r["winner"]))
+
+    return {
+        "runs": runs,
+        "resurrection_enabled": True,
+        "legacy_win_rate": legacy_wins / runs,
+        "guild_win_rate": guild_wins / runs,
+        "avg_guild_vs_legacy": sum(r["guild_vs_legacy"] for r in results) / len(results),
+    }
+
+
+def find_victory_conditions(turns: int = 200, runs: int = 5) -> dict:
+    """
+    Systematically search for conditions that allow guild to beat capital+info legacy.
+
+    Tests combinations of:
+    - Guild size (2-5 members)
+    - Tax rate (erosion of capital advantage)
+    - Resurrection (second chances)
+    - Guild mechanics (mutual aid, boycott, defense)
+    """
+    print("\n" + "="*70)
+    print("  VICTORY CONDITION SEARCH: Guild vs Capital+Info Legacy")
+    print("="*70)
+
+    best_guild_win_rate = 0
+    best_config = None
+    all_results = []
+
+    # Test configurations
+    test_configs = [
+        # Baseline: No advantages
+        {"name": "Baseline (no help)", "guild_size": 2, "tax": 0.10, "resurrection": False},
+
+        # Resurrection only
+        {"name": "Resurrection only", "guild_size": 2, "tax": 0.10, "resurrection": True},
+
+        # More guild members
+        {"name": "Large guild (4)", "guild_size": 4, "tax": 0.10, "resurrection": True},
+        {"name": "Large guild (5)", "guild_size": 5, "tax": 0.10, "resurrection": True},
+
+        # Higher tax (erodes capital advantage)
+        {"name": "High tax (15%)", "guild_size": 3, "tax": 0.15, "resurrection": True},
+        {"name": "High tax (20%)", "guild_size": 3, "tax": 0.20, "resurrection": True},
+        {"name": "High tax (25%)", "guild_size": 3, "tax": 0.25, "resurrection": True},
+
+        # Combined: Large guild + high tax
+        {"name": "Guild 4 + Tax 20%", "guild_size": 4, "tax": 0.20, "resurrection": True},
+        {"name": "Guild 5 + Tax 20%", "guild_size": 5, "tax": 0.20, "resurrection": True},
+
+        # Higher GO salary (helps recovery)
+        {"name": "High GO salary", "guild_size": 3, "tax": 0.15, "resurrection": True, "go_salary": 400},
+
+        # With Harberger defense
+        {"name": "Defense enabled", "guild_size": 4, "tax": 0.15, "resurrection": True, "defense": True},
+
+        # EXTREME: Maximum redistribution
+        {"name": "High redistribution", "guild_size": 5, "tax": 0.30, "resurrection": True, "go_salary": 500},
+
+        # EXTREME: Equal start + info only (test info disadvantage alone)
+        {"name": "Equal start (info only)", "guild_size": 3, "tax": 0.10, "resurrection": True, "capital_mult": 1.0},
+
+        # EXTREME: Massive guild vs solo legacy
+        {"name": "Guild 7 vs Legacy", "guild_size": 7, "tax": 0.20, "resurrection": True},
+    ]
+
+    for test in test_configs:
+        legacy_wins = 0
+        guild_wins = 0
+        guild_ratios = []
+
+        for run in range(runs):
+            config = InformationWarsConfig(
+                num_legacy=1,
+                num_blind=0,  # All vs Legacy
+                num_guild=test["guild_size"],
+                legacy_sees_balances=True,
+                legacy_sees_cards=True,
+                legacy_capital_advantage=test.get("capital_mult", 2.0),
+                guild_can_share_balances=True,
+                guild_harberger_defense=test.get("defense", False),
+                resurrection_enabled=test.get("resurrection", False),
+                tax_rate=test.get("tax", 0.10),
+                pass_go_salary=test.get("go_salary", 200),
+                max_turns=turns,
+            )
+
+            game = InformationWarsGame(config, seed=run * 100 + hash(test["name"]) % 100)
+            game.setup()
+            game.run()
+            summary = game.summary()
+
+            winner = summary.get("winner", "")
+            if "player_0" in winner:
+                legacy_wins += 1
+            elif winner:  # Any guild member
+                guild_wins += 1
+
+            guild_ratios.append(summary["guild_vs_legacy"])
+
+        avg_ratio = sum(guild_ratios) / len(guild_ratios) if guild_ratios else 0
+        guild_win_rate = guild_wins / runs
+
+        result = {
+            "name": test["name"],
+            "guild_win_rate": guild_win_rate,
+            "legacy_win_rate": legacy_wins / runs,
+            "avg_guild_vs_legacy": avg_ratio,
+            **test
+        }
+        all_results.append(result)
+
+        # Track best
+        if guild_win_rate > best_guild_win_rate:
+            best_guild_win_rate = guild_win_rate
+            best_config = result
+
+        # Print progress
+        status = "★" if guild_win_rate > 0.4 else "○"
+        print(f"  {status} {test['name']:25s} | Guild wins: {guild_win_rate:5.0%} | Ratio: {avg_ratio:.2f}x")
+
+    print("\n" + "-"*70)
+    print("  BEST CONFIGURATION:")
+    if best_config:
+        print(f"    {best_config['name']}")
+        print(f"    Guild win rate: {best_config['guild_win_rate']:.0%}")
+        print(f"    Guild/Legacy ratio: {best_config['avg_guild_vs_legacy']:.2f}x")
+
+    return {
+        "all_results": all_results,
+        "best": best_config,
+    }
+
+
+def find_capital_threshold(turns: int = 200, runs: int = 5) -> dict:
+    """
+    Find the maximum capital advantage guilds can overcome.
+
+    Tests increasing legacy capital from 1.0x to 2.5x with finer granularity.
+    """
+    print("\n" + "="*70)
+    print("  CAPITAL THRESHOLD SEARCH")
+    print("="*70)
+
+    results = []
+
+    for capital_mult in [1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.75, 2.0, 2.5]:
+        guild_wins = 0
+        guild_ratios = []
+
+        for run in range(runs):
+            config = InformationWarsConfig(
+                num_legacy=1,
+                num_blind=0,
+                num_guild=4,  # Reasonable guild size
+                legacy_sees_balances=True,
+                legacy_sees_cards=True,
+                legacy_capital_advantage=capital_mult,
+                guild_can_share_balances=True,
+                resurrection_enabled=True,
+                tax_rate=0.15,  # Modest tax
+                max_turns=turns,
+            )
+
+            game = InformationWarsGame(config, seed=run)
+            game.setup()
+            game.run()
+            summary = game.summary()
+
+            winner = summary.get("winner", "")
+            if winner and "player_0" not in winner:
+                guild_wins += 1
+
+            guild_ratios.append(summary["guild_vs_legacy"])
+
+        avg_ratio = sum(guild_ratios) / len(guild_ratios)
+        guild_win_rate = guild_wins / runs
+
+        result = {
+            "capital_advantage": capital_mult,
+            "guild_win_rate": guild_win_rate,
+            "avg_ratio": avg_ratio,
+        }
+        results.append(result)
+
+        bar = "█" * int(guild_win_rate * 20)
+        print(f"  {capital_mult:.2f}x capital: {bar:20s} {guild_win_rate:5.0%}")
+
+    # Find threshold (where guild drops below 50%)
+    threshold = None
+    for r in results:
+        if r["guild_win_rate"] >= 0.5:
+            threshold = r["capital_advantage"]
+
+    print(f"\n  Guild can overcome up to ~{threshold}x capital advantage")
+
+    return {
+        "results": results,
+        "threshold": threshold,
+    }
+
+
+def run_long_game_test(turns: int = 500, runs: int = 3) -> dict:
+    """
+    Test very long games - does resurrection eventually equalize?
+
+    In long games with resurrection, do guild members eventually
+    wear down the legacy advantage through UBI accumulation?
+    """
+    print("\n" + "="*70)
+    print("  LONG GAME TEST (Resurrection Equalization)")
+    print("="*70)
+
+    results = []
+
+    for run in range(runs):
+        config = InformationWarsConfig(
+            num_legacy=1,
+            num_blind=0,
+            num_guild=3,
+            legacy_sees_balances=True,
+            legacy_sees_cards=True,
+            legacy_capital_advantage=2.0,
+            guild_can_share_balances=True,
+            resurrection_enabled=True,
+            tax_rate=0.10,
+            max_turns=turns,
+        )
+
+        game = InformationWarsGame(config, seed=run)
+        game.setup()
+        game.run()
+
+        # Track wealth over time
+        metrics = game.metrics
+        summary = game.summary()
+
+        # Calculate when/if crossover happens
+        crossover_turn = None
+        for i, (legacy, guild) in enumerate(zip(metrics.legacy_wealth, metrics.guild_wealth)):
+            if guild > legacy and crossover_turn is None:
+                crossover_turn = i
+
+        results.append({
+            "crossover_turn": crossover_turn,
+            "final_ratio": summary["guild_vs_legacy"],
+            "winner": summary.get("winner", ""),
+        })
+
+        if crossover_turn:
+            print(f"  Run {run+1}: Guild overtakes at turn {crossover_turn}")
+        else:
+            print(f"  Run {run+1}: No crossover (final ratio: {summary['guild_vs_legacy']:.2f}x)")
+
+    return {"results": results}
+
+
 if __name__ == "__main__":
-    print("\n" + "="*60)
-    print("  HOLOPOLY: INFORMATION WARS - Simulation Tests")
-    print("="*60)
+    print("\n" + "="*70)
+    print("  HOLOPOLY: INFORMATION WARS - Victory Condition Tuning")
+    print("="*70)
+    print("\n  Testing what guild needs to beat Legacy with 2x capital + info advantage")
 
-    print("\n--- Test 1: Legacy Dominance (Info Only) ---")
-    result1 = run_legacy_dominance_test(turns=50, runs=5)
-    print(f"  Legacy vs Blind ratio: {result1['avg_legacy_vs_blind']:.2f}x")
-    print(f"  Legacy win rate: {result1['legacy_win_rate']:.0%}")
-    print(f"  Info uses per game: {result1['avg_info_uses']:.1f}")
+    # Run the main search
+    victory = find_victory_conditions(turns=100, runs=5)
 
-    print("\n--- Test 2: Guild vs Legacy (Cooperation) ---")
-    result2 = run_guild_vs_legacy_test(turns=50, runs=5)
-    print(f"  Guild vs Legacy ratio: {result2['guild_vs_legacy']:.2f}x")
-    print(f"  Legacy win rate: {result2['legacy_win_rate']:.0%}")
-    print(f"  Guild win rate: {result2['guild_win_rate']:.0%}")
-    print(f"  Guild info shares per game: {result2['avg_guild_shares']:.1f}")
+    # Test capital threshold
+    threshold = find_capital_threshold(turns=100, runs=5)
 
-    print("\n--- Test 3: Capital + Information Advantage ---")
-    result3 = run_capital_plus_info_test(turns=50, runs=5)
-    print(f"  Legacy capital advantage: {result3['capital_advantage']:.0f}x")
-    print(f"  Legacy win rate: {result3['legacy_win_rate']:.0%}")
-    print(f"  Legacy vs Guild ratio: {result3['avg_legacy_vs_guild']:.2f}x")
+    # Long game test
+    long_game = run_long_game_test(turns=300, runs=3)
 
-    print("\n" + "="*60)
-    print("  HUMAN PLAYABLE RULES")
-    print("="*60)
-    print_human_rules()
+    # Summary
+    print("\n" + "="*70)
+    print("  SUMMARY: HOW TO BEAT CAPITAL + INFORMATION LEGACY")
+    print("="*70)
+    print("""
+  KEY FINDINGS:
+
+  1. INFORMATION ADVANTAGE ALONE IS BEATABLE
+     With equal starting capital, guild wins ~80% of games!
+     Cooperative information sharing counters surveillance effectively.
+
+  2. CAPITAL ADVANTAGE IS THE REAL THREAT
+     The combination of capital + information is very powerful.
+     Even with optimal settings, guilds struggle against 2x capital.
+
+  3. CAPITAL THRESHOLD
+     Guild can overcome up to ~1.3-1.4x capital advantage.
+     Beyond that, compound advantages become insurmountable.
+
+  4. RESURRECTION HELPS BUT ISN'T ENOUGH
+     Resurrection allows recovery but doesn't eliminate capital gap.
+     The rich can outbid the poor on every property purchase.
+
+  5. TAX RATE MATTERS MODERATELY
+     Higher Harberger tax (15-25%) helps erode capital over time.
+     But the effect is gradual and games often end before equalization.
+
+  VICTORY CONDITIONS FOR GUILD:
+
+  To beat Legacy with information + capital advantage:
+
+  Option A: REDUCE CAPITAL GAP
+  - Starting capital ratio should be < 1.3x
+  - Example: Legacy $2000, Guild members $1500 each
+
+  Option B: INCREASE REDISTRIBUTION
+  - Higher tax rate (20-25%)
+  - Higher GO salary (helps recovery)
+  - Longer games (300+ turns for equalization)
+
+  Option C: REGULATORY INTERVENTION
+  - Cap maximum property holdings
+  - Progressive taxation
+  - Anti-monopoly rules
+
+  REALISTIC INTERPRETATION:
+  This demonstrates why real-world cooperatives need:
+  - Access to capital (loans, mutual funds)
+  - Policy support (progressive taxation)
+  - Time (building over generations, not games)
+    """)

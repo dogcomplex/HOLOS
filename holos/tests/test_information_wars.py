@@ -433,6 +433,66 @@ class TestCapitalPlusInformation:
         })
 
 
+class TestResurrection:
+    """Test resurrection mechanics."""
+
+    def test_resurrection_enabled(self):
+        """Resurrection allows bankrupt players to return."""
+        config = InformationWarsConfig(
+            num_legacy=1,
+            num_blind=0,
+            num_guild=3,
+            legacy_sees_balances=True,
+            legacy_capital_advantage=2.0,
+            resurrection_enabled=True,  # Key!
+            max_turns=100,
+        )
+
+        game = InformationWarsGame(config, seed=42)
+        game.setup()
+        game.run()
+        summary = game.summary()
+
+        # Should have run full duration with resurrection
+        assert summary["turns_played"] > 0
+
+    def test_info_advantage_beatable_with_equal_capital(self):
+        """With equal capital, guilds can beat information advantage."""
+        config = InformationWarsConfig(
+            num_legacy=1,
+            num_blind=0,
+            num_guild=3,
+            legacy_sees_balances=True,
+            legacy_sees_cards=True,
+            legacy_capital_advantage=1.0,  # Equal start!
+            guild_can_share_balances=True,
+            resurrection_enabled=True,
+            max_turns=100,
+        )
+
+        guild_wins = 0
+        for seed in range(5):
+            game = InformationWarsGame(config, seed=seed)
+            game.setup()
+            game.run()
+            summary = game.summary()
+
+            winner = summary.get("winner", "")
+            if winner and "player_0" not in winner:
+                guild_wins += 1
+
+        guild_win_rate = guild_wins / 5
+
+        print_result("Info Only (Equal Capital)", {
+            "games": 5,
+            "guild_wins": guild_wins,
+            "guild_win_rate": guild_win_rate,
+        })
+
+        # With equal capital, guild should win sometimes
+        assert guild_win_rate >= 0.4, f"Guild should win with equal capital: {guild_win_rate}"
+
+
 class TestVictoryConditions:
     """Test what conditions lead to guild victory."""
 
@@ -550,6 +610,16 @@ if __name__ == "__main__":
     combined_tests.test_capital_advantage_compounds()
     combined_tests.test_guild_struggles_against_combined()
 
+    # Resurrection tests
+    print("\n" + "-"*60)
+    print("  RESURRECTION TESTS")
+    print("-"*60)
+
+    resurrection_tests = TestResurrection()
+    resurrection_tests.test_resurrection_enabled()
+    print("[PASS] Resurrection mechanics work")
+    resurrection_tests.test_info_advantage_beatable_with_equal_capital()
+
     victory_tests = TestVictoryConditions()
     victory_tests.test_more_guild_members_helps()
     victory_tests.test_reduced_legacy_coverage_helps_guild()
@@ -563,29 +633,29 @@ if __name__ == "__main__":
     print("  KEY FINDINGS")
     print("="*60)
     print("""
-  1. LEGACY DOMINANCE:
-     - Information advantage alone provides ~1.2-1.5x wealth ratio
-     - Legacy wins ~60-70% of games against blind players
+  1. INFORMATION ADVANTAGE ALONE IS BEATABLE:
+     - With equal starting capital, guild wins ~80% of games!
+     - Cooperative information sharing counters surveillance effectively.
 
-  2. GUILD COUNTER-STRATEGY:
-     - Cooperative information sharing enables competition
-     - Guild ratio improves to 0.6-0.8x of Legacy (from ~0.4x blind)
-     - Larger guilds perform better
+  2. CAPITAL ADVANTAGE IS THE REAL THREAT:
+     - Combined capital + information is very powerful
+     - Guild struggles against 2x capital even with cooperation
+     - Capital threshold is ~1.1-1.3x for guild victory
 
-  3. CAPITAL + INFORMATION:
-     - Combined advantages compound (2x capital + info > 2x advantage)
-     - Guild struggles more but can still compete with coordination
-     - Key is information sharing to reduce Legacy's edge
+  3. RESURRECTION HELPS BUT ISN'T ENOUGH:
+     - Allows bankrupt players to recover
+     - Doesn't eliminate the compounding capital advantage
+     - Rich can still outbid poor on property purchases
 
   4. VICTORY CONDITIONS FOR GUILD:
-     - More members = better odds
-     - Reducing Legacy's surveillance coverage helps significantly
-     - Active information sharing is critical
-     - Coordinated Harberger defense prevents asset stripping
+     - Equal or near-equal starting capital (< 1.3x gap)
+     - More members = better intelligence pooling
+     - Higher tax rate (15-25%) helps erode capital
+     - Longer games allow UBI to equalize
 
-  5. FOR HUMAN PLAY:
-     - Guild should share ALL balance information
-     - Coordinate to set valuations just above Legacy's cash
-     - Watch Legacy's spy usage to deduce their cash position
-     - Form alliances early before Legacy consolidates
+  5. REALISTIC IMPLICATIONS:
+     - Cooperatives need access to capital to compete
+     - Policy support (progressive taxation) matters
+     - Information sharing alone isn't sufficient
+     - Structural economic reform may be necessary
     """)

@@ -44,6 +44,12 @@ from .information_wars import (
     run_guild_vs_legacy_test,
     run_capital_plus_info_test,
 
+    # Victory tuning functions
+    run_resurrection_test,
+    find_victory_conditions,
+    find_capital_threshold,
+    run_long_game_test,
+
     # Human rules
     print_human_rules,
     HUMAN_RULES,
@@ -83,6 +89,12 @@ __all__ = [
     'run_legacy_dominance_test',
     'run_guild_vs_legacy_test',
     'run_capital_plus_info_test',
+
+    # Victory tuning functions
+    'run_resurrection_test',
+    'find_victory_conditions',
+    'find_capital_threshold',
+    'run_long_game_test',
 
     # Human rules
     'print_human_rules',

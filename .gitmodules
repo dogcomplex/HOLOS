@@ -1,0 +1,4 @@
+[submodule "seel"]
+	path = seel
+	url = https://github.com/dogcomplex/seel.git
+

@@ -1,7 +1,10 @@
 # MANIFEST: seel
 
-**Status**: Awaiting folder upload
+**Status**: Submodule exists but needs configuration
+**Note**: seel is a git submodule pointing to commit `c3c1fa46990ffdbe7d0598c771badbd1e83299d5` but lacks .gitmodules config
 **Purpose**: Catalog and analyze seel implementation for insights and consistency with current LOCUS
+
+**TODO**: Configure submodule properly or fetch content directly
 
 ---
 

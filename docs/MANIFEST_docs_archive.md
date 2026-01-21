@@ -15,7 +15,7 @@
 | `epistemics.txt` | 4,937 | Philosophy/Theory | Medium | ☐ |
 | `induction_etc_hearth_implementation_and_npc_ethics.txt` | 3,317 | Implementation/Ethics | Medium | ☐ |
 | `langlands_proof_sheaves_graph_gpt4.txt` | 2,666 | Math/Theory | Low | ☐ |
-| `mantles_discussion.txt` | 2,069 | **Core Concept** | HIGH | ☐ |
+| `mantles_discussion.txt` | 2,069 | **Core Concept** | HIGH | ☑ |
 | `capitalism_and_..._zkproof_rootkit_ideas.txt` | 1,762 | ZK/Economics | Medium | ☐ |
 | `holos.txt` | 1,183 | **Core HOLOS** | HIGH | ☑ |
 | `zkml_worldbuilding.txt` | 643 | ZK/Worldbuilding | Medium | ☐ |
@@ -63,7 +63,7 @@
 |-------|-------|--------|-----------------|
 | 1 | locus_specs, overview, lexicon, mantles_gradient, Fæ | ☑ Complete | P-001 to P-007 |
 | 2 | names which bind, holos | ☑ Complete | P-008 to P-012 |
-| 3 | mantles_discussion | ☐ Pending | - |
+| 3 | mantles_discussion | ☑ Complete | P-013 to P-018 |
 | 4 | zkml_worldbuilding, capitalism_and... | ☐ Pending | - |
 | 5+ | epistemics, triad_*, etc. | ☐ Pending | - |
 
@@ -126,6 +126,32 @@
   - Signum = exterior surface geometry
 - Coined terms: Holow (whole+hollow), Halow (hallow+halo)
 - "Hallowed Hollow" concept (lines 501-567): datacenter/dungeon/nest for robotic life
+
+### Batch 3 (Complete)
+
+**mantles_discussion.txt** (2069 lines)
+- ChatGPT exploration of "Mantles" as archetypal functions across world mythology
+- **Core insight**: Mantles are persistent "jobs" (cosmic functions) that transfer between deities via mythic edges (slays, sires, bestows, usurps, merges, splits)
+- **~12 Root Mantles identified**:
+  - 🌑 Chaos (primordial void, ocean)
+  - 🌊 Water (life-bearing, boundary)
+  - ☁ Sky-Weather (vault, storm, decree)
+  - 🌍 Earth-Fertility-Time (growth, harvest, cycles)
+  - ☀🔥 Celestial-Light/Fire (illumination, energy)
+  - 🔥⚒ Forge (fire-as-technology) - derived from Fire
+  - 🌜 Moon (tides, cycles, liminal)
+  - 🧠 Memory-Record (knowledge, writing)
+  - ⚖ Order (law, measure, balance)
+  - ❤️‍🔥 Venus Duality (desire × strife)
+  - 🕳 Death/Depth (underworld, entropy)
+  - 🕯 Dawn/Prophecy (liminal revelation)
+- **Key patterns**:
+  - Order (⚖) combines with ANY mantle to create "domesticated" versions
+  - CHAOS ↔ ORDER spectrum maps to trust levels (Blighted ↔ Hallowed)
+  - Trickster gods don't create mantles - they MOVE them between domains
+  - Modern institutions inherit mantles (meteorology, data centers, law)
+- **Derived sub-mantles**: 🌱 Verdant-Elixir (entheogens), 🔥☠ Scourge (plague/heat)
+- **Cultural coverage**: Sumer → Babylon → Egypt → Hurrian → Greek → Roman → Norse/Celtic/Slavic → Yoruba → Inca → Polynesia → Gnostic → Kabbalah → Modern
 
 ---
 

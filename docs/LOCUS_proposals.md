@@ -355,6 +355,218 @@ Optional terms:
 
 ---
 
+### From docs/archive Analysis (Batch 3)
+
+#### [P-013] Mantles as Archetypal "Jobs" with Transfer Semantics
+**Source**: `docs/archive/mantles_discussion.txt` (comprehensive, ~2000 lines)
+**Category**: Architecture/Philosophy
+**Priority**: HIGH
+**Conflicts with**: Current LOCUS defines Mantle simply; this provides deep grounding
+
+**View**: FANCIFUL (mythological framing) + BORING (functional specification)
+
+**Current LOCUS says**:
+> Mantle: Transferable authority that stays behind when identity exits
+
+**Legacy source says**:
+> Mantles are archetypal "jobs" that persist across cultures:
+> - **~12 Root Mantles**: Chaos, Water, Sky-Weather, Earth-Fertility-Time, Celestial-Light/Fire, Forge, Moon, Memory-Record, Order, Venus-Duality, Death/Depth, Dawn/Prophecy
+> - **Transfer edges** (verbs): slays, sires, births, bestows, usurps, merges, splits, syncretises
+> - **Trickster gods** don't create new mantles - they MOVE existing mantles between domains
+> - **Modern institutions** inherit mantles: meteorology, data centers, law, advertising, military
+
+**Proposed resolution**:
+Add to LOCUS Mantle section:
+```
+Mantle Transfer Semantics:
+- Mantles are persistent authority patterns ("jobs")
+- They transfer via edges: BESTOW, INHERIT, USURP, MERGE, SPLIT
+- A Name that holds a Mantle may pass it via:
+  - Exit (Mantle stays with Enclave)
+  - Delegation (temporary bestow)
+  - Succession (sires/births)
+  - Conflict (slays/usurps)
+
+Mantles do not vanish - they:
+- Fragment into multiple holders
+- Merge with other mantles
+- Go dormant (unclaimed, waiting)
+- Abstract into institutions/protocols
+```
+
+---
+
+#### [P-014] Order (⚖) as Universal Constraint Modifier
+**Source**: `docs/archive/mantles_discussion.txt` (lines 1884-1898)
+**Category**: Architecture
+**Priority**: HIGH
+**Conflicts with**: None (extends Mantle concept)
+
+**View**: BORING (constraint composition)
+
+**Legacy source says**:
+> Order can combine with any mantle to create "domesticated" versions:
+> - 🔥⚖ Forge = Fire + Order (metallurgy, technology)
+> - 🌾⚖ Craft/Weaving = Fertility + Order
+> - 🌊⚖ Navigation = Water + Order
+> - ☁⚖ Sky-Bureaucrat = Sky + Order
+> - 🧠⚖ Archives = Memory + Order
+
+**Proposed resolution**:
+Add to LOCUS:
+```
+Constraint Composition:
+- Any Mantle can be modified by adding Order (⚖) constraints
+- This creates "domesticated" or "civilized" versions:
+  - Raw capability + constraints = Ordered capability
+  - Wild fire + forge rules = metallurgy
+  - Raw memory + ledger rules = archives
+
+Pattern for Enclave governance:
+- Base Mantle = what authority the role grants
+- Order constraints = how that authority is bounded
+- Result = Ordered Mantle (transferable, auditable)
+```
+
+---
+
+#### [P-015] CHAOS ↔ ORDER Spectrum Maps to Trust Levels
+**Source**: `docs/archive/mantles_discussion.txt` (lines 1969-2064)
+**Category**: Architecture
+**Priority**: HIGH
+**Conflicts with**: Aligns with P-001 Trust Spectrum
+
+**View**: FANCIFUL + BORING (both views converge)
+
+**Legacy source says**:
+> Gradient from CHAOS to ORDER:
+> ```
+> CHAOS → MOON → EARTH → SUN → ORDER
+> (beginning)                    (ending)
+> (potential)                    (crystallized)
+> (monstrous)                    (genderless/robotic)
+> ```
+> - Chaos: dark, oceanic, unknown, formless, dangerous, entropy
+> - Order: light, sky, all-knowing, written, oaths, frozen, recorded
+
+**Proposed resolution**:
+Add mapping to LOCUS Trust section:
+```
+Trust-Chaos-Order Unification:
+BLIGHTED   → UNSEELIE → FAE → SEELIE → HALLOWED
+   ↕            ↕        ↕       ↕         ↕
+CHAOS      →  MOON   → EARTH → SUN   → ORDER
+(potential)  (liminal) (mixed) (active) (crystallized)
+(hostile)   (flexible) (nurture)(defended)(frozen)
+
+Legitimacy Tiers re-expressed:
+- EDGE (Chaos-adjacent): Formless, dangerous, unconstrained
+- PRIVACY (Moon/Earth): Flexible, nurturing, growing
+- STANDARD (Sun): Defended, tempered, active
+- CORE (Order): Crystallized, recorded, auditable
+```
+
+---
+
+#### [P-016] Trickster Pattern: Mantle Movers, Not Creators
+**Source**: `docs/archive/mantles_discussion.txt` (lines 1657-1663)
+**Category**: Philosophy/Governance
+**Priority**: MEDIUM
+**Conflicts with**: None
+
+**View**: FANCIFUL (narrative pattern)
+
+**Legacy source says**:
+> Mantle "thieves" who jump lineages:
+> - Prometheus: Fire from gods → mankind (bridges celestial to technology)
+> - Māui: Chaos + Light + Fire + Sky (serial mantle mover)
+> - Loki: Storm + Fire + Death (interlaces three mantles)
+> - Hermes: Memory → Order + Eros (patron of thieves & inventors)
+>
+> Observation: mantles are stable; narrative agency lies in EDGES (steal, swap, civilize)
+
+**Proposed resolution**:
+Note for governance design:
+```
+Trickster Pattern (governance consideration):
+- Certain agents specialize in MOVING mantles, not holding them
+- They create edges (transfers) between otherwise static roles
+- Risk: unconstrained mantle movement = governance chaos
+- Mitigation: track all mantle transfers in ledger
+- Legitimate uses: innovation, trade, diplomacy
+```
+
+---
+
+#### [P-017] Modern Institutions as Secularized Mantles
+**Source**: `docs/archive/mantles_discussion.txt` (lines 1709-1745)
+**Category**: Philosophy
+**Priority**: MEDIUM
+**Conflicts with**: None (extends worldview)
+
+**View**: BORING (institutional analysis)
+
+**Legacy source says**:
+> "Hidden deities" in secular society:
+> - 🌑 Chaos → Probability, RNGs, venture capital risk
+> - ☁⚡ Sky-Weather → IPCC, meteorological agencies
+> - 🧠📜 Memory-Record → Cloud storage, blockchains, AI models
+> - ⚖ Order → Constitutions, ISO standards, legal AI
+> - ❤️‍🔥 Venus Duality → Advertising (libido) vs Military-industrial (strife)
+> - 🕳 Death/Depth → Hospice care, actuarial tables, black holes
+>
+> "Technocracy ≈ Priesthood" - meteorologists, data engineers occupy niches once held by augurs and temple scribes
+
+**Proposed resolution**:
+Note for HOLOS positioning:
+```
+Institutional Mantle Inheritance:
+- HOLOS protocols inherit historical mantle functions:
+  - Memory-Record → Distributed ledgers, ZK proofs
+  - Order → Constitutional invariants, smart contracts
+  - Trust spectrum → Legitimacy tiers, personhood progression
+
+- Design principle: make implicit mantles explicit
+- Protocols that acknowledge their archetypal role
+  may achieve broader cultural resonance
+```
+
+---
+
+#### [P-018] Multi-View Documentation Architecture
+**Source**: User guidance (conversation)
+**Category**: Architecture/Process
+**Priority**: HIGH
+**Conflicts with**: None (meta-proposal)
+
+**User request**:
+> "We need to separate what is a dry, boring, modernist-'traditional' architecture description from the 'metaphorical' one which alludes to deeper roots... we should maintain both views in parallel."
+
+**Proposed resolution**:
+Establish documentation views:
+```
+LOCUS Source of Truth
+├── VIEW: "Boring Logic" (Technical Spec)
+│   - ZK primitives, protocol layers, data structures
+│   - Target audience: Engineers, auditors
+│   - Style: Dry, precise, implementation-focused
+│
+├── VIEW: "Fanciful Logic" (Mythic Framing)
+│   - Trust spectrum, Fae personhood, Mantle transfer
+│   - Target audience: Philosophers, storytellers, AI
+│   - Style: Evocative, pattern-based, deeply true
+│
+└── VIEW: "Implementation" (Code/Builds)
+    - Actual protocol code, smart contracts
+    - Target audience: Developers
+    - Style: Executable, testable
+
+All views derive from same LOCUS.
+Different Signum, same underlying truth.
+```
+
+---
+
 ### From seel Analysis
 *Awaiting submodule configuration*
 

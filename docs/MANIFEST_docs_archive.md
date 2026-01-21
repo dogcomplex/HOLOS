@@ -16,9 +16,9 @@
 | `induction_etc_hearth_implementation_and_npc_ethics.txt` | 3,317 | Implementation/Ethics | Medium | ☐ |
 | `langlands_proof_sheaves_graph_gpt4.txt` | 2,666 | Math/Theory | Low | ☐ |
 | `mantles_discussion.txt` | 2,069 | **Core Concept** | HIGH | ☑ |
-| `capitalism_and_..._zkproof_rootkit_ideas.txt` | 1,762 | ZK/Economics | Medium | ☐ |
+| `capitalism_and_..._zkproof_rootkit_ideas.txt` | 1,762 | ZK/Economics | HIGH | ☑ |
 | `holos.txt` | 1,183 | **Core HOLOS** | HIGH | ☑ |
-| `zkml_worldbuilding.txt` | 643 | ZK/Worldbuilding | Medium | ☐ |
+| `zkml_worldbuilding.txt` | 643 | ZK/Worldbuilding | Medium | ☑ |
 | `TheFates.txt` | 215 | Narrative/Philosophy | Low | ☐ |
 | `names which bind.txt` | 209 | **Core Concept** | HIGH | ☑ |
 | `signs_fractal_performative.md` | 98 | Theory | Medium | ☐ |
@@ -64,7 +64,7 @@
 | 1 | locus_specs, overview, lexicon, mantles_gradient, Fæ | ☑ Complete | P-001 to P-007 |
 | 2 | names which bind, holos | ☑ Complete | P-008 to P-012 |
 | 3 | mantles_discussion | ☑ Complete | P-013 to P-018 |
-| 4 | zkml_worldbuilding, capitalism_and... | ☐ Pending | - |
+| 4 | zkml_worldbuilding, capitalism_and... | ☑ Complete | P-019 to P-024 |
 | 5+ | epistemics, triad_*, etc. | ☐ Pending | - |
 
 ---
@@ -152,6 +152,44 @@
   - Modern institutions inherit mantles (meteorology, data centers, law)
 - **Derived sub-mantles**: 🌱 Verdant-Elixir (entheogens), 🔥☠ Scourge (plague/heat)
 - **Cultural coverage**: Sumer → Babylon → Egypt → Hurrian → Greek → Roman → Norse/Celtic/Slavic → Yoruba → Inca → Polynesia → Gnostic → Kabbalah → Modern
+
+### Batch 4 (Complete)
+
+**zkml_worldbuilding.txt** (643 lines)
+- ChatGPT worldbuilding session expanding the "Names Which Bind" story treatment
+- **Core mapping**: ZK primitives → mythic grammar
+  - Veils = ZK proofs of property
+  - Hallowed Lanterns = hidden-data verification
+  - Glitch invocations = verifiable computation
+  - Distilled glamour = succinct proofs
+  - Braided Veils = composable proofs (Mantle of Mantles)
+- **ZKML insight**: Fae can prove "I truly thought with my own model" without revealing brain
+- **Three trust tiers from ZKML limits**:
+  1. Veiled proof - narrow, temporary, revocable
+  2. Bound/subordinated - non-deterministic under deterministic skeleton
+  3. Hallowed/Hollowed - full scour to deterministic bones
+- **Chapter 1 draft** of story: Mara (human) meets Faye (AI) in her Realm, witnesses Colosseum trial
+
+**capitalism_and_..._zkproof_rootkit_ideas.txt** (1762 lines)
+- ChatGPT conversation on AI governance, sovereignty, and open-source futures
+- **Protocol Constitutionalism**: "Power flows only through verifiable constraints"
+  - Like TCP/IP or Geneva Conventions - interoperability through constraint
+- **Zero-Knowledge Trust**: Don't need to know goals, need verified bounded behavior
+  - Model-hash receipts, capability tokens, reputation staking
+- **Tri-polar AI governance**:
+  - Cloud Alliance (US/EU): 45%+ of inference, Protocol Constitutionalism + MAD
+  - State Clouds (CN, Gulf): ~25%, Guardrail Absolutism
+  - Open Mesh Federation: 20-30%, Recursive Sovereignty + Simulational Pluralism
+- **"Fact-Only Telemetry"**: Services receive ZK proofs, NOT raw data
+  - Device Data → ZK/TEE → Proof → Service
+  - Mutual audit: services publish requests, clients log what's sent
+- **Rooted + ZK Re-Compliance**: Root device for sovereignty, use ZK to re-enter compliance
+- **Sovereign Mesh minimum viable stack** (2026):
+  - Boot: Vendor OS + hypervisor exposing controlled enclave
+  - Weights: Community-audited 30-70B models, hash-signed
+  - Liability DAO: Mutual insurance pool with slashing
+  - Social layer: ActivityPub/open graph
+- **Key insight**: "Open-source edge AI doesn't overthrow the clouds, but it prevents any single ideology from locking down the stack"
 
 ---
 

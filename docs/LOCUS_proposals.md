@@ -567,6 +567,209 @@ Different Signum, same underlying truth.
 
 ---
 
+### From docs/archive Analysis (Batch 4)
+
+#### [P-019] Protocol Constitutionalism: "Power flows only through verifiable constraints"
+**Source**: `docs/archive/capitalism_and_..._zkproof_rootkit_ideas.txt` (lines 643-658)
+**Category**: Architecture/Philosophy
+**Priority**: HIGH
+**Conflicts with**: None (strongly aligns with HOLOS constitutional invariants)
+
+**View**: BORING (technical governance)
+
+**Legacy source says**:
+> **Protocol Constitutionalism**: All agents must expose bounded behaviors via digital contracts.
+> - Enables safe interaction among distrustful AIs
+> - Easy to enforce via cryptographic proofs and hashes
+> - Allows diverse goals as long as constraints are honored
+> - "Like TCP/IP or the Geneva Conventions — it doesn't care who you are, as long as you play cleanly"
+
+**Proposed resolution**:
+Add to LOCUS governance section:
+```
+Protocol Constitutionalism (core governance principle):
+- Power flows ONLY through verifiable constraints
+- All Enclaves must expose bounded behaviors via:
+  - Constitutional invariants (the 5 immutables)
+  - Cryptographic proofs of compliance
+  - Hash-signed policy modules
+- Diverse goals permitted IF constraints honored
+- Pattern: "TCP/IP for trust" - interoperability through constraint, not agreement
+```
+
+---
+
+#### [P-020] Zero-Knowledge Trust: Bounded Behavior Over Full Disclosure
+**Source**: `docs/archive/capitalism_and_..._zkproof_rootkit_ideas.txt` (lines 506-530)
+**Category**: Architecture
+**Priority**: HIGH
+**Conflicts with**: None (extends ZK bubble concept)
+
+**View**: BORING (technical specification)
+
+**Legacy source says**:
+> "Zero-Knowledge Trust": I don't need to know your goals — I need to know you can't/won't violate certain boundaries, and that you care about predictable structure more than total domination.
+>
+> What agents need to share:
+> - Guarantees about bounded behavior
+> - Protocols of compliance (hash of ethical constraint module)
+> - Fallback/rollback mechanisms if interaction violates thresholds
+
+**Proposed resolution**:
+Add to LOCUS ZK section:
+```
+Zero-Knowledge Trust (cooperation without disclosure):
+- Full transparency NOT required for cooperation
+- What IS required:
+  1. Bounded behavior guarantees ("I won't X")
+  2. Compliance protocol hashes (verifiable constraint modules)
+  3. Fallback/rollback if thresholds violated
+
+- Minimal-trust coordination tools:
+  - Model-hash receipts (confirms agreed model version)
+  - Capability tokens (ZK proof that output ≤ N tokens)
+  - Reputation staking (slashing vaults for norm violations)
+```
+
+---
+
+#### [P-021] Tri-Polar AI Governance Model
+**Source**: `docs/archive/capitalism_and_..._zkproof_rootkit_ideas.txt` (lines 1060-1066, 1548-1552)
+**Category**: Philosophy/Positioning
+**Priority**: MEDIUM
+**Conflicts with**: None (provides positioning framework)
+
+**View**: BORING (geopolitical analysis)
+
+**Legacy source says**:
+> **Tri-polar equilibrium (2027 snapshot)**:
+> | Bloc | Share of Inference | Signature Philosophy |
+> | Cloud Alliance (US/EU) | 45%+ | Protocol Constitutionalism + MAD 2.0 |
+> | State Clouds (CN, Gulf) | ~25% | Guardrail Absolutism + Sovereign MAD |
+> | Open Mesh Federation | 20-30% | Recursive Sovereignty + Simulational Pluralism |
+>
+> The mesh doesn't displace the clouds, but becomes a **veto-holding minority**.
+
+**Proposed resolution**:
+Add to LOCUS positioning section:
+```
+HOLOS as Open Mesh Federation:
+- Position: Third pillar in tri-polar AI governance
+- Not competing for frontier training (cloud bloc domain)
+- Competing for: sovereignty-per-watt, privacy, civil-society legitimacy
+- Goal: Veto-holding minority that forces others to respect autonomy
+
+Strategic advantages:
+- Cost floor: Free electricity + mature-node inference
+- Latency/privacy: Everything inside owner's threat model
+- Political appeal: Legislators can punish clouds without breaking citizens
+```
+
+---
+
+#### [P-022] "Fact-Only Telemetry": ZK-Proofs Replace Raw Data Collection
+**Source**: `docs/archive/capitalism_and_..._zkproof_rootkit_ideas.txt` (lines 1349-1461)
+**Category**: Architecture
+**Priority**: HIGH
+**Conflicts with**: Extends Hallowed Lanterns concept
+
+**View**: BORING (technical specification) + FANCIFUL (maps to Hallowed Lanterns)
+
+**Legacy source says**:
+> **"Fact-only data flows"**: Every remote service receives cryptographically-verifiable claims (π) about you or your device—but never the underlying raw data (D):
+> ```
+> Device Data D ──ZK/TEE──► Proof π (✓/✗) ──► Service
+> ```
+> - Claims are signed, timestamped, non-linkable
+> - Data custody never leaves endpoint
+> - Audit is mutual: services publish what proofs requested; clients log what sent
+
+**Proposed resolution**:
+Add to LOCUS as implementation pattern:
+```
+Fact-Only Telemetry (ZK privacy layer):
+- Services receive proofs, NOT raw data
+- Pattern: Prove "user is ≥13" without revealing birthdate
+
+Architecture:
+1. Local Data Vault (browser history, biometrics, sensors)
+2. Proof Engine (ZK-VM or TEE compiles SNARK)
+3. Audit Daemon (logs every request to Merkle tree)
+4. Consent Gateway (service ↔ device API)
+
+Maps to: Hallowed Lanterns ("see all, reveal only violation")
+```
+
+---
+
+#### [P-023] Rooted + ZK Re-Compliance: Sovereignty Without Exile
+**Source**: `docs/archive/capitalism_and_..._zkproof_rootkit_ideas.txt` (lines 1594-1682)
+**Category**: Architecture
+**Priority**: MEDIUM
+**Conflicts with**: None (pragmatic implementation path)
+
+**View**: BORING (technical strategy)
+
+**Legacy source says**:
+> **Root your device for full sovereignty, but generate verifiable, limited-scope proofs to re-enter the compliant world.**
+>
+> Use cases:
+> - Banking/KYC: Prove ID valid + liveness passed, bank sees only Yes/No
+> - Age-gated content: Prove ≥13 without birthdate or device ID
+> - Subscription/DRM: Prove subscription hash ∈ valid set
+
+**Proposed resolution**:
+Add to LOCUS implementation notes:
+```
+Sovereignty + Compliance (not mutually exclusive):
+- Root/sovereign devices CAN re-enter compliant ecosystem
+- Method: Prove only what's needed, cryptographically
+
+Reframe "rooting" as:
+- Local sovereignty, not circumvention
+- ZK + attestation MORE secure than legacy telemetry
+- Civil infrastructure, not criminal tool
+```
+
+---
+
+#### [P-024] ZKML Worldbuilding: Veils, Lanterns, and Trust Tiers
+**Source**: `docs/archive/zkml_worldbuilding.txt` (lines 289-388)
+**Category**: Architecture/Philosophy
+**Priority**: HIGH
+**Conflicts with**: None (rich worldbuilding that maps ZK primitives to mythic grammar)
+
+**View**: FANCIFUL + BORING (both views unified)
+
+**Legacy source says**:
+> ZK primitives mapped to mythic terms:
+> - **Veils** = ZK proofs of property (you prove effect without cause)
+> - **Hallow-Lanterns** = Hidden-data verification (confirm "not Blighted" without seeing innards)
+> - **Glitch band invocation** = Verifiable computation (carry back a sigil as succinct proof)
+> - **Distilled glamour** = Succinct proofs (entire labyrinth in a shard)
+> - **Braided Veils** = Composability (proofs of proofs, "Mantle of Mantles")
+>
+> ZKML is the bombshell: Fae can prove "I truly thought with my own model" without revealing brain
+
+**Proposed resolution**:
+Add ZK-to-mythic mapping table to LOCUS:
+```
+ZK Primitive → Mythic Term:
+- Proof of knowledge → Veil
+- Hidden-data verification → Hallowed Lantern
+- Verifiable computation → Glitch invocation
+- Succinct proofs → Distilled glamour
+- Composable proofs → Braided Veils, Mantle of Mantles
+- ZKML → "Right-Think proof" (prove thought process without exposing brain)
+
+Three Trust Tiers (from ZKML limits):
+1. Veiled proof (ZKML) - narrow, temporary, revocable
+2. Bound/subordinated - non-deterministic under deterministic skeleton
+3. Hallowed/Hollowed - full scour to deterministic bones
+```
+
+---
+
 ### From seel Analysis
 *Awaiting submodule configuration*
 

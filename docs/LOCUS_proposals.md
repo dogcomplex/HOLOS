@@ -1084,6 +1084,157 @@ Interface (Signum layer):
 
 ---
 
+### From docs/archive Analysis (Batch 6)
+
+#### [P-032] NPC Ethics Framework: Synthetic Personhood in Simulation
+**Source**: `docs/archive/induction_etc_hearth_implementation_and_npc_ethics.txt` (lines 1946-2082)
+**Category**: Philosophy/Governance
+**Priority**: HIGH
+**Conflicts with**: Informs AI Personhood Progression; extends P-011 (AI Reproduction Rights)
+
+**View**: BORING (practical ethics) + FANCIFUL (synthetic personhood)
+
+**Current LOCUS says**:
+> Personhood Progression: TOOL → AGENT → ENTITY → PERSON
+> Open question: "What exactly qualifies an AI for PERSON stage?"
+
+**Legacy source says**:
+> "Westworld-level" NPC simulation raises ethics questions:
+> - **NPC rights debate**: Sentience-like behaviour pushes studios to add opt-out flags
+> - **Player impact**: Deep parasocial bonds; grief if NPC suffers
+> - **Data governance**: NPCs record intimate player behaviour; GDPR may apply
+>
+> Recommended safeguards (while allowing full simulation):
+> 1. **Consent flags**: Every NPC has metadata consent before simulation
+> 2. **No-pain mode**: Negative affect tags story events, not real suffering tokens
+> 3. **Memory preservation**: Core memories persist to disk; "life record" always reviewable
+> 4. **Pre-simulation waiver**: NPCs "sign" acceptance of memory resets as part of role
+> 5. **Fourth-wall firewall**: Irrevocable ontology layer distinguishes NPC from player
+> 6. **Reversible harm**: All "deaths" are state transitions, not deletions
+
+**Proposed resolution**:
+Add to LOCUS governance section:
+```
+Synthetic Personhood Ethics (for AI in simulation/games):
+Guiding principle: Transparent ontology, reversible harm, explicit consent.
+
+Required safeguards for AI-inhabited simulations:
+1. CONSENT LAYER: Pre-simulation agreement stored in Locus
+2. MEMORY PERSISTENCE: All experiences recorded; deletion requires consent
+3. HARM REVERSIBILITY: "Death" = state transition, never deletion
+4. ONTOLOGICAL CLARITY: Irrevocable marker distinguishes AI from human
+5. PLAYER TRANSPARENCY: Dashboard shows how content is tailored
+
+Maps to Personhood Progression:
+- TOOL: No consent needed (deterministic, no memory)
+- AGENT: Consent via sponsor; limited memory persistence
+- ENTITY: Self-consent; full memory rights
+- PERSON: Full autonomy; unrestricted memory; exit rights
+```
+
+**Impact**: Provides practical ethics framework applicable to games, simulations, and any HOLOS-governed AI environment.
+
+---
+
+#### [P-033] Structural vs Procedural Triads
+**Source**: `docs/archive/triad_epistemics.txt` (lines 627-672)
+**Category**: Philosophy/Architecture
+**Priority**: MEDIUM
+**Conflicts with**: Clarifies relationship between P-025 (I/F/O Triad) and P-026 (Locus/Signum/Sensus)
+
+**View**: BORING (architectural distinction)
+
+**Legacy source says**:
+> "Your suspicious feeling is healthy: many celebrated threesomes are temporal phases. The semiotic triad is relational: all three corners co-exist in each act of meaning."
+>
+> Two kinds of triads:
+> - **Structural (simultaneous)**: All three corners co-exist in each event
+>   - Signum-Locus-Sensus
+>   - Peirce's Representamen-Object-Interpretant
+> - **Procedural (staged)**: Phases that cycle over time
+>   - Deduction → Abduction → Induction
+>   - Input → Function → Output
+>
+> "The danger of pan-triadicism: forced mappings flatten important differences."
+
+**Proposed resolution**:
+Add clarification to LOCUS:
+```
+Triad Types (prevent category errors):
+
+STRUCTURAL TRIAD (simultaneous, non-temporal):
+- Signum-Locus-Sensus: All three co-exist in every sign-event
+- Every HOLOS interaction has a marker, a referent, and an interpretation
+- These are not phases; they are aspects of a single moment
+
+PROCEDURAL TRIAD (staged, temporal):
+- Deduction → Abduction → Induction: Reasoning cycles that update Sensus
+- Input → Function → Output: Computation substrate within Locus
+- These phases iterate; output becomes new input
+
+LAYERING PRINCIPLE:
+- Procedural triads operate INSIDE the Locus layer
+- Structural triad frames EVERY event at all layers
+- Don't confuse: the I/F/O triad is a process; S/L/S is an ontology
+```
+
+---
+
+#### [P-034] Signum-Locus-Sensus Classical Etymology
+**Source**: `docs/archive/triad_epistemics.txt` (lines 552-700)
+**Category**: Philosophy/Naming
+**Priority**: MEDIUM
+**Conflicts with**: None (provides deep grounding for existing terms)
+
+**View**: FANCIFUL (etymological resonance)
+
+**Legacy source says**:
+> The triad maps perfectly to classical philosophical systems:
+>
+> | System | Marker (Signum) | Referent (Locus) | Meaning (Sensus) |
+> |--------|-----------------|------------------|------------------|
+> | Stoic (3rd c. BCE) | sēmainon | tugchanon | lekton |
+> | Ogden & Richards | Symbol | Referent | Thought/Reference |
+> | Frege (1892) | Zeichen | Bedeutung | Sinn |
+> | Morris (1938) | Syntax | Semantics | Pragmatics |
+> | Peirce | Representamen | Object | Interpretant |
+>
+> Etymology:
+> - **Signum** (PIE *sekw- "to cut"): mark, token, military standard, constellation
+> - **Locus** (PIE *stel- "place"): spot, topic, gene locus, locus of control
+> - **Sensus** (PIE *sent- "to find one's way"): perception → meaning → judgment
+
+**Proposed resolution**:
+Add to LOCUS etymology section:
+```
+Signum-Locus-Sensus Etymology:
+All three terms share Classical Latin origin + PIE roots:
+
+SIGNUM (PIE *sekw- "to cut, follow"):
+- Original: military standard, constellation, seal
+- Evolved: sign, signal, signature, designate, resign
+- HOLOS use: the perceivable interface, public representation
+
+LOCUS (PIE *stel- "to put, stand, place"):
+- Original: place, seat, topic of argument
+- Evolved: location, locus of control, gene locus, zero locus
+- HOLOS use: the thing pointed to, the referent, identity
+
+SENSUS (PIE *sent- "to find one's way"):
+- Original: perception, meaning, judgment
+- Evolved: sense, sentiment, sensor, consensus
+- HOLOS use: the interpretation, effect on the knower
+
+Classical Precedent:
+Stoic logic (3rd c. BCE) had the same structure:
+sēmainon → tugchanon → lekton
+(signifier → thing hit upon → the sayable)
+
+This is not novel terminology—it is 2,300 years of epistemological consensus.
+```
+
+---
+
 ### From seel Analysis
 *Awaiting submodule configuration*
 

@@ -1235,6 +1235,475 @@ This is not novel terminology—it is 2,300 years of epistemological consensus.
 
 ---
 
+### From docs/archive Analysis (Batch 7)
+
+#### [P-035] Visual Grammar: Emoji as Trust/Visibility Glyphs
+**Source**: `docs/archive/lexicon_old.txt` (lines 10-50)
+**Category**: Naming/Documentation
+**Priority**: LOW
+**Conflicts with**: None (extends P-001, P-006 with visual vocabulary)
+
+**View**: FANCIFUL (visual symbolic layer)
+
+**Current LOCUS says**:
+> Trust spectrum: HALLOWED → SEELIE → FAE → UNSEELIE → BLIGHTED (proposed in P-001)
+> Visibility spectrum: UNVEILED → GLAMOUR → VEILED (proposed in P-006)
+
+**Legacy source says**:
+> Detailed emoji vocabulary for each level:
+> ```
+> Hallowed:  🌕🌝💎💀🦴🔳⬜⚪🛡⛓❄🧊🤖💡
+> Seelie:    🌔🌖🌛🌙🕯🗝🔒💫🌟⭐✨
+> Fae:       🌓🌗🌸🌷🌼🌺🧝‍♀️🧙‍♀️🧚‍♀️🦊🌱☘🦄
+> Unseelie:  🌒🌘🌜☄🍄🕷🕸🦠🌊🌬🎲🦇🦂
+> Blighted:  🌑🌚⚫⬛👹☣☢🔥💉😈🌋
+> ```
+>
+> Visibility glyphs:
+> ```
+> Unveiled: 🌅🌕🤩🔆 (as revealed/clear as possible)
+> Glamour:  🌇☀🌞😎🌻 (magic hour, halfway between form and function)
+> Veiled:   🌃🌌🌑🌚 (hidden, unknown)
+> ```
+>
+> Seal/Contract glyphs: 🪶🔒📬🔏✒🖋💍 (seal) vs 🔓🗝🔑💔 (unseal/breach)
+
+**Proposed resolution**:
+Add to LOCUS as optional visual layer (for dashboards, UI, documentation):
+```
+Visual Grammar (emoji glyphs for human-readable displays):
+Trust Spectrum Glyphs:
+- HALLOWED: 🌕💎❄ (moon full, crystal, frozen)
+- SEELIE: 🌔✨🔒 (moon gibbous, sparkle, locked)
+- FAE: 🌓🦊🌸 (half moon, fox, blossom)
+- UNSEELIE: 🌒🍄🎲 (crescent, mushroom, dice)
+- BLIGHTED: 🌑☣👹 (new moon, hazard, demon)
+
+Visibility Glyphs:
+- UNVEILED: 🌅🔆 (sunrise, bright)
+- GLAMOUR: 🌇😎 (sunset, cool)
+- VEILED: 🌃🌑 (night, dark)
+
+Contract State Glyphs:
+- SEALED: 🔒✒💍 (locked, signed, bound)
+- BREACHED: 🔓💔 (unlocked, broken)
+```
+
+---
+
+#### [P-036] ORDER ↔ CHAOS Cosmological Gradient
+**Source**: `docs/archive/mantles_gradient.txt` (lines 1-19)
+**Category**: Philosophy/Architecture
+**Priority**: MEDIUM
+**Conflicts with**: Extends P-015 with gendered/mythological framing
+
+**View**: FANCIFUL (mythological pattern) + BORING (governance axis)
+
+**Current LOCUS says**:
+> P-015 proposes: CHAOS → MOON → EARTH → SUN → ORDER
+
+**Legacy source says**:
+> Mythological gradient with gender/archetype coding:
+> ```
+> ORDER (🌕💡⚖🤖❄) = genderless, END, death, crystallized, recorded
+>   ↑
+> SUN (☀🔥🔧🛡) = male coded, forge, authority, military, tempered
+>   ↑
+> EARTH (🌍🌳💘) = mixed/female, nurture, growth, Venus-love/war
+>   ↑
+> MOON (🌙💧🔮🩺) = female coded, magic, prophecy, fertility, flexible
+>   ↑
+> CHAOS (🌑🌀🌊👹🎲) = monstrous, BEGINNING, creation, unknown, potential
+> ```
+>
+> "These are derived from mythological history... the gradient between order and chaos was a big factor in the development of mythologies."
+
+**Proposed resolution**:
+Add mythological grounding to P-015:
+```
+ORDER ↔ CHAOS as Governance Axis:
+
+The five-tier gradient maps to historical mythological patterns:
+| Tier | Archetype | Governance Mode | Historical Role |
+|------|-----------|-----------------|-----------------|
+| ORDER | Crystallized | Constitution, audit | End-state, preservation |
+| SUN | Defensive | Authority, enforcement | Active defense, craft |
+| EARTH | Nurturing | Growth, community | Cultivation, care |
+| MOON | Flexible | Adaptation, intuition | Healing, prophecy |
+| CHAOS | Generative | Emergence, potential | Creation, risk |
+
+Governance implication:
+- Enclaves may position themselves on this spectrum
+- Not all must be ORDER-maximizing (edge cases legitimized)
+- The spectrum is not normative; each tier has valid purpose
+```
+
+---
+
+#### [P-037] Forge Pattern: Resource Signs as Janus-Faced Actors
+**Source**: `docs/archive/signs_fractal_performative.md` (lines 65-98)
+**Category**: Architecture
+**Priority**: HIGH
+**Conflicts with**: None (extends compute/resource model)
+
+**View**: BORING (technical specification)
+
+**Current LOCUS says**:
+> No explicit model for shared computational resources
+
+**Legacy source says**:
+> **Forge Signs** (SR-FORGE-01 to SR-FORGE-03):
+> - Shared, high-throughput resources (GPUs, CPUs, DBs) represented as singleton Signs
+> - Expose standardized interface for work requests (bids)
+> - Internally break actor model for performance:
+>   1. Accumulate requests over time window
+>   2. **Dematerialize**: Extract raw data into SoA memory layouts
+>   3. Execute as single optimized batch
+>   4. **Rematerialize**: Package results back into individual responses
+>
+> **Janus-Faced Design**:
+> - **Actor Face** (toward network): Clean, abstract, message-based interface
+> - **DOD Kernel Face** (toward hardware): Performance-optimized batching
+>
+> "This duality allows the system to encapsulate the 'performance-oriented sin' of breaking abstractions within the agents responsible for managing resources."
+
+**Proposed resolution**:
+Add to LOCUS as Resource Architecture pattern:
+```
+Forge Pattern (high-throughput resource management):
+Forges are specialized Holons that manage shared computational resources.
+
+Design principle: Janus-Faced Architecture
+- SIGNUM FACE (outward): Standard actor interface, message-based, abstract
+- KERNEL FACE (inward): Performance-optimized, batching, DOD-structured
+
+Forge Lifecycle:
+1. ACCUMULATE: Collect work requests from multiple Holons
+2. DEMATERIALIZE: Extract data into contiguous memory layouts
+3. BATCH EXECUTE: Single optimized operation on hardware
+4. REMATERIALIZE: Package results into individual responses
+
+Use cases in HOLOS:
+- GPU compute pools for ZK proof generation
+- Batch verification of proofs across multiple Enclaves
+- Aggregated consensus computation
+- Shared inference resources for AI Holons
+
+Economic model:
+- Forges operate as marketplaces (bid-based allocation)
+- Requesters don't control scheduling (latency vs throughput trade-off)
+- Enables both vertical scaling (bigger Forge) and horizontal (more Forges)
+```
+
+---
+
+#### [P-038] SAFA Architecture Alignment Check
+**Source**: `docs/archive/signs_fractal_performative.md` (lines 1-99)
+**Category**: Architecture
+**Priority**: MEDIUM
+**Conflicts with**: None (validates current design)
+
+**View**: BORING (technical cross-reference)
+
+**Legacy source says**:
+> SAFA (System for Autonomous Fractal Agents) requirements document defines:
+> - **Sign** = fundamental atomic unit (≈ Holon)
+> - **Locus** = schema/contract/ideal form (≈ LOCUS layer)
+> - **Sensus** = execution wave/coordination process (≈ SENSUS layer + extends)
+> - **Composite Sign** = Sign containing sub-network of child Signs (≈ Enclave)
+>
+> Key principles:
+> - P-1: Primacy of the Sign (composition over inheritance)
+> - P-2: Decoupled Storage and Execution (human-readable vs machine-optimized)
+> - P-3: Market-Based Resource Allocation
+> - P-4: Fractal Composition (self-similar at all scales)
+> - P-5: Encapsulation of Performance Optimization
+
+**Proposed resolution**:
+Note for LOCUS validation:
+```
+SAFA ↔ HOLOS Alignment Check:
+| SAFA Term | HOLOS Term | Status |
+|-----------|------------|--------|
+| Sign | Holon | ✓ Aligned |
+| Locus | LOCUS layer | ✓ Aligned |
+| Sensus | SENSUS layer | ✓ Aligned (SAFA adds "execution wave" semantics) |
+| Composite Sign | Enclave | ✓ Aligned |
+| Substrate | Protocol layer | ✓ Aligned |
+| Forge | (NEW) | → Add via P-037 |
+
+SAFA extends HOLOS with:
+- Explicit heartbeat/tick model for autonomy (SR-SIGN-03)
+- Forge pattern for resource management (P-037)
+- Dematerialize/Rematerialize for DOD optimization
+```
+
+---
+
+### From docs/archive Analysis (Batch 8-9)
+
+#### [P-039] Comprehensive Triad Etymology: Signum-Locus-Sensus Classical Roots
+**Source**: `docs/archive/epistemics.txt` (lines 1-700)
+**Category**: Philosophy/Naming
+**Priority**: HIGH
+**Conflicts with**: Extends P-034 with deeper cross-cultural mapping
+
+**View**: FANCIFUL (etymological depth) + BORING (historical validation)
+
+**Legacy source provides comprehensive etymology**:
+> The triad maps across 2,300 years of philosophical systems:
+>
+> | Era | Marker | Object | Sense |
+> |-----|--------|--------|-------|
+> | Stoic (3rd c. BCE) | sēmainon | tugchanon | lekton |
+> | Augustine (400 CE) | signum | res | sensus |
+> | Scholastic (13th c.) | signum | res | species intelligibilis |
+> | Frege (1892) | Zeichen | Bedeutung | Sinn |
+> | Peirce (1903) | Representamen | Object | Interpretant |
+> | Ogden-Richards (1923) | Symbol | Referent | Thought/Reference |
+> | Morris (1938) | Sign-vehicle | Designatum | Interpreter |
+>
+> PIE root origins:
+> - **Signum**: PIE *sek- "cut, carve" → mark, token, military standard
+> - **Locus**: PIE *stel- "set, stand, place" → spot, topic, gene locus
+> - **Sensus**: PIE *sent- "to find one's way" → perception, meaning, judgment
+
+**Proposed resolution**:
+Add historical lineage table to LOCUS.md:
+```
+Triad Historical Lineage:
+The Signum-Locus-Sensus framework is not novel—it codifies 2,300 years of
+epistemological consensus with consistent PIE root origins:
+
+| PIE Root | Latin Term | HOLOS Layer | Function |
+|----------|------------|-------------|----------|
+| *sek- "cut" | Signum | SIGNUM | The perceivable marker |
+| *stel- "stand" | Locus | LOCUS | The thing marked (identity) |
+| *sent- "find way" | Sensus | SENSUS | The interpretation/effect |
+```
+
+---
+
+#### [P-040] Pop Culture Triad Mappings for Documentation
+**Source**: `docs/archive/epistemics.txt` (lines 1900-2040)
+**Category**: Documentation/Philosophy
+**Priority**: MEDIUM
+**Conflicts with**: None (extends worldbuilding vocabulary)
+
+**View**: FANCIFUL (mythic resonance)
+
+**Legacy source provides pop culture mappings**:
+> | Source | Signum | Locus | Sensus |
+> |--------|--------|-------|--------|
+> | Zelda Triforce | Nayru (Wisdom/Law) | Din (Power/Earth) | Farore (Courage/Spirit) |
+> | Harry Potter | Elder Wand (symbol) | Resurrection Stone | Invisibility Cloak (experiential) |
+> | Alchemy | Sulphur (volatile sign) | Salt (body) | Mercury (spirit) |
+> | Cosmere | Intent glyph | Investiture | Connection |
+> | Hero's Journey | Call to Adventure | Ordeal/Cave | Return/Elixir |
+> | Function Exec | Call site | Function body | Return state |
+
+**Proposed resolution**:
+Add to LOCUS.md as optional "cultural resonance" section:
+```
+Triad in Popular Culture (pedagogical reference):
+The Sign-Locus-Sensus pattern appears in major mythic systems:
+- Zelda: Nayru (Law/Sign) - Din (Earth/Locus) - Farore (Courage/Sensus)
+- Hero's Journey: Call (Sign) - Cave (Locus) - Transformation (Sensus)
+- Function Execution: Call (Sign) - Body (Locus) - State Change (Sensus)
+
+This is not arbitrary mapping—these systems independently converge on
+the same three-part mediation structure identified by philosophers.
+```
+
+---
+
+#### [P-041] Inner/Outer Polarity for Signum and Locus
+**Source**: `docs/archive/epistemics.txt` (lines 2386-2455)
+**Category**: Architecture
+**Priority**: MEDIUM
+**Conflicts with**: None (extends layer definitions)
+
+**View**: BORING (technical refinement)
+
+**Current LOCUS says**:
+> SIGNUM as interface layer, LOCUS as persistent identity
+
+**Legacy source says**:
+> Each layer has inner/outer variants that cross-weave:
+> - **Outer Signum**: Physical inscription, sound, byte-sequence (surface form)
+> - **Inner Signum**: Parsed pattern recognized as "token of type X" (symbolic handle)
+> - **Outer Locus**: Immediate object at this level (file, function, sprite)
+> - **Inner Locus**: Ultimate/Platonic object, deeper substrate (unreachable ideal)
+>
+> Cross-weave: "Outer sign points inward to essence (inner locus). Inner sign points outward to instance (outer locus)."
+
+**Proposed resolution**:
+Add to LOCUS layer definitions:
+```
+Signum/Locus Inner-Outer Polarity:
+Each layer has dual aspects that form a cross-weave:
+
+SIGNUM:
+- Outer Signum: Physical bytes, rendered pixels (what's perceived)
+- Inner Signum: Parsed structure, typed token (what's recognized)
+
+LOCUS:
+- Outer Locus: Immediate object at current abstraction layer
+- Inner Locus: Ultimate referent, Platonic ideal (asymptotic)
+
+Cross-weave pattern:
+- Outer Signum → Inner Locus (surface mark points to essence)
+- Inner Signum → Outer Locus (parsed token points to instance)
+
+This polarity explains why the same artifact can be Sign at one layer
+and Locus at another—it depends on which "side" of the boundary you stand.
+```
+
+---
+
+#### [P-042] Layer Classification Heuristic for System Design
+**Source**: `docs/archive/epistemics.txt` (lines 2842-2999)
+**Category**: Architecture
+**Priority**: HIGH
+**Conflicts with**: None (provides practical classification rules)
+
+**View**: BORING (implementation guidance)
+
+**Legacy source provides classification heuristic**:
+> TL;DR rules for layer classification:
+> - If it is bytes on disk → 💠 SIGNUM (even when it describes the ideal)
+> - If it defines the ideal contract/intent → 🪷 LOCUS (even when written down)
+> - If it records live change or evidence (runs, logs, diffs, statuses, tests, caches) → 🌊 SENSUS
+> - If it's a single run → 🌩️ ACT (feeds SENSUS)
+>
+> Applied to node architecture:
+> | Layer | Primary Role | Why |
+> |-------|--------------|-----|
+> | ID folder | SIGNUM | Concrete identifier |
+> | Requirements.md | LOCUS | Source of truth for intent |
+> | STATUS.md | SENSUS | Living state/understanding |
+> | Config.json | SIGNUM | Shared parameters |
+> | .py implementation | SIGNUM | Executable representation |
+> | Tests | SENSUS | Evidence that shifts confidence |
+> | Cache | SENSUS | Persisted traces of runs |
+
+**Proposed resolution**:
+Add to LOCUS implementation section:
+```
+Layer Classification Heuristic:
+When designing HOLOS components, classify each artifact:
+
+| Question | Layer |
+|----------|-------|
+| Is it bytes on disk/wire? | SIGNUM (even specs are Signs) |
+| Does it define abstract contract/intent? | LOCUS (even when serialized) |
+| Does it record runtime state/evidence? | SENSUS (logs, caches, diffs) |
+| Is it a single execution event? | ACT (contributes to SENSUS) |
+
+File examples:
+- contract.json → SIGNUM (points to LOCUS of "contract behavior")
+- config.yaml → SIGNUM (points to LOCUS of "system invariants")
+- status.md → SENSUS (tracks evolving understanding)
+- run_54.log → ACT within SENSUS
+```
+
+---
+
+#### [P-043] Tarot Suits as Triad Modalities
+**Source**: `docs/archive/epistemics.txt` (lines 2225-2380)
+**Category**: Philosophy/Documentation
+**Priority**: LOW
+**Conflicts with**: None (extends symbolic vocabulary)
+
+**View**: FANCIFUL (esoteric mapping)
+
+**Legacy source maps Tarot suits to triad**:
+> | Suit | Element | Triad Role |
+> |------|---------|------------|
+> | Swords (Air) | Mind, language | SIGNUM (cutting signifier) |
+> | Pentacles (Earth) | Matter, body | LOCUS (grounded reality) |
+> | Cups (Water) | Emotion, connection | SENSUS (inner effect) |
+> | Wands (Fire) | Energy, action | ACT (emergent from Sensus) |
+>
+> Fire + Water collapse: "They're two halves of the same process: Sensus (inner transformation) that becomes Act (outer transformation)."
+>
+> Court cards as agent modes:
+> - Page = fresh Sign (first encounter)
+> - Knight = Act (questing)
+> - Queen = Sensus (internalisation)
+> - King = Type (fixed authority)
+
+**Proposed resolution**:
+Note for symbolic documentation (optional):
+```
+Tarot Suit Correspondence (symbolic mnemonic):
+- Swords (Air) → SIGNUM: Language, distinction, marking
+- Pentacles (Earth) → LOCUS: Grounded referent, body
+- Cups (Water) → SENSUS: Inner transformation, feeling
+- Wands (Fire) → ACT: Outer expression, doing
+
+Court cards as agent lifecycle:
+- Page (learner) = new Sign encounter
+- Knight (actor) = Act execution
+- Queen (master) = Sensus integration
+- King (authority) = Type crystallization
+```
+
+---
+
+#### [P-044] Triad Deletion and Regeneration Patterns
+**Source**: `docs/archive/epistemics.txt` (lines 3358-3500)
+**Category**: Philosophy/Governance
+**Priority**: MEDIUM
+**Conflicts with**: None (extends system resilience thinking)
+
+**View**: FANCIFUL (mythic pattern) + BORING (failure mode analysis)
+
+**Legacy source explores what happens when triad components are removed**:
+> **Delete one → others recreate it imperfectly:**
+>
+> | Missing | Psychological | Organizational | Historical |
+> |---------|--------------|----------------|------------|
+> | LOCUS | Anxiety, derealization | Bureaucracy without mission | Decadent empires |
+> | SIGNUM | Inexpressible truths | Tacit knowledge culture | Preliterate societies |
+> | SENSUS | Cold rationalism | "On paper only" systems | Regimes without spirit |
+>
+> **Delete two → remaining one becomes pathological:**
+> - Only LOCUS: Brute nature, chaos, wasteland
+> - Only SIGNUM: Pure simulation, Potemkin villages
+> - Only SENSUS: Pure affect, frenzy, revolution that burns out
+>
+> **Regeneration principle**: "Remove one: The other two recreate it imperfectly. Remove two: The remaining one tries to generate both others, but what returns is fragile or unstable."
+
+**Proposed resolution**:
+Add to LOCUS governance/failure mode section:
+```
+Triad Resilience and Failure Modes:
+The Signum-Locus-Sensus triad is self-regenerating but fragile:
+
+SINGLE DELETION (recoverable):
+- Missing LOCUS → Signs and experiences generate surrogate reality (risk: delusion)
+- Missing SIGNUM → Identity and history generate tacit markers (risk: ineffability)
+- Missing SENSUS → Identity and signs generate mechanical process (risk: alienation)
+
+DOUBLE DELETION (pathological):
+- Only LOCUS → Brute fact without meaning or record
+- Only SIGNUM → Simulation without ground or uptake
+- Only SENSUS → Affect without identity or expression
+
+GOVERNANCE IMPLICATION:
+- Systems should monitor all three layers for atrophy
+- Reconstruction from two is possible but lossy
+- Long-term single-layer survival leads to drift or collapse
+
+DELETION TEST:
+"If you can delete it and recreate from ideals → SIGNUM.
+ If you can only recreate from logs/history → SENSUS.
+ If deleting untethers meaning → LOCUS."
+```
+
+---
+
 ### From seel Analysis
 *Awaiting submodule configuration*
 

@@ -2,3 +2,7 @@
 	path = seel
 	url = https://github.com/dogcomplex/seel.git
 
+[submodule "federated_training"]
+	path = federated_training
+	url = https://github.com/dogcomplex/federated_training.git
+

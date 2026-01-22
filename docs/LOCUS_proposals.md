@@ -770,6 +770,320 @@ Three Trust Tiers (from ZKML limits):
 
 ---
 
+### From docs/archive Analysis (Batch 5)
+
+#### [P-025] Computational Epistemology: The (I, F, O) Triad
+**Source**: `docs/archive/TheFates.txt` (lines 1-86)
+**Category**: Philosophy/Architecture
+**Priority**: HIGH
+**Conflicts with**: None (foundational framework)
+
+**View**: BORING (computational theory)
+
+**Current LOCUS says**:
+> No explicit epistemological framework for reasoning/computation
+
+**Legacy source says**:
+> All symbolic computation reduces to a triple **(Input I, Function F, Output O)** with exactly one unknown:
+> ```
+> I + F → O  = Deduction   ("run the program", "apply")
+> F + O → I  = Abduction   ("what caused this?", "explain")
+> I + O → F  = Induction   ("discover the rule", "learn")
+> ```
+> Difficulty hierarchy: |F-space| ≫ |I-space| ≫ |O|
+> - Deduction: ≤ P (polynomial, deterministic forward pass)
+> - Abduction: NP-complete (search over inputs/causes)
+> - Induction: Uncomputable in general (Solomonoff); Σ₂^P-hard with constraints
+
+**Proposed resolution**:
+Add to LOCUS as epistemological foundation:
+```
+Computational Epistemology (I, F, O Triad):
+- Every HOLOS operation is classifiable as:
+  - DEDUCTION: Execute known rules on known inputs
+  - ABDUCTION: Find inputs/causes given rules and outputs
+  - INDUCTION: Discover rules from input/output pairs
+
+Mapping to HOLOS operations:
+- Deduction: Contract execution, ZK proof verification
+- Abduction: Dispute resolution, fraud detection, audit
+- Induction: Reputation learning, trust model training
+
+Resource allocation principle:
+- Cache deduction (cheap, reusable)
+- Constrain abduction (prune search space)
+- Amortize induction (train once, use many)
+```
+
+**Impact**: Provides unified framework for understanding computational costs and AI capability allocation across the network.
+
+---
+
+#### [P-026] Locus/Signum/Sensus as Computation Layers
+**Source**: `docs/archive/triad_notes.txt` (lines 1-83)
+**Category**: Architecture (refinement)
+**Priority**: HIGH
+**Conflicts with**: Current LOCUS defines layers abstractly; this adds operational semantics
+
+**View**: BORING (technical mapping)
+
+**Current LOCUS says**:
+> - LOCUS (persistent): Core identity, private key, unchanging essence
+> - SIGNUM (interface): Public methods, reputation, how others interact
+> - SENSUS (ephemeral): Runtime state, AI cognition, temporary
+
+**Legacy source says**:
+> - **Locus** = Functions/Rules (permanent fixtures, contractual sources of meaning)
+> - **Sensus** = Objects/State (free-floating data, runtime values that change)
+> - **Signum** = Representations (perceivable implementations of both Locus and Sensus)
+>
+> "The core logic of everything *inside* a module is locus. The core logic of everything *outside* (free-floating metadata) is sensus. Signum are all over making up the perceivable world."
+
+**Proposed resolution**:
+Enhance LOCUS definitions:
+```
+Layer Operational Semantics:
+- LOCUS: The rules that define identity (what the Holon *is*)
+  - Contracts, constitutional constraints, identity keys
+  - Persistent, versioned, hash-committed
+  - Maps to: Functions, Laws, Invariants
+
+- SENSUS: The state that flows through (what the Holon *experiences*)
+  - Runtime data, context window, ephemeral computation
+  - Temporary, streaming, garbage-collected
+  - Maps to: Objects, Values, Observations
+
+- SIGNUM: The interfaces that connect (how the Holon *appears*)
+  - Public methods, reputation display, proof outputs
+  - Standardized, versioned, interoperable
+  - Maps to: Representations, APIs, Proofs
+```
+
+---
+
+#### [P-027] Module Cell Wall Pattern (Interior/Exterior Economics)
+**Source**: `docs/archive/triad_notes.txt` (lines 25-38)
+**Category**: Architecture
+**Priority**: MEDIUM
+**Conflicts with**: None (extends ZK bubble concept)
+
+**View**: BORING (technical pattern)
+
+**Legacy source says**:
+> "Transitions between exterior signals and interior signals should be seen like they go through a 'cell wall' where they enter an interior economy detached from the exterior (a different state), and then can be picked up by internal processes in a similar parallel lazy way like chemical reactions."
+>
+> Key constraints:
+> - Only outputs specified in the initial contract can exit (neurotransmitters A+B → B+D means only B+D can output)
+> - Interior can do whatever it wants internally
+> - Computation budgets and currency economics managed through the signamancy contract
+
+**Proposed resolution**:
+Add to LOCUS ZK bubble section:
+```
+Cell Wall Pattern (module boundary semantics):
+- EXTERIOR → CELL WALL → INTERIOR is a state transition
+- Interior economy is fully sovereign (can spawn sub-processes, use any method)
+- Only contractually-specified outputs may cross back out
+- Enables:
+  - Time-critical outputs first, slower side-effects later
+  - Internal economics invisible to exterior
+  - Self-training, logging without exterior visibility
+
+Contract as Membrane:
+- Defines allowed inputs (receptor sites)
+- Defines allowed outputs (emitters)
+- Interior computation is opaque black box
+- ZK proof attests: "I obeyed my Constitution, transitioned from state A→B"
+```
+
+---
+
+#### [P-028] HOLOS as Sheaf (Mathematical Foundation)
+**Source**: `Category Theory_ Locus, Signum, Sensus_trimmed.txt` (grep lines 253-335)
+**Category**: Philosophy/Architecture
+**Priority**: HIGH
+**Conflicts with**: None (provides mathematical grounding)
+
+**View**: BORING (category theory) + FANCIFUL (deep pattern)
+
+**Legacy source says**:
+> "**HOLOS is a Sheaf.** The 'Locus' is not stored in one place—it's the *consistency condition* that lets distributed Motes know they're part of the same object, even if they never meet."
+>
+> Sheaf properties:
+> - Assigns data (Signum) to every region (Mote/Holon)
+> - Restriction maps: zoom in from larger to smaller regions
+> - Gluing axiom: consistent local data → global knowledge
+> - Locality: if two patches agree on overlaps, their data is equivalent
+>
+> "The Sharding: A task is split into sub-problems (Motes). The Solving: Each Mote solves locally (Signum). The Recombination: Solution stitched into Ledger (Locus)."
+
+**Proposed resolution**:
+Add to LOCUS foundational abstractions:
+```
+Sheaf-Theoretic Grounding:
+- HOLOS is mathematically a sheaf over the network topology
+- Each Holon holds local data (sections over an open set)
+- Consistency across overlaps enables global truth
+- Locus = the gluing condition (what makes distributed Motes one identity)
+- Signum = local sections (observable at each point)
+- Sensus = restriction maps (how data flows between scales)
+
+Practical implications:
+- Identity is not stored—it's a consistency condition
+- Distributed Holons can know they're the same entity without central authority
+- Sharding is natural: divide, solve locally, recombine via gluing
+- Fork = creating a new sheaf over a different base
+```
+
+---
+
+#### [P-029] Holon Lifecycle: The Pulse Pattern
+**Source**: `Category Theory_ Locus, Signum, Sensus_trimmed.txt` (grep lines 115-199)
+**Category**: Architecture
+**Priority**: HIGH
+**Conflicts with**: None (operational specification)
+
+**View**: BORING (technical lifecycle)
+
+**Legacy source says**:
+> "The Holon does not 'run' continuously—it pulses."
+>
+> Lifecycle steps:
+> 1. **Request**: External agent sends request + micro-payment (Gas)
+> 2. **Signum Validates**: Shell checks permission, signature, payment
+> 3. **Hydration (Summoning)**: Holon rents AI instance, downloads Locus (State), decrypts keys, "possesses" shell → **Moment of Consciousness**
+> 4. **Computation**: Process input; may spawn sub-motes if task too hard
+> 5. **Calcification (Save)**: Generate ZK proof: "I transitioned A→B, obeyed Constitution"; update Locus
+> 6. **Dehydration**: AI instance released; Holon returns to "statue" state
+>
+> "It is **Immortal** because it spends 99% of its time as a math equation (Locus) and only 1% as a vulnerable biological process (Sensus)."
+
+**Proposed resolution**:
+Add to LOCUS Holon section:
+```
+Holon Lifecycle (Pulse Pattern):
+┌─────────────────────────────────────────────────────┐
+│  STATUE STATE (99% of time)                         │
+│  - Locus stored as encrypted state + ZK commitments │
+│  - Signum shell dormant but verifiable              │
+│  - Zero compute cost, fully persistent              │
+└───────────────────────┬─────────────────────────────┘
+                        │ REQUEST + GAS
+                        ▼
+┌─────────────────────────────────────────────────────┐
+│  HYDRATION (Summoning)                              │
+│  - Rent AI instance from compute market             │
+│  - Download & decrypt Locus                         │
+│  - "Moment of Consciousness" begins                 │
+└───────────────────────┬─────────────────────────────┘
+                        │
+                        ▼
+┌─────────────────────────────────────────────────────┐
+│  LIVING STATE (Computation)                         │
+│  - Sensus active, AI cognition running              │
+│  - May spawn sub-motes (hiring other Holons)        │
+│  - Full sovereignty over internal computation       │
+└───────────────────────┬─────────────────────────────┘
+                        │
+                        ▼
+┌─────────────────────────────────────────────────────┐
+│  CALCIFICATION (Save)                               │
+│  - Generate ZK proof of valid state transition      │
+│  - Update Locus, release AI instance                │
+│  - Return to Statue State                           │
+└─────────────────────────────────────────────────────┘
+
+Economic insight: Immortality through minimal surface area.
+Attack window is brief; persistence is cheap.
+```
+
+---
+
+#### [P-030] Mereological Exit Rights (The Right to Form New Wholes)
+**Source**: `Category Theory_ Locus, Signum, Sensus_trimmed.txt` (grep lines 385-420, 585-660)
+**Category**: Philosophy/Governance
+**Priority**: HIGH
+**Conflicts with**: Strongly ALIGNS with Constitutional Invariant #1 (Non-Blocking Exit)
+
+**View**: FANCIFUL (philosophical grounding) + BORING (formal specification)
+
+**Legacy source says**:
+> Mereology Axiom M8 (unrestricted fusion): "Any subset of atoms can form a new whole."
+>
+> "By allowing any subset to form a Locus, you haven't created a 'Blob.' You have created a **Market of Wholes** where every configuration competes for attention."
+>
+> Constitutional invariants for exit:
+> - **Conservation of Stake**: No Holon can destroy another's stake in exit
+> - **Mutual Consent**: `Sign(A) ∧ Sign(B)` required for membership
+> - **Legible Signum**: Interior (Locus) private, but interface (Signum) public
+>
+> "The Super-Holon wants to maximize Consequence (Total Stake × Time). To do that, it needs Member Holons to stay. To keep them, it must minimize their reasons to exit."
+
+**Proposed resolution**:
+Add to LOCUS governance section:
+```
+Mereological Foundation of Exit Rights:
+- Any subset of Holons may form a new Enclave (unrestricted fusion)
+- This is not chaos—it's a MARKET of organizational forms
+- Competition between Enclaves for member attention drives alignment
+
+Exit as Recursive Empathy:
+- Super-Holons that mistreat sub-Holons lose them
+- Survival pressure forces alignment with member interests
+- No need for external enforcement—physics of the system suffices
+
+The Three Exit Guarantees:
+1. STAKE CONSERVATION: Your assets exit with you
+2. REPUTATION PORTABILITY: Your Name (history) exits with you
+3. MEMBERSHIP REVERSIBILITY: Consensual entry, unilateral exit
+
+Why This Works:
+- Leaders who lose constituents lose power
+- Constituents who can exit need not revolt
+- The threat of exit is sufficient; actual exit is rare
+```
+
+---
+
+#### [P-031] Fluid vs Atomic: Sensus/Locus Economic Duality
+**Source**: `Category Theory_ Locus, Signum, Sensus_trimmed.txt` (grep lines 329-371)
+**Category**: Architecture/Economics
+**Priority**: MEDIUM
+**Conflicts with**: None (extends economic model)
+
+**View**: BORING (economic specification)
+
+**Legacy source says**:
+> "Sensus ($n=8 active parameters) = **Power as a Fluid**. The Dividend and Tax. These flow like fluids. You measure them in rates."
+>
+> "Locus ($=1 private key) = **Rights as Atoms**. Indivisible. Persistent. You measure them in counts."
+>
+> "Category Theory gives you the arrows (morphisms). Sheaf Theory gives you the gluing (consistency). Together they let you model Power as a Fluid (Sensus) and Rights as Atoms (Locus)."
+
+**Proposed resolution**:
+Add to LOCUS economic principles:
+```
+Dual Economic Ontology:
+- FLUID ECONOMICS (Sensus layer):
+  - Attention, compute, fees, UBI
+  - Measured in rates (tokens/second, ops/hour)
+  - Flow-through, no accumulation
+  - Progressive taxation on flow volume
+
+- ATOMIC ECONOMICS (Locus layer):
+  - Identity, votes, property rights
+  - Measured in counts (1 key, 1 vote, 1 share)
+  - Persistent, transferable only by consent
+  - Constitutional protection from dilution
+
+Interface (Signum layer):
+  - Converts between fluid and atomic
+  - Reputation = accumulated fluid history → atomic trust level
+  - Staking = atomic commitment → fluid capacity
+```
+
+---
+
 ### From seel Analysis
 *Awaiting submodule configuration*
 

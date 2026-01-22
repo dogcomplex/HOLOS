@@ -1704,6 +1704,254 @@ DELETION TEST:
 
 ---
 
+### From docs/archive Analysis (Batch 10+)
+
+#### [P-045] Three Governance Philosophies: Law-first, Virtue-first, Consequence-first
+**Source**: `docs/archive/triad_epistemics.txt` (lines 5030-5115)
+**Category**: Governance/Philosophy
+**Priority**: HIGH
+**Conflicts with**: None (provides governance design framework)
+
+**View**: BORING (governance architecture) + FANCIFUL (philosophical grounding)
+
+**Legacy source identifies three anchor modes for the triad**:
+> The triad is invariant; norm-anchoring is a choice. Each philosophy fixes one corner as "what sets rightness":
+>
+> **1. Law-first (Reality/Order)**: 🪷=law/essence, 💠=inscription/matter, 🌊=lived effect
+> - Strengths: Reliability, fairness, safety, invariants
+> - Failure mode: Bureaucracy, "security theater", model-worship
+> - Use when: Safety-critical, compliance, large-scale coordination
+>
+> **2. Virtue-first (Teleology/Character)**: 🪷=will/telos, 💠=codified wisdom, 🌊=power felt
+> - Strengths: Moral clarity, leadership, culture, resilient purpose
+> - Failure mode: Charisma drift, will-to-power if under-constrained
+> - Use when: Founding movements, education, culture change
+>
+> **3. Consequence-first (Pragmatism/Utility)**: 🪷=outcomes, 💠=instruments, 🌊=experience/feedback
+> - Strengths: Adaptivity, empirical correction, continuous improvement
+> - Failure mode: Goodharting, short-termism, wireheading
+> - Use when: Operations, optimization, exploration, adaptation
+>
+> **Durable pattern**: Virtue → articulates Law → yields Consequences → refines both
+
+**Proposed resolution**:
+Add to LOCUS governance section:
+```
+Governance Philosophy Selection:
+Enclaves choose an "anchor mode" - which triad corner defines rightness:
+
+| Anchor | What is LOCUS? | Best For |
+|--------|---------------|----------|
+| LAW-FIRST | Rules/invariants | Safety-critical systems, constitutions |
+| VIRTUE-FIRST | Purpose/character | New ventures, culture-building |
+| CONSEQUENCE-FIRST | Measured outcomes | Operations, optimization |
+
+Selection heuristic:
+- Must certain failures be impossible? → Law-first
+- Is purpose contested or formative? → Virtue-first
+- Do outcomes define success under uncertainty? → Consequence-first
+
+All three operate in a feedback loop:
+Purpose → Law → Outcomes → (refine purpose, update law)
+```
+
+---
+
+#### [P-046] ZK Rings as Trust Graph (Not DAG)
+**Source**: `docs/archive/triad_epistemics.txt` (lines 10147-10200)
+**Category**: Architecture
+**Priority**: CRITICAL
+**Conflicts with**: Any assumption of hierarchical containment
+
+**View**: BORING (core architecture principle)
+
+**Legacy source articulates the non-hierarchical geometry**:
+> "A ZK ring is not a place. It is a boundary condition on knowledge."
+>
+> Key insight: Any two ZK rings may contain the same locus. This is not a DAG, it's a graph.
+>
+> Instead of thinking:
+> ```
+> [ Kingdom A ]
+>     [ Person X ]
+> ```
+> Think:
+> ```
+> A ── attests ──▶ X
+> B ── attests ──▶ X
+> X ── attests ──▶ A
+> ```
+>
+> This is a graph of trust relations, not nesting. There is no shared interior, only shared attestations.
+
+**Proposed resolution**:
+Add to LOCUS core principles:
+```
+ZK Boundary Geometry (CRITICAL):
+HOLOS uses trust graphs, NOT containment hierarchies.
+
+A ZK ring is NOT a container. It is a boundary condition on knowledge.
+- Two sovereigns may make overlapping claims about what they vouch for
+- Overlap exists only as equivalence classes of proofs, not shared interior access
+- There is no shared interior, only shared attestations
+
+Implications:
+- Identity is relational, not territorial
+- Sovereignty is composable (person in one context, collective in another)
+- No global root required = no inevitable tyranny
+- Validation proceeds by fixpoint, not topological order
+```
+
+---
+
+#### [P-047] Co-inductive Validation for Circular Attestation
+**Source**: `docs/archive/triad_epistemics.txt` (lines 10250-10295)
+**Category**: Architecture
+**Priority**: HIGH
+**Conflicts with**: Any assumption requiring acyclic dependency
+
+**View**: BORING (consensus mechanism)
+
+**Legacy source explains how circular validation works**:
+> "The person above you asking if your ZK ring is valid may also be the person inside your ZK ring you're asking as valid."
+>
+> This is normal in real systems. Each ZK ring publishes:
+> "I satisfy constraints C, assuming all referenced proofs P are valid."
+>
+> Validation proceeds by **fixpoint**, not topological order:
+> - Accept a set of rings if all constraints are satisfied simultaneously
+> - No ring requires more power or trust than permitted
+>
+> This is how:
+> - mutually recursive type systems work
+> - co-inductive definitions work
+> - consensus protocols work
+> - economic equilibria work
+>
+> Result: Strongly Connected Components (SCCs) of trust. An SCC with valid constraints is a stable locus.
+
+**Proposed resolution**:
+Add to LOCUS validation model:
+```
+Co-inductive Validation:
+HOLOS supports circular attestation through fixpoint resolution.
+
+Mechanism:
+1. Each ring publishes: "I satisfy C, assuming proofs P are valid"
+2. System finds fixpoint where all constraints satisfied simultaneously
+3. Strongly Connected Components (SCCs) of valid constraints = stable loci
+
+No root required. SCCs are the atomic units of collective trust.
+
+Warning: Overlapping loci do NOT imply shared liability unless explicit.
+Enforce:
+- Scope of attestation (what exactly is being vouched for)
+- Non-transitivity by default (trust doesn't cascade)
+- Explicit delegation (power transfer requires ceremony)
+```
+
+---
+
+#### [P-048] Collective Locus: Invariants Over Interiors
+**Source**: `docs/archive/triad_epistemics.txt` (lines 10210-10250)
+**Category**: Architecture
+**Priority**: HIGH
+**Conflicts with**: None (clarifies composite identity)
+
+**View**: BORING (federation model)
+
+**Legacy source distinguishes single vs composite loci**:
+> **Case A: Single-nucleus locus** (person)
+> - One interior, one Name, one ZK boundary
+>
+> **Case B: Composite locus** (kingdom/guild/collective)
+> - Multiple interiors, each with own ZK ring
+> - Collective has: constitution (rules), joint attestation, possibly single outward Name
+>
+> **Crucially**: The collective's LOCUS is NOT a super-interior.
+> It is a stable agreement over constraints + proofs.
+>
+> The locus of a kingdom is:
+> - the invariant rules
+> - the accepted membership proofs
+> - the power-allocation constraints
+> NOT the sum of minds inside it.
+
+**Proposed resolution**:
+Add to LOCUS layer definitions:
+```
+Composite Locus Model:
+Collectives (guilds, kingdoms, DAOs) have LOCUS as agreement, not super-interior.
+
+Single-nucleus: One interior, one Name, one boundary
+Composite: Multiple interiors + shared constitutional rules
+
+A collective's LOCUS consists of:
+- Invariant rules (constitution)
+- Accepted membership proofs
+- Power-allocation constraints
+
+NOT: The sum or union of member interiors
+
+This matches:
+- Cells → organisms (agreements among cells)
+- Companies (legal personhood over individuals)
+- States (sovereignty over citizens)
+- DAOs (governance over wallets)
+```
+
+---
+
+#### [P-049] Pressure-Tested Triad: Why Selection Enforces Three Layers
+**Source**: `docs/archive/triad_epistemics.txt` (lines 10020-10130)
+**Category**: Philosophy/Architecture
+**Priority**: MEDIUM
+**Conflicts with**: None (validates triad universality)
+
+**View**: BORING (evolutionary justification)
+
+**Legacy source explains why high-pressure systems converge on the triad**:
+> "Successful under pressure" systems (cells, ecosystems, economies) converge on three functional necessities:
+>
+> 1. Boundary/identity/invariants (what counts as "self," what must remain true)
+> 2. Interfaces/tools/actuators (how the system acts and is acted upon)
+> 3. Dynamics/memory/adaptation (how it changes over time)
+>
+> That's 🪷/💠/🌊. Selection pressure punishes systems lacking any one.
+>
+> | Missing | Failure Mode |
+> |---------|--------------|
+> | 🪷 weak | Loses coherence (cancer-like growth, autoimmune) |
+> | 💠 weak | Can't act/compete (no effective tooling) |
+> | 🌊 weak | Can't adapt (outcompeted as conditions change) |
+>
+> What winning systems have in common:
+> - Keep 🪷 boring and stable
+> - Let 💠 be modular and replaceable
+> - Treat 🌊 as the arena of adaptation (fast sensing + correction)
+
+**Proposed resolution**:
+Add to LOCUS rationale section:
+```
+Evolutionary Pressure Validation:
+Why the triad persists across domains—selection punishes its absence.
+
+| Layer | Function | Failure if Missing |
+|-------|----------|-------------------|
+| LOCUS | Identity/boundary | Loses coherence, unbounded growth |
+| SIGNUM | Interface/tools | Can't act, compete, or express |
+| SENSUS | Memory/adaptation | Can't learn, gets outcompeted |
+
+Winning pattern (observed across cells, ecosystems, economies):
+- LOCUS: Keep boring and stable
+- SIGNUM: Keep modular and replaceable
+- SENSUS: Arena of adaptation (fast sensing + correction)
+
+This is why HOLOS adopts the triad as foundational architecture.
+```
+
+---
+
 ### From seel Analysis
 *Awaiting submodule configuration*
 
